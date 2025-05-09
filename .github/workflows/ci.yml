@@ -1,0 +1,33 @@
+name: Build
+on:
+  pull_request:
+    branches:
+      - main
+
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  YARN_NPM_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+jobs:
+  test:
+    runs-on: [ubuntu-latest]
+    container: node:20-bookworm
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Checkout
+        uses: actions/checkout@d632683dd7b4114ad314bca15554477dd762a938 # ratchet:actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - run: corepack enable
+
+      - name: Build
+        run: |
+          yarn install
+          yarn build
+
+      - name: Test
+        run: |
+          yarn test
