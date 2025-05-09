@@ -1,0 +1,34 @@
+{
+  "inputs": [
+    {
+      "inputFile": "./sonarqube-base.yaml"
+    },
+    {
+      "inputFile": "./sonarqube-v2.json",
+      "pathModification": {
+        "prepend": "/v2"
+      },
+      "description": {
+        "append": true,
+        "title": {
+          "headingLevel": 1,
+          "value": "SonarQube V2 API"
+        }
+      }
+    },
+    {
+      "inputFile": "./sonarqube-v1.yaml",
+      "dispute": {
+        "prefix": "V1"
+      },
+      "description": {
+        "append": true,
+        "title": {
+          "headingLevel": 1,
+          "value": "SonarQube V1 API"
+        }
+      }
+    }
+  ],
+  "output": "./sonarqube-all.yaml"
+}

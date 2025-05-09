@@ -1,0 +1,22 @@
+name: Publish Package
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  YARN_NPM_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+jobs:
+  build:
+    runs-on: [ubuntu-latest]
+    container: node:20-bookworm
+    steps:
+      - uses: actions/checkout@v4
+      - run: corepack enable
+      - run: yarn install
+      - run: yarn build
+      - run: yarn npm publish
