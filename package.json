@@ -1,6 +1,6 @@
 {
   "name": "@philips-software/qubekit",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "packageManager": "yarn@4.5.0",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
