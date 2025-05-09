@@ -1,0 +1,4 @@
+info:
+  title: Unified Sonarqube API
+  version: 2025.2
+  description: API definition for Sonarqube Server API
