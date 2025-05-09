@@ -1,0 +1,1450 @@
+info:
+  title: Sonarqube V1 API
+  version: 2025.2
+  description: API definition for Sonarqube Server v1 API
+tags:
+  - name: project
+  - name: measure
+  - name: issue
+  - name: permission
+paths:
+  /issues/search:
+    get:
+      tags:
+        - issue
+      summary: Search Issues
+      security:
+        - basicAuth: []
+        - tokenAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IssueSearchResponse"
+          description: The request was successful, and the server has returned the
+            requested resource in the response body.
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - message
+                properties:
+                  message:
+                    type: string
+          description: Authentication is required to access the requested resource. The
+            client must include the appropriate credentials.
+        "403":
+          description: Forbidden - The user does not have the required permissions
+        "404":
+          description: Not found - The requested resource does not exist
+        "500":
+          description: Internal server error
+        "503":
+          $ref: "#/components/responses/Service Unavailable"
+      parameters:
+        - $ref: "#/components/parameters/ps"
+        - $ref: "#/components/parameters/p"
+        - in: query
+          name: componentKeys
+          style: form
+          schema:
+            type: string
+          explode: true
+          required: false
+          description: Comma-separated list of component keys. Retrieve issues associated
+            with the specified components and their descendants.
+          allowReserved: false
+        - in: query
+          name: projectKeys
+          style: form
+          schema:
+            type: string
+          explode: true
+          required: false
+          description: Comma-separated list of project keys. Retrieve issues associated
+            with the specified projects.
+          allowReserved: false
+        - in: query
+          name: severities
+          style: form
+          schema:
+            type: string
+            examples:
+              - INFO,MINOR,MAJOR,CRITICAL,BLOCKER
+          explode: true
+          required: false
+          description: Comma-separated list of severities (INFO, MINOR, MAJOR, CRITICAL,
+            BLOCKER).
+          allowReserved: false
+        - in: query
+          name: assignees
+          style: form
+          schema:
+            type: string
+            examples:
+              - admin,usera,__me__
+          explode: true
+          required: false
+          description: Comma-separated list of assignee logins. The value '__me__' can be
+            used as a placeholder for user who performs the request
+          allowReserved: false
+        - in: query
+          name: types
+          style: form
+          schema:
+            type: string
+            examples:
+              - CODE_SMELL
+              - BUG
+              - VULNERABILITY
+          explode: true
+          required: false
+          description: Comma-separated list of issue types (CODE_SMELL, BUG, VULNERABILITY).
+          allowReserved: false
+        - in: query
+          name: statuses
+          style: form
+          schema:
+            type: string
+            examples:
+              - OPEN,CONFIRMED,REOPENED,RESOLVED,CLOSED
+          explode: true
+          required: false
+          description: Comma-separated list of statuses (OPEN, CONFIRMED, REOPENED,
+            RESOLVED, CLOSED).
+          allowReserved: false
+        - in: query
+          name: resolutions
+          style: form
+          schema:
+            type: string
+            examples:
+              - FALSE-POSITIVE,WONTFIX,FIXED,REMOVED
+          explode: true
+          required: false
+          description: Comma-separated list of resolutions (FALSE-POSITIVE, WONTFIX,
+            FIXED, REMOVED).
+          allowReserved: false
+        - in: query
+          name: s
+          style: form
+          schema:
+            enum:
+              - HOTSPOTS
+              - FILE_LINE
+              - STATUS
+              - SEVERITY
+              - CLOSE_DATE
+              - CREATION_DATE
+              - UPDATE_DATE
+            type: string
+          explode: true
+          required: false
+          description: Sort field
+          allowReserved: false
+        - in: query
+          name: asc
+          style: form
+          schema:
+            type: boolean
+            default: false
+          explode: true
+          required: false
+          description: Ascending sort. Default is false (descending).
+          allowReserved: false
+        - in: query
+          name: resolved
+          style: form
+          schema:
+            type: boolean
+          explode: true
+          required: false
+          description: To match resolved or unresolved issues
+          allowReserved: false
+        - in: query
+          name: rules
+          style: form
+          schema:
+            type: string
+          explode: true
+          required: false
+          description: Comma-separated list of rule keys.
+          allowReserved: false
+        - in: query
+          name: tags
+          style: form
+          schema:
+            type: string
+          explode: true
+          required: false
+          description: Comma-separated list of tags.
+          allowReserved: false
+        - in: query
+          name: authors
+          style: form
+          schema:
+            type: string
+            examples:
+              - torvalds@linux-foundation.org
+          explode: true
+          required: false
+          description: Comma-separated list of SCM accounts. To set several values, the
+            parameter must be called once for each value.
+          allowReserved: false
+        - in: query
+          name: createdAfter
+          style: form
+          schema:
+            type: string
+            format: date-time
+          explode: true
+          required: false
+          description: Filter issues created after the given date (format YYYY-MM-DD or
+            datetime ISO format).
+          allowReserved: false
+        - in: query
+          name: createdBefore
+          style: form
+          schema:
+            type: string
+            format: date-time
+          explode: true
+          required: false
+          description: Filter issues created before the given date (format YYYY-MM-DD or
+            datetime ISO format).
+          allowReserved: false
+        - in: query
+          name: createdAt
+          style: form
+          schema:
+            type: string
+            format: date-time
+          explode: true
+          required: false
+          description: Filter issues created at a specific date (format YYYY-MM-DD or
+            datetime ISO format).
+          allowReserved: false
+        - in: query
+          name: createdInLast
+          style: form
+          schema:
+            type: string
+            examples:
+              - 1m
+              - 1h
+              - 1d
+              - 1w
+              - 1y
+          explode: true
+          required: false
+          description: Filter issues created during a time span before now (e.g. 1m, 1h,
+            1d, 1w, 1y).
+          allowReserved: false
+        - in: query
+          name: languages
+          style: form
+          schema:
+            type: string
+          explode: true
+          required: false
+          description: Comma-separated list of language keys.
+          allowReserved: false
+        - in: query
+          name: facets
+          style: form
+          schema:
+            type: string
+          explode: true
+          required: false
+          description: Comma-separated list of facets to include in the response.
+          allowReserved: false
+        - in: query
+          name: additionalFields
+          style: form
+          schema:
+            type: string
+            examples:
+              - _all
+              - comments
+              - languages
+              - rules
+              - ruleDescriptionContextKey
+              - transitions
+              - actions
+              - users
+          explode: true
+          required: false
+          description: Comma-separated list of the optional fields to be returned in
+            response. Action plans are dropped in 5.5, it is not returned in the
+            response.
+          allowReserved: false
+      description: >-
+        Search for issues based on various criteria. This endpoint supports
+        pagination and filtering. The response includes issue details, paging
+        information, and facets if requested.
+
+        Requires the 'Browse' permission on the specified project(s).
+
+        For applications, it also requires 'Browse' permission on its child
+        projects.
+
+        When issue indexing is in progress returns 503 service unavailable HTTP
+        code.
+      operationId: searchIssues
+  /projects/search:
+    get:
+      tags:
+        - project
+      summary: Search Projects
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProjectSearchResponse"
+          description: The request was successful, and the server has returned the
+            requested resource in the response body.
+        "401":
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - message
+                properties:
+                  message:
+                    type: string
+          description: Authentication is required to access the requested resource. The
+            client must include the appropriate credentials.
+      parameters:
+        - in: query
+          name: analyzedBefore
+          style: form
+          schema:
+            type: string
+          explode: true
+          required: false
+          description: >-
+            Filter the projects for which the last analysis of all branches are
+            older than the given date (exclusive).
+
+            Either a date (server timezone) or datetime can be provided.
+          allowReserved: false
+        - in: query
+          name: p
+          style: form
+          schema:
+            type: integer
+          explode: true
+          required: false
+          description: 1-based page number
+          allowReserved: false
+        - in: query
+          name: q
+          style: form
+          schema:
+            type: string
+          explode: true
+          required: false
+          description: |-
+            Limit search to:
+            component names that contain the supplied string
+            component keys that contain the supplied string
+          allowReserved: false
+        - in: query
+          name: onProvisionedOnly
+          style: form
+          schema:
+            type: boolean
+          explode: true
+          required: false
+          description: Filter the projects that are provisioned
+          allowReserved: false
+        - in: query
+          name: projects
+          style: form
+          schema:
+            type: string
+          explode: true
+          required: false
+          description: Comma-separated list of project keys
+          allowReserved: false
+        - in: query
+          name: ps
+          style: form
+          schema:
+            type: integer
+          explode: true
+          required: false
+          description: Page size. Must be greater than 0 and less or equal than 500
+          allowReserved: false
+        - in: query
+          name: qualifiers
+          style: form
+          schema:
+            type: string
+          explode: true
+          required: false
+          description: Comma-separated list of component qualifiers. Filter the results
+            with the specified qualifiers
+          allowReserved: false
+      description: Search for projects
+      operationId: searchProjects
+  /measures/component:
+    get:
+      tags:
+        - measure
+      summary: Component
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MeasureComponentResponse"
+          description: The request was successful, and the server has returned the
+            requested resource in the response body.
+        "401":
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - message
+                properties:
+                  message:
+                    type: string
+          description: Authentication is required to access the requested resource. The
+            client must include the appropriate credentials.
+        "403":
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - message
+                properties:
+                  message:
+                    type: string
+          description: The server understood the request, but refuses to authorize it.
+            Ensure the client has appropriate permissions.
+      parameters:
+        - in: query
+          name: additionalFields
+          style: form
+          schema:
+            enum:
+              - metrics
+              - period
+            type: string
+          explode: true
+          required: false
+          description: Comma-separated list of additional fields that can be returned in
+            the response.
+          allowReserved: false
+        - in: query
+          name: branch
+          style: form
+          schema:
+            type: string
+          explode: true
+          required: false
+          description: Branch key. Not available in the community edition.
+          allowReserved: false
+        - in: query
+          name: component
+          style: form
+          schema:
+            type: string
+            examples:
+              - my_project
+          explode: true
+          required: true
+          description: Component key
+          allowReserved: false
+        - in: query
+          name: metricKeys
+          style: form
+          schema:
+            enum:
+              - accepted_issues
+              - new_software_quality_maintainability_remediation_effort
+              - new_technical_debt
+              - high_impact_accepted_issues
+              - blocker_violations
+              - software_quality_blocker_issues
+              - bugs
+              - classes
+              - code_smells
+              - cognitive_complexity
+              - comment_lines
+              - comment_lines_density
+              - branch_coverage
+              - new_branch_coverage
+              - conditions_to_cover
+              - new_conditions_to_cover
+              - confirmed_issues
+              - coverage
+              - new_coverage
+              - critical_violations
+              - complexity
+              - duplicated_blocks
+              - new_duplicated_blocks
+              - duplicated_files
+              - duplicated_lines
+              - duplicated_lines_density
+              - new_duplicated_lines_density
+              - new_duplicated_lines
+              - effort_to_reach_software_quality_maintainability_rating_a
+              - effort_to_reach_maintainability_rating_a
+              - false_positive_issues
+              - files
+              - functions
+              - generated_lines
+              - generated_ncloc
+              - software_quality_high_issues
+              - info_violations
+              - software_quality_info_issues
+              - violations
+              - prioritized_rule_issues
+              - line_coverage
+              - new_line_coverage
+              - lines
+              - ncloc
+              - lines_to_cover
+              - new_lines_to_cover
+              - software_quality_low_issues
+              - software_quality_maintainability_issues
+              - sqale_rating
+              - software_quality_maintainability_rating
+              - new_maintainability_rating
+              - new_software_quality_maintainability_rating
+              - major_violations
+              - software_quality_medium_issues
+              - minor_violations
+              - new_accepted_issues
+              - new_blocker_violations
+              - new_software_quality_blocker_issues
+              - new_bugs
+              - new_code_smells
+              - new_critical_violations
+              - new_software_quality_high_issues
+              - new_info_violations
+              - new_software_quality_info_issues
+              - new_violations
+              - new_lines
+              - new_software_quality_low_issues
+              - new_software_quality_maintainability_issues
+              - new_major_violations
+              - new_software_quality_medium_issues
+              - new_minor_violations
+              - new_software_quality_reliability_issues
+              - new_security_hotspots
+              - new_software_quality_security_issues
+              - new_vulnerabilities
+              - open_issues
+              - projects
+              - alert_status
+              - releasability_rating
+              - software_quality_reliability_issues
+              - reliability_rating
+              - software_quality_reliability_rating
+              - new_software_quality_reliability_rating
+              - new_reliability_rating
+              - software_quality_reliability_remediation_effort
+              - reliability_remediation_effort
+              - new_reliability_remediation_effort
+              - new_software_quality_reliability_remediation_effort
+              - reopened_issues
+              - security_hotspots
+              - security_hotspots_reviewed
+              - new_security_hotspots_reviewed
+              - software_quality_security_issues
+              - security_rating
+              - software_quality_security_rating
+              - new_software_quality_security_rating
+              - new_security_rating
+              - security_remediation_effort
+              - software_quality_security_remediation_effort
+              - new_software_quality_security_remediation_effort
+              - new_security_remediation_effort
+              - security_review_rating
+              - new_security_review_rating
+              - skipped_tests
+              - statements
+              - sqale_index
+              - software_quality_maintainability_remediation_effort
+              - sqale_debt_ratio
+              - software_quality_maintainability_debt_ratio
+              - new_software_quality_maintainability_debt_ratio
+              - new_sqale_debt_ratio
+              - uncovered_conditions
+              - new_uncovered_conditions
+              - uncovered_lines
+              - new_uncovered_lines
+              - test_execution_time
+              - test_errors
+              - test_failures
+              - tests
+              - test_success_density
+              - vulnerabilities
+            type: string
+          explode: true
+          required: true
+          description: Comma-separated list of metric keys
+          allowReserved: false
+        - in: query
+          name: pullRequest
+          style: form
+          schema:
+            type: string
+            examples:
+              - "5461"
+          explode: true
+          required: true
+          description: Pull request id. Not available in the community edition.
+          allowReserved: false
+      description: >-
+        Return component with specified measures.
+
+        Requires the following permission: 'Browse' on the project of specified
+        component.
+      operationId: component
+  /permissions/add_user:
+    post:
+      tags:
+        - permission
+      summary: Add permission to a user
+      responses:
+        "200":
+          $ref: "#/components/responses/Ok"
+      parameters:
+        - in: query
+          name: login
+          style: form
+          schema:
+            type: string
+          explode: true
+          required: true
+          description: User login
+          allowReserved: false
+        - in: query
+          name: permission
+          style: form
+          schema:
+            type: string
+          explode: true
+          required: true
+          description: >-
+            The permission you would like to grant to the user
+
+
+            Possible values for global permissions: admin, gateadmin,
+            profileadmin, provisioning, scan, applicationcreator,
+            portfoliocreator
+
+
+            Possible values for project permissions admin, codeviewer,
+            issueadmin, securityhotspotadmin, scan, user
+          allowReserved: false
+        - in: query
+          name: projectId
+          style: form
+          schema:
+            type: string
+          explode: true
+          required: false
+          description: Project id
+          allowReserved: false
+        - in: query
+          name: projectKey
+          style: form
+          schema:
+            type: string
+          explode: true
+          required: false
+          description: Project key
+          allowReserved: false
+      description: >-
+        This service defaults to global permissions, but can be limited to
+        project permissions by providing project id or project key.
+
+
+        Requires one of the following permissions:
+
+        'Administer System' or 'Administer' rights on the specified project
+      operationId: addPermissionToAUser
+  /permissions/add_group:
+    post:
+      tags:
+        - permission
+      summary: Add a permission to a group
+      responses:
+        "200":
+          $ref: "#/components/responses/Ok"
+      parameters:
+        - in: query
+          name: groupName
+          style: form
+          schema:
+            type: string
+          explode: true
+          required: true
+          description: Group name or 'anyone' (case insensitive)
+          allowReserved: false
+        - in: query
+          name: permission
+          style: form
+          schema:
+            type: string
+          explode: true
+          required: true
+          description: >-
+            The permission you would like to grant to the group.
+
+
+            Possible values for global permissions: admin, gateadmin,
+            profileadmin, provisioning, scan, applicationcreator,
+            portfoliocreator
+
+
+            Possible values for project permissions admin, codeviewer,
+            issueadmin, securityhotspotadmin, scan, user
+          allowReserved: false
+        - in: query
+          name: projectId
+          style: form
+          schema:
+            type: string
+          explode: true
+          required: false
+          description: Project id
+          allowReserved: false
+        - in: query
+          name: projectKey
+          style: form
+          schema:
+            type: string
+          explode: true
+          required: false
+          description: Project key
+          allowReserved: false
+      description: >-
+        This service defaults to global permissions, but can be limited to
+        project permissions by providing project id or project key.
+
+
+        The group name must be provided.
+
+
+        Requires one of the following permissions:
+
+        'Administer System' or 'Administer' rights on the specified project
+      operationId: addAPermissionToAGroup
+  /permissions/remove_user:
+    post:
+      tags:
+        - permission
+      summary: Remove permission from a user
+      responses:
+        "200":
+          $ref: "#/components/responses/Ok"
+      parameters:
+        - in: query
+          name: login
+          style: form
+          schema:
+            type: string
+          explode: true
+          required: true
+          description: User login
+          allowReserved: false
+        - in: query
+          name: permission
+          style: form
+          schema:
+            type: string
+          explode: true
+          required: true
+          description: >-
+            The permission you would like to revoke from the user.
+
+
+            Possible values for global permissions: admin, gateadmin,
+            profileadmin, provisioning, scan, applicationcreator,
+            portfoliocreator
+
+
+            Possible values for project permissions admin, codeviewer,
+            issueadmin, securityhotspotadmin, scan, user
+          allowReserved: false
+        - in: query
+          name: projectId
+          style: form
+          schema:
+            type: string
+          explode: true
+          required: false
+          description: Project id
+          allowReserved: false
+        - in: query
+          name: projectKey
+          style: form
+          schema:
+            type: string
+          explode: true
+          required: false
+          description: Project key
+          allowReserved: false
+      description: >-
+        This service defaults to global permissions, but can be limited to
+        project permissions by providing project id or project key.
+
+
+        Requires one of the following permissions:
+
+        'Administer System'
+
+
+        'Administer' rights on the specified project
+      operationId: removePermissionFromAUser
+  /permissions/remove_group:
+    post:
+      tags:
+        - permission
+      summary: Remove a permission from a group
+      responses:
+        "200":
+          $ref: "#/components/responses/Ok"
+      parameters:
+        - in: query
+          name: groupName
+          style: form
+          schema:
+            type: string
+          explode: true
+          required: true
+          description: Group name or 'anyone' (case insensitive)
+          allowReserved: false
+        - in: query
+          name: permission
+          style: form
+          schema:
+            type: string
+          explode: true
+          required: true
+          description: >-
+            The permission you would like to revoke from the group.
+
+
+            Possible values for global permissions: admin, gateadmin,
+            profileadmin, provisioning, scan, applicationcreator,
+            portfoliocreator
+
+
+            Possible values for project permissions admin, codeviewer,
+            issueadmin, securityhotspotadmin, scan, user
+          allowReserved: false
+        - in: query
+          name: projectId
+          style: form
+          schema:
+            type: string
+          explode: true
+          required: false
+          description: Project id
+          allowReserved: false
+        - in: query
+          name: projectKey
+          style: form
+          schema:
+            type: string
+          explode: true
+          required: false
+          description: Project key
+          allowReserved: false
+      description: >-
+        This service defaults to global permissions, but can be limited to
+        project permissions by providing project id or project key.
+
+
+        The group name must be provided.
+
+
+        Requires one of the following permissions:
+
+        'Administer System' or 'Administer' rights on the specified project
+      operationId: removeAPermissionFromAGroup
+openapi: 3.1.0
+components:
+  schemas:
+    Metric:
+      type: object
+      title: Metric for a component
+      required:
+        - key
+        - name
+        - description
+        - domain
+        - type
+        - higherValuesAreBetter
+        - qualitative
+        - hidden
+      properties:
+        key:
+          type: string
+        name:
+          type: string
+        type:
+          type: string
+        domain:
+          type: string
+        hidden:
+          type: boolean
+        description:
+          type: string
+        qualitative:
+          type: boolean
+        higherValuesAreBetter:
+          type: boolean
+      description: A metric captured from a project
+    Paging:
+      type: object
+      required:
+        - pageIndex
+        - pageSize
+        - total
+      properties:
+        total:
+          type: integer
+          examples:
+            - 100
+        pageSize:
+          type: integer
+          examples:
+            - 25
+        pageIndex:
+          type: integer
+          examples:
+            - 1
+            - 2
+      description: Used to represent a paged response
+    Measure:
+      type: object
+      required:
+        - metric
+        - value
+        - period
+      properties:
+        value:
+          type: string
+        metric:
+          type: string
+          examples:
+            - complexity
+            - new_violations
+            - nloc
+        period:
+          type: object
+          required:
+            - value
+            - bestValue
+          properties:
+            value:
+              type: boolean
+            bestValue:
+              type: string
+              examples:
+                - "25"
+      description: Measures from a project
+    Component:
+      type: object
+      required:
+        - key
+        - name
+        - qualifier
+        - visibility
+        - lastAnalysisDate
+        - revision
+        - managed
+      properties:
+        key:
+          type: string
+        name:
+          type: string
+        managed:
+          type: string
+        revision:
+          type: string
+        qualifier:
+          type: string
+        visibility:
+          type: string
+        lastAnalysisDate:
+          type: string
+      description: A component is a representation of a Project in Sonarqube
+    IssueSearchResponse:
+      type: object
+      title: Issue Search Response
+      required:
+        - paging
+        - components
+        - rules
+        - users
+        - facets
+        - issues
+      properties:
+        rules:
+          type: array
+          items:
+            type: object
+            required:
+              - key
+              - name
+              - status
+              - lang
+              - langName
+            properties:
+              key:
+                type: string
+              lang:
+                type: string
+              name:
+                type: string
+              status:
+                type: string
+              langName:
+                type: string
+        users:
+          type: array
+          items:
+            type: object
+            required:
+              - login
+              - name
+              - active
+              - avatar
+            properties:
+              name:
+                type: string
+              login:
+                type: string
+              active:
+                type: boolean
+              avatar:
+                type: string
+        facets:
+          type: array
+          items:
+            type: object
+            required:
+              - property
+              - values
+            properties:
+              values:
+                type: array
+                items:
+                  type: object
+                  required:
+                    - val
+                    - count
+                  properties:
+                    val:
+                      type: string
+                    count:
+                      type: number
+              property:
+                type: string
+        paging:
+          $ref: "#/components/schemas/Paging"
+        components:
+          type: array
+          items:
+            type: object
+            required:
+              - key
+              - enabled
+              - qualifier
+              - name
+              - longName
+            properties:
+              key:
+                type: string
+              name:
+                type: string
+              path:
+                type: string
+              enabled:
+                type: boolean
+              longName:
+                type: string
+              qualifier:
+                type: string
+        issues:
+          type: array
+          items:
+            type: object
+            required:
+              - key
+              - component
+              - project
+              - rule
+              - cleanCodeAttribute
+              - cleanCodeAttributeCategory
+              - issueStatus
+              - prioritizedRule
+              - impacts
+              - message
+              - messageFormattings
+              - line
+              - hash
+              - author
+              - effort
+              - creationDate
+              - updateDate
+              - tags
+              - comments
+              - attr
+              - transitions
+              - actions
+              - textRange
+              - flows
+              - quickFixAvailable
+              - ruleDescriptionContextKey
+              - codeVariants
+              - type
+              - severity
+              - status
+            properties:
+              key:
+                type: string
+              attr:
+                type: object
+                required:
+                  - jira-issue-key
+                properties:
+                  jira-issue-key:
+                    type: string
+              hash:
+                type: string
+              line:
+                type: number
+              rule:
+                type: string
+              tags:
+                type: array
+                items:
+                  type: string
+              flows:
+                type: array
+                items:
+                  type: object
+                  required:
+                    - locations
+                  properties:
+                    locations:
+                      type: array
+                      items:
+                        type: object
+                        required:
+                          - textRange
+                          - msg
+                          - msgFormattings
+                        properties:
+                          msg:
+                            type: string
+                          textRange:
+                            type: object
+                            required:
+                              - startLine
+                              - endLine
+                              - startOffset
+                              - endOffset
+                            properties:
+                              endLine:
+                                type: number
+                              endOffset:
+                                type: number
+                              startLine:
+                                type: number
+                              startOffset:
+                                type: number
+                          msgFormattings:
+                            type: array
+                            items:
+                              type: object
+                              required:
+                                - start
+                                - end
+                                - type
+                              properties:
+                                end:
+                                  type: number
+                                type:
+                                  type: string
+                                start:
+                                  type: number
+              author:
+                type: string
+              effort:
+                type: string
+              actions:
+                type: array
+                items:
+                  type: string
+              impacts:
+                type: array
+                items:
+                  type: object
+                  required:
+                    - softwareQuality
+                    - severity
+                  properties:
+                    severity:
+                      type: string
+                    softwareQuality:
+                      type: string
+              message:
+                type: string
+              project:
+                type: string
+              comments:
+                type: array
+                items:
+                  type: object
+                  required:
+                    - key
+                    - login
+                    - htmlText
+                    - markdown
+                    - updatable
+                    - createdAt
+                  properties:
+                    key:
+                      type: string
+                    login:
+                      type: string
+                    htmlText:
+                      type: string
+                    markdown:
+                      type: string
+                    createdAt:
+                      type: string
+                    updatable:
+                      type: boolean
+              component:
+                type: string
+              textRange:
+                type: object
+                required:
+                  - startLine
+                  - endLine
+                  - startOffset
+                  - endOffset
+                properties:
+                  endLine:
+                    type: number
+                  endOffset:
+                    type: number
+                  startLine:
+                    type: number
+                  startOffset:
+                    type: number
+              updateDate:
+                type: string
+              issueStatus:
+                type: string
+              transitions:
+                type: array
+                items:
+                  type: string
+              codeVariants:
+                type: array
+                items:
+                  type: string
+              creationDate:
+                type: string
+              prioritizedRule:
+                type: boolean
+              quickFixAvailable:
+                type: boolean
+              cleanCodeAttribute:
+                type: string
+              messageFormattings:
+                type: array
+                items:
+                  type: object
+                  required:
+                    - start
+                    - end
+                    - type
+                  properties:
+                    end:
+                      type: number
+                    type:
+                      type: string
+                    start:
+                      type: number
+              ruleDescriptionContextKey:
+                type: string
+              cleanCodeAttributeCategory:
+                type: string
+              type:
+                type: string
+              severity:
+                type: string
+              status:
+                type: string
+      description: Response object from the Issue Search API
+    ProjectSearchResponse:
+      type: object
+      required:
+        - components
+        - paging
+      properties:
+        paging:
+          $ref: "#/components/schemas/Paging"
+        components:
+          type: array
+          items:
+            $ref: "#/components/schemas/Component"
+      description: Response type for searching for a project
+    MeasureComponentResponse:
+      type: object
+      title: Generated schema for Root
+      required:
+        - component
+        - metrics
+        - period
+      properties:
+        period:
+          type: object
+          required:
+            - mode
+            - date
+            - parameter
+          properties:
+            date:
+              type: string
+            mode:
+              type: string
+            parameter:
+              type: string
+        metrics:
+          type: array
+          items:
+            $ref: "#/components/schemas/Metric"
+        component:
+          type: object
+          required:
+            - key
+            - name
+            - qualifier
+            - language
+            - path
+            - measures
+          properties:
+            key:
+              type: string
+            name:
+              type: string
+            path:
+              type: string
+            language:
+              type: string
+            measures:
+              type: array
+              items:
+                $ref: "#/components/schemas/Measure"
+            qualifier:
+              type: string
+      description: Response from the /measures/component endpoint
+  responses:
+    Ok:
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - data
+            properties:
+              data:
+                type: object
+      description: The request was successful, and the server has returned the
+        requested resource in the response body.
+    BadRequest:
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - message
+            properties:
+              errors:
+                type: array
+                items:
+                  type: object
+                  required:
+                    - message
+                  properties:
+                    message:
+                      type: string
+              message:
+                type: string
+      description: The server could not understand the request due to invalid syntax.
+        The client should modify the request and try again.
+    Service Unavailable:
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - message
+            properties:
+              message:
+                type: string
+              retryAfter:
+                type: number
+      description: The server is currently unable to handle the request due to a
+        temporary overload or scheduled maintenance. Try again later.
+  parameters:
+    p:
+      in: query
+      name: p
+      style: form
+      schema:
+        type: integer
+      explode: true
+      description: Current page
+      allowReserved: false
+      allowEmptyValue: false
+    ps:
+      in: query
+      name: ps
+      style: form
+      schema:
+        type: integer
+        format: int64
+        maximum: 500
+        minimum: 1
+        examples:
+          - 31
+          - 100
+          - 500
+      explode: true
+      description: Page size. Must be greater than 0 and less or equal than 500
+      allowReserved: false
+      allowEmptyValue: false
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+      description: HTTP Basic Authentication. Works with API keys or username/password.
+    tokenAuth:
+      type: http
+      scheme: bearer
+      description: Authentication using a bearer token.

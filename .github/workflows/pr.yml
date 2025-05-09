@@ -1,0 +1,27 @@
+name: 'Semantic Commit Check'
+on:
+  pull_request_target:
+    types:
+      - opened
+      - edited
+      - synchronize
+permissions:
+  contents: read
+  pull-requests: write
+
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  YARN_NPM_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+jobs:
+  main:
+    name: Semantic Commit Message Check
+    runs-on: [ubuntu-latest]
+    steps:
+      - uses: actions/checkout@d632683dd7b4114ad314bca15554477dd762a938 # ratchet:actions/checkout@v3
+      - uses: amannn/action-semantic-pull-request@0723387faaf9b38adef4775cd42cfd5155ed6017 # ratchet:amannn/action-semantic-pull-request@v5
+        name: Check PR for Semantic Commit Message
+
+        with:
+          requireScope: false
+          ignoreLabels: release merge
