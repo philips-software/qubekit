@@ -526,23 +526,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@hey-api/json-schema-ref-parser@npm:1.0.5":
-  version: 1.0.5
-  resolution: "@hey-api/json-schema-ref-parser@npm:1.0.5"
+"@hey-api/json-schema-ref-parser@npm:1.0.6":
+  version: 1.0.6
+  resolution: "@hey-api/json-schema-ref-parser@npm:1.0.6"
   dependencies:
     "@jsdevtools/ono": "npm:^7.1.3"
     "@types/json-schema": "npm:^7.0.15"
     js-yaml: "npm:^4.1.0"
     lodash: "npm:^4.17.21"
-  checksum: 10c0/6b74c6a4dae87bf0890a87931aebdcb73983713b6bbe0093dafad746736bbbe40882cefdf37ffbe50d63173254be076c26633359b6913e283bcf66dc9e3a27d0
+  checksum: 10c0/a3d15b2316ef5a4442131386aa61e196af4f0e01064d5c66a598cf0ea5b9217dce57cb40e98278cdac9548a7e27ecc5cf9146fe301b9371aefd81a0933553252
   languageName: node
   linkType: hard
 
-"@hey-api/openapi-ts@npm:^0.66.7":
-  version: 0.66.7
-  resolution: "@hey-api/openapi-ts@npm:0.66.7"
+"@hey-api/openapi-ts@npm:^0.67.6":
+  version: 0.67.6
+  resolution: "@hey-api/openapi-ts@npm:0.67.6"
   dependencies:
-    "@hey-api/json-schema-ref-parser": "npm:1.0.5"
+    "@hey-api/json-schema-ref-parser": "npm:1.0.6"
     c12: "npm:2.0.1"
     commander: "npm:13.0.0"
     handlebars: "npm:4.7.8"
@@ -550,7 +550,7 @@ __metadata:
     typescript: ^5.5.3
   bin:
     openapi-ts: bin/index.cjs
-  checksum: 10c0/4f630dee0f859a2344b1e7d7aa8e61d1d7c8700a3dc1cf44559967c86c7e8a4a81414f680096f58ec54a5321f302e3f9862a1aa797c7098d3197f5caa08cdd61
+  checksum: 10c0/a278179cee9790327fb502a7c83b0ddee405522b798c124c294143b21104e62b243829e3368123ff69aafdf165a7c390b8ecfe39f67b94e14d8d2329291e5712
   languageName: node
   linkType: hard
 
@@ -1043,7 +1043,7 @@ __metadata:
   resolution: "@philips-software/qubekit@workspace:."
   dependencies:
     "@hey-api/client-fetch": "npm:^0.10.0"
-    "@hey-api/openapi-ts": "npm:^0.66.7"
+    "@hey-api/openapi-ts": "npm:^0.67.6"
     "@types/jest": "npm:^29.5.14"
     "@types/node": "npm:^22.15.17"
     eslint: "npm:^9.26.0"
