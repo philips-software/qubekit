@@ -1048,7 +1048,7 @@ __metadata:
     "@types/node": "npm:^22.15.17"
     eslint: "npm:^9.26.0"
     jest: "npm:^29.7.0"
-    msw: "npm:^2.7.6"
+    msw: "npm:^2.8.4"
     openapi-merge-cli: "npm:^1.3.2"
     prettier: "npm:^3.5.3"
     ts-jest: "npm:^29.3.4"
@@ -4093,9 +4093,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"msw@npm:^2.7.6":
-  version: 2.7.6
-  resolution: "msw@npm:2.7.6"
+"msw@npm:^2.8.4":
+  version: 2.8.4
+  resolution: "msw@npm:2.8.4"
   dependencies:
     "@bundled-es-modules/cookie": "npm:^2.0.1"
     "@bundled-es-modules/statuses": "npm:^1.0.1"
@@ -4122,7 +4122,7 @@ __metadata:
       optional: true
   bin:
     msw: cli/index.js
-  checksum: 10c0/885fd60dfd327281e94fe5f28f48d303ccddf5d50157c76fb3d83256768e077e3dd6044db98261bf62d734bd4a61705cddd5660b4e80548b924f64d24975f0ae
+  checksum: 10c0/525e1a43067942121b212fa1d2fef79649b9800ab421d4c638d2bdfbb3b69af603c2f2641df7e07ce340299fdd274d044bc294a1a9c326adec2bb942f4643540
   languageName: node
   linkType: hard
 
