@@ -538,9 +538,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@hey-api/openapi-ts@npm:^0.67.6":
-  version: 0.67.6
-  resolution: "@hey-api/openapi-ts@npm:0.67.6"
+"@hey-api/openapi-ts@npm:^0.69.1":
+  version: 0.69.1
+  resolution: "@hey-api/openapi-ts@npm:0.69.1"
   dependencies:
     "@hey-api/json-schema-ref-parser": "npm:1.0.6"
     c12: "npm:2.0.1"
@@ -550,7 +550,7 @@ __metadata:
     typescript: ^5.5.3
   bin:
     openapi-ts: bin/index.cjs
-  checksum: 10c0/a278179cee9790327fb502a7c83b0ddee405522b798c124c294143b21104e62b243829e3368123ff69aafdf165a7c390b8ecfe39f67b94e14d8d2329291e5712
+  checksum: 10c0/fd1fa905b587026e8c7749d3fe44bacc71e8bfba5624246d716f6aab57c123072db20245c6485e1bb5e0eb1282ebbd95eb8aef42b519f2fdf8c2951860a7b67c
   languageName: node
   linkType: hard
 
@@ -1025,7 +1025,7 @@ __metadata:
   resolution: "@philips-software/qubekit@workspace:."
   dependencies:
     "@hey-api/client-fetch": "npm:^0.10.2"
-    "@hey-api/openapi-ts": "npm:^0.67.6"
+    "@hey-api/openapi-ts": "npm:^0.69.1"
     "@types/jest": "npm:^29.5.14"
     "@types/node": "npm:^22.15.17"
     eslint: "npm:^9.27.0"
