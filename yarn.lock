@@ -538,19 +538,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@hey-api/openapi-ts@npm:^0.67.6":
-  version: 0.67.6
-  resolution: "@hey-api/openapi-ts@npm:0.67.6"
+"@hey-api/openapi-ts@npm:^0.71.1":
+  version: 0.71.1
+  resolution: "@hey-api/openapi-ts@npm:0.71.1"
   dependencies:
     "@hey-api/json-schema-ref-parser": "npm:1.0.6"
+    ansi-colors: "npm:4.1.3"
     c12: "npm:2.0.1"
+    color-support: "npm:1.1.3"
     commander: "npm:13.0.0"
     handlebars: "npm:4.7.8"
   peerDependencies:
     typescript: ^5.5.3
   bin:
     openapi-ts: bin/index.cjs
-  checksum: 10c0/a278179cee9790327fb502a7c83b0ddee405522b798c124c294143b21104e62b243829e3368123ff69aafdf165a7c390b8ecfe39f67b94e14d8d2329291e5712
+  checksum: 10c0/ef2c56155519c4a3d6f12916a57dbf0df4b5be2faebef8a3a6b3ca4c3f641cf8632283759638f74b74836d2a1e74deeb24942d82b4ac6eeee18002759955ea6a
   languageName: node
   linkType: hard
 
@@ -1025,7 +1027,7 @@ __metadata:
   resolution: "@philips-software/qubekit@workspace:."
   dependencies:
     "@hey-api/client-fetch": "npm:^0.10.2"
-    "@hey-api/openapi-ts": "npm:^0.67.6"
+    "@hey-api/openapi-ts": "npm:^0.71.1"
     "@types/jest": "npm:^29.5.14"
     "@types/node": "npm:^22.15.17"
     eslint: "npm:^9.27.0"
@@ -1322,6 +1324,13 @@ __metadata:
     json-schema-traverse: "npm:^0.4.1"
     uri-js: "npm:^4.2.2"
   checksum: 10c0/41e23642cbe545889245b9d2a45854ebba51cda6c778ebced9649420d9205f2efb39cb43dbc41e358409223b1ea43303ae4839db682c848b891e4811da1a5a71
+  languageName: node
+  linkType: hard
+
+"ansi-colors@npm:4.1.3":
+  version: 4.1.3
+  resolution: "ansi-colors@npm:4.1.3"
+  checksum: 10c0/ec87a2f59902f74e61eada7f6e6fe20094a628dab765cfdbd03c3477599368768cffccdb5d3bb19a1b6c99126783a143b1fee31aab729b31ffe5836c7e5e28b9
   languageName: node
   linkType: hard
 
@@ -1755,6 +1764,15 @@ __metadata:
   version: 1.1.4
   resolution: "color-name@npm:1.1.4"
   checksum: 10c0/a1a3f914156960902f46f7f56bc62effc6c94e84b2cae157a526b1c1f74b677a47ec602bf68a61abfa2b42d15b7c5651c6dbe72a43af720bc588dff885b10f95
+  languageName: node
+  linkType: hard
+
+"color-support@npm:1.1.3":
+  version: 1.1.3
+  resolution: "color-support@npm:1.1.3"
+  bin:
+    color-support: bin.js
+  checksum: 10c0/8ffeaa270a784dc382f62d9be0a98581db43e11eee301af14734a6d089bd456478b1a8b3e7db7ca7dc5b18a75f828f775c44074020b51c05fc00e6d0992b1cc6
   languageName: node
   linkType: hard
 
