@@ -3115,6 +3115,73 @@ paths:
 
         'Administer System' or 'Administer' rights on the specified project
       operationId: removeAPermissionFromAGroup
+  /projects/license_usage:
+    get:
+      operationId: getAListOfProjectsAndLicenseUsage
+      tags:
+        - project
+      summary: Get a list of projects and license usage.
+      responses:
+        '200':
+          description: >-
+            The request was successful, and the server has returned the
+            requested resource in the response body.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  projects:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        projectKey:
+                          type: string
+                        projectName:
+                          type: string
+                        branch:
+                          type: string
+                        licenseUsagePercentage:
+                          type: number
+                        linesOfCode:
+                          type: integer
+                      required:
+                        - projectKey
+                        - projectName
+                        - branch
+                        - licenseUsagePercentage
+                        - linesOfCode
+                required:
+                  - projects
+        '401':
+          description: >-
+            Authentication is required to access the requested resource. The
+            client must include the appropriate credentials.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                required:
+                  - message
+        '403':
+          description: >-
+            The server understood the request, but refuses to authorize it.
+            Ensure the client has appropriate permissions.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                required:
+                  - message
+        '500':
+          $ref: '#/components/responses/InternalServerErrror'
 components:
   schemas:
     UserCreateRestRequest:
@@ -5068,31 +5135,6 @@ components:
                       type: number
               property:
                 type: string
-        paging:
-          $ref: '#/components/schemas/Paging'
-        components:
-          type: array
-          items:
-            type: object
-            required:
-              - key
-              - enabled
-              - qualifier
-              - name
-              - longName
-            properties:
-              key:
-                type: string
-              name:
-                type: string
-              path:
-                type: string
-              enabled:
-                type: boolean
-              longName:
-                type: string
-              qualifier:
-                type: string
         issues:
           type: array
           items:
@@ -5148,6 +5190,8 @@ components:
                 type: array
                 items:
                   type: string
+              type:
+                type: string
               flows:
                 type: array
                 items:
@@ -5201,6 +5245,8 @@ components:
                 type: string
               effort:
                 type: string
+              status:
+                type: string
               actions:
                 type: array
                 items:
@@ -5245,6 +5291,8 @@ components:
                       type: string
                     updatable:
                       type: boolean
+              severity:
+                type: string
               component:
                 type: string
               textRange:
@@ -5302,11 +5350,30 @@ components:
                 type: string
               cleanCodeAttributeCategory:
                 type: string
-              type:
+        paging:
+          $ref: '#/components/schemas/Paging'
+        components:
+          type: array
+          items:
+            type: object
+            required:
+              - key
+              - enabled
+              - qualifier
+              - name
+              - longName
+            properties:
+              key:
                 type: string
-              severity:
+              name:
                 type: string
-              status:
+              path:
+                type: string
+              enabled:
+                type: boolean
+              longName:
+                type: string
+              qualifier:
                 type: string
       description: Response object from the Issue Search API
     ProjectSearchResponse:
@@ -5423,6 +5490,20 @@ components:
       description: >-
         The server is currently unable to handle the request due to a temporary
         overload or scheduled maintenance. Try again later.
+    InternalServerErrror:
+      description: >-
+        The server encountered an unexpected condition that prevented it from
+        fulfilling the request. Report the issue to the support team if it
+        persists.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+            required:
+              - message
   parameters:
     p:
       in: query

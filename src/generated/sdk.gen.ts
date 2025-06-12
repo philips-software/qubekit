@@ -163,6 +163,9 @@ import type {
   RemovePermissionFromAuserResponse,
   RemoveAPermissionFromAGroupData,
   RemoveAPermissionFromAGroupResponse,
+  GetAListOfProjectsAndLicenseUsageData,
+  GetAListOfProjectsAndLicenseUsageResponse,
+  GetAListOfProjectsAndLicenseUsageError,
 } from './types.gen';
 import { client as _heyApiClient } from './client.gen';
 
@@ -1700,6 +1703,22 @@ export class ProjectService {
       ThrowOnError
     >({
       url: '/projects/search',
+      ...options,
+    });
+  }
+
+  /**
+   * Get a list of projects and license usage.
+   */
+  public static getAListOfProjectsAndLicenseUsage<
+    ThrowOnError extends boolean = false,
+  >(options?: Options<GetAListOfProjectsAndLicenseUsageData, ThrowOnError>) {
+    return (options?.client ?? _heyApiClient).get<
+      GetAListOfProjectsAndLicenseUsageResponse,
+      GetAListOfProjectsAndLicenseUsageError,
+      ThrowOnError
+    >({
+      url: '/projects/license_usage',
       ...options,
     });
   }
