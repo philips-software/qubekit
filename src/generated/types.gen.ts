@@ -1251,15 +1251,6 @@ export type IssueSearchResponse = {
     }>;
     property: string;
   }>;
-  paging: Paging;
-  components: Array<{
-    key: string;
-    name: string;
-    path?: string;
-    enabled: boolean;
-    longName: string;
-    qualifier: string;
-  }>;
   issues: Array<{
     key: string;
     attr: {
@@ -1269,6 +1260,7 @@ export type IssueSearchResponse = {
     line: number;
     rule: string;
     tags: Array<string>;
+    type: string;
     flows: Array<{
       locations: Array<{
         msg: string;
@@ -1287,6 +1279,7 @@ export type IssueSearchResponse = {
     }>;
     author: string;
     effort: string;
+    status: string;
     actions: Array<string>;
     impacts: Array<{
       severity: string;
@@ -1302,6 +1295,7 @@ export type IssueSearchResponse = {
       createdAt: string;
       updatable: boolean;
     }>;
+    severity: string;
     component: string;
     textRange: {
       endLine: number;
@@ -1324,9 +1318,15 @@ export type IssueSearchResponse = {
     }>;
     ruleDescriptionContextKey: string;
     cleanCodeAttributeCategory: string;
-    type: string;
-    severity: string;
-    status: string;
+  }>;
+  paging: Paging;
+  components: Array<{
+    key: string;
+    name: string;
+    path?: string;
+    enabled: boolean;
+    longName: string;
+    qualifier: string;
   }>;
 };
 
@@ -3477,6 +3477,55 @@ export type RemoveAPermissionFromAGroupResponses = {
 
 export type RemoveAPermissionFromAGroupResponse =
   RemoveAPermissionFromAGroupResponses[keyof RemoveAPermissionFromAGroupResponses];
+
+export type GetAListOfProjectsAndLicenseUsageData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: '/projects/license_usage';
+};
+
+export type GetAListOfProjectsAndLicenseUsageErrors = {
+  /**
+   * Authentication is required to access the requested resource. The client must include the appropriate credentials.
+   */
+  401: {
+    message: string;
+  };
+  /**
+   * The server understood the request, but refuses to authorize it. Ensure the client has appropriate permissions.
+   */
+  403: {
+    message: string;
+  };
+  /**
+   * The server encountered an unexpected condition that prevented it from fulfilling the request. Report the issue to the support team if it persists.
+   */
+  500: {
+    message: string;
+  };
+};
+
+export type GetAListOfProjectsAndLicenseUsageError =
+  GetAListOfProjectsAndLicenseUsageErrors[keyof GetAListOfProjectsAndLicenseUsageErrors];
+
+export type GetAListOfProjectsAndLicenseUsageResponses = {
+  /**
+   * The request was successful, and the server has returned the requested resource in the response body.
+   */
+  200: {
+    projects: Array<{
+      projectKey: string;
+      projectName: string;
+      branch: string;
+      licenseUsagePercentage: number;
+      linesOfCode: number;
+    }>;
+  };
+};
+
+export type GetAListOfProjectsAndLicenseUsageResponse =
+  GetAListOfProjectsAndLicenseUsageResponses[keyof GetAListOfProjectsAndLicenseUsageResponses];
 
 export type ClientOptions = {
   baseUrl: 'http://sonarqube.internal.philips/api/v2' | (string & {});
