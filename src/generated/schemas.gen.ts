@@ -2565,36 +2565,6 @@ export const IssueSearchResponseSchema = {
         },
       },
     },
-    paging: {
-      $ref: '#/components/schemas/Paging',
-    },
-    components: {
-      type: 'array',
-      items: {
-        type: 'object',
-        required: ['key', 'enabled', 'qualifier', 'name', 'longName'],
-        properties: {
-          key: {
-            type: 'string',
-          },
-          name: {
-            type: 'string',
-          },
-          path: {
-            type: 'string',
-          },
-          enabled: {
-            type: 'boolean',
-          },
-          longName: {
-            type: 'string',
-          },
-          qualifier: {
-            type: 'string',
-          },
-        },
-      },
-    },
     issues: {
       type: 'array',
       items: {
@@ -2658,6 +2628,9 @@ export const IssueSearchResponseSchema = {
             items: {
               type: 'string',
             },
+          },
+          type: {
+            type: 'string',
           },
           flows: {
             type: 'array',
@@ -2727,6 +2700,9 @@ export const IssueSearchResponseSchema = {
           effort: {
             type: 'string',
           },
+          status: {
+            type: 'string',
+          },
           actions: {
             type: 'array',
             items: {
@@ -2787,6 +2763,9 @@ export const IssueSearchResponseSchema = {
                 },
               },
             },
+          },
+          severity: {
+            type: 'string',
           },
           component: {
             type: 'string',
@@ -2863,13 +2842,34 @@ export const IssueSearchResponseSchema = {
           cleanCodeAttributeCategory: {
             type: 'string',
           },
-          type: {
+        },
+      },
+    },
+    paging: {
+      $ref: '#/components/schemas/Paging',
+    },
+    components: {
+      type: 'array',
+      items: {
+        type: 'object',
+        required: ['key', 'enabled', 'qualifier', 'name', 'longName'],
+        properties: {
+          key: {
             type: 'string',
           },
-          severity: {
+          name: {
             type: 'string',
           },
-          status: {
+          path: {
+            type: 'string',
+          },
+          enabled: {
+            type: 'boolean',
+          },
+          longName: {
+            type: 'string',
+          },
+          qualifier: {
             type: 'string',
           },
         },
