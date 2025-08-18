@@ -741,9 +741,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@hey-api/openapi-ts@npm:^0.78.3":
-  version: 0.78.3
-  resolution: "@hey-api/openapi-ts@npm:0.78.3"
+"@hey-api/openapi-ts@npm:^0.80.11":
+  version: 0.80.11
+  resolution: "@hey-api/openapi-ts@npm:0.80.11"
   dependencies:
     "@hey-api/json-schema-ref-parser": "npm:1.0.6"
     ansi-colors: "npm:4.1.3"
@@ -752,11 +752,12 @@ __metadata:
     commander: "npm:13.0.0"
     handlebars: "npm:4.7.8"
     open: "npm:10.1.2"
+    semver: "npm:7.7.2"
   peerDependencies:
     typescript: ^5.5.3
   bin:
     openapi-ts: bin/index.cjs
-  checksum: 10c0/d4dd9f57cbd184fc37dae88fd79791a3154a9b420762b0a30b1e097e1f10ca9df9d381404a91bce4cc498e69cc8ce0bc8ccddef9580706ea6fd3e1d58daff749
+  checksum: 10c0/25376d12ff5ad46071553f41a9883326bc24f36fdac2b737cfd1ed8c2a84c01ebbc5417b652e97ebaaf80bc36192639c3eb695048eae51189dd05e19ddc5e82d
   languageName: node
   linkType: hard
 
@@ -1321,7 +1322,7 @@ __metadata:
   resolution: "@philips-software/qubekit@workspace:."
   dependencies:
     "@hey-api/client-fetch": "npm:^0.10.2"
-    "@hey-api/openapi-ts": "npm:^0.78.3"
+    "@hey-api/openapi-ts": "npm:^0.80.11"
     "@types/jest": "npm:^30.0.0"
     "@types/node": "npm:^24.3.0"
     eslint: "npm:^9.32.0"
@@ -4846,6 +4847,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"semver@npm:7.7.2, semver@npm:^7.7.2":
+  version: 7.7.2
+  resolution: "semver@npm:7.7.2"
+  bin:
+    semver: bin/semver.js
+  checksum: 10c0/aca305edfbf2383c22571cb7714f48cadc7ac95371b4b52362fb8eeffdfbc0de0669368b82b2b15978f8848f01d7114da65697e56cd8c37b0dab8c58e543f9ea
+  languageName: node
+  linkType: hard
+
 "semver@npm:^6.3.1":
   version: 6.3.1
   resolution: "semver@npm:6.3.1"
@@ -4861,15 +4871,6 @@ __metadata:
   bin:
     semver: bin/semver.js
   checksum: 10c0/fd603a6fb9c399c6054015433051bdbe7b99a940a8fb44b85c2b524c4004b023d7928d47cb22154f8d054ea7ee8597f586605e05b52047f048278e4ac56ae958
-  languageName: node
-  linkType: hard
-
-"semver@npm:^7.7.2":
-  version: 7.7.2
-  resolution: "semver@npm:7.7.2"
-  bin:
-    semver: bin/semver.js
-  checksum: 10c0/aca305edfbf2383c22571cb7714f48cadc7ac95371b4b52362fb8eeffdfbc0de0669368b82b2b15978f8848f01d7114da65697e56cd8c37b0dab8c58e543f9ea
   languageName: node
   linkType: hard
 
