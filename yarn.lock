@@ -720,12 +720,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@hey-api/client-fetch@npm:^0.10.2":
-  version: 0.10.2
-  resolution: "@hey-api/client-fetch@npm:0.10.2"
+"@hey-api/client-fetch@npm:^0.13.1":
+  version: 0.13.1
+  resolution: "@hey-api/client-fetch@npm:0.13.1"
   peerDependencies:
     "@hey-api/openapi-ts": < 2
-  checksum: 10c0/5b0c1be110b79d5dade3e35d80f6f4521c043b69395fcca3424f0b935687e5d7b6380574f5462b67ad0def86ac0b70f3bc1f1923c4663f257d8fcfc132f7c7bf
+  checksum: 10c0/2c144edd852475062ac2631a08e611d06d7c09b2cdf608ac02eb95de96df12fc83f49954f655733958f4279ab6cc5f179d2f8ba1c8e074bb0f476f51604a2623
   languageName: node
   linkType: hard
 
@@ -1320,7 +1320,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@philips-software/qubekit@workspace:."
   dependencies:
-    "@hey-api/client-fetch": "npm:^0.10.2"
+    "@hey-api/client-fetch": "npm:^0.13.1"
     "@hey-api/openapi-ts": "npm:^0.78.3"
     "@types/jest": "npm:^30.0.0"
     "@types/node": "npm:^24.3.0"
