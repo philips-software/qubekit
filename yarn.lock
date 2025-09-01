@@ -719,34 +719,46 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@hey-api/json-schema-ref-parser@npm:1.0.6":
-  version: 1.0.6
-  resolution: "@hey-api/json-schema-ref-parser@npm:1.0.6"
+"@hey-api/codegen-core@npm:^0.0.1":
+  version: 0.0.1
+  resolution: "@hey-api/codegen-core@npm:0.0.1"
+  peerDependencies:
+    typescript: ">=5.5.3"
+  checksum: 10c0/1a241e51a1886137a6bc72c6fd866c9310bcdc855f480fdf677069eba7f30ef356bc1a4d43240b33b36b75633b33ad17942b4a8d9f411eb0a757fae834d74ea5
+  languageName: node
+  linkType: hard
+
+"@hey-api/json-schema-ref-parser@npm:1.0.7":
+  version: 1.0.7
+  resolution: "@hey-api/json-schema-ref-parser@npm:1.0.7"
   dependencies:
     "@jsdevtools/ono": "npm:^7.1.3"
     "@types/json-schema": "npm:^7.0.15"
     js-yaml: "npm:^4.1.0"
     lodash: "npm:^4.17.21"
-  checksum: 10c0/a3d15b2316ef5a4442131386aa61e196af4f0e01064d5c66a598cf0ea5b9217dce57cb40e98278cdac9548a7e27ecc5cf9146fe301b9371aefd81a0933553252
+  checksum: 10c0/fd65ef8eee3ebf695cb6a64df576cfe4aa3787b985aef145ce5ace00326dc2aec81d711ad8b611fa6d94148e54865c7183d9522c3c40b8d6121962010d5a22ac
   languageName: node
   linkType: hard
 
-"@hey-api/openapi-ts@npm:^0.78.3":
-  version: 0.78.3
-  resolution: "@hey-api/openapi-ts@npm:0.78.3"
+"@hey-api/openapi-ts@npm:^0.82.2":
+  version: 0.82.2
+  resolution: "@hey-api/openapi-ts@npm:0.82.2"
   dependencies:
-    "@hey-api/json-schema-ref-parser": "npm:1.0.6"
+    "@hey-api/codegen-core": "npm:^0.0.1"
+    "@hey-api/json-schema-ref-parser": "npm:1.0.7"
     ansi-colors: "npm:4.1.3"
     c12: "npm:2.0.1"
     color-support: "npm:1.1.3"
     commander: "npm:13.0.0"
     handlebars: "npm:4.7.8"
+    js-yaml: "npm:4.1.0"
     open: "npm:10.1.2"
+    semver: "npm:7.7.2"
   peerDependencies:
-    typescript: ^5.5.3
+    typescript: ">=5.5.3"
   bin:
     openapi-ts: bin/index.cjs
-  checksum: 10c0/d4dd9f57cbd184fc37dae88fd79791a3154a9b420762b0a30b1e097e1f10ca9df9d381404a91bce4cc498e69cc8ce0bc8ccddef9580706ea6fd3e1d58daff749
+  checksum: 10c0/df8c2fd40617c85a4b5c092c48815680656bd785be12ed5ed1acfb9e03287a48f3f3af41f808a93cc207b590cd0bb818e0e6e1571a4b8847026447e91056a9d3
   languageName: node
   linkType: hard
 
@@ -1311,7 +1323,7 @@ __metadata:
   resolution: "@philips-software/qubekit@workspace:."
   dependencies:
     "@hey-api/client-fetch": "npm:^0.10.2"
-    "@hey-api/openapi-ts": "npm:^0.78.3"
+    "@hey-api/openapi-ts": "npm:^0.82.2"
     "@types/jest": "npm:^30.0.0"
     "@types/node": "npm:^24.3.0"
     eslint: "npm:^9.34.0"
@@ -3820,6 +3832,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"js-yaml@npm:4.1.0, js-yaml@npm:^4.1.0":
+  version: 4.1.0
+  resolution: "js-yaml@npm:4.1.0"
+  dependencies:
+    argparse: "npm:^2.0.1"
+  bin:
+    js-yaml: bin/js-yaml.js
+  checksum: 10c0/184a24b4eaacfce40ad9074c64fd42ac83cf74d8c8cd137718d456ced75051229e5061b8633c3366b8aada17945a7a356b337828c19da92b51ae62126575018f
+  languageName: node
+  linkType: hard
+
 "js-yaml@npm:^3.13.1, js-yaml@npm:^3.14.0":
   version: 3.14.1
   resolution: "js-yaml@npm:3.14.1"
@@ -3829,17 +3852,6 @@ __metadata:
   bin:
     js-yaml: bin/js-yaml.js
   checksum: 10c0/6746baaaeac312c4db8e75fa22331d9a04cccb7792d126ed8ce6a0bbcfef0cedaddd0c5098fade53db067c09fe00aa1c957674b4765610a8b06a5a189e46433b
-  languageName: node
-  linkType: hard
-
-"js-yaml@npm:^4.1.0":
-  version: 4.1.0
-  resolution: "js-yaml@npm:4.1.0"
-  dependencies:
-    argparse: "npm:^2.0.1"
-  bin:
-    js-yaml: bin/js-yaml.js
-  checksum: 10c0/184a24b4eaacfce40ad9074c64fd42ac83cf74d8c8cd137718d456ced75051229e5061b8633c3366b8aada17945a7a356b337828c19da92b51ae62126575018f
   languageName: node
   linkType: hard
 
@@ -4806,6 +4818,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"semver@npm:7.7.2, semver@npm:^7.7.2":
+  version: 7.7.2
+  resolution: "semver@npm:7.7.2"
+  bin:
+    semver: bin/semver.js
+  checksum: 10c0/aca305edfbf2383c22571cb7714f48cadc7ac95371b4b52362fb8eeffdfbc0de0669368b82b2b15978f8848f01d7114da65697e56cd8c37b0dab8c58e543f9ea
+  languageName: node
+  linkType: hard
+
 "semver@npm:^6.3.1":
   version: 6.3.1
   resolution: "semver@npm:6.3.1"
@@ -4821,15 +4842,6 @@ __metadata:
   bin:
     semver: bin/semver.js
   checksum: 10c0/fd603a6fb9c399c6054015433051bdbe7b99a940a8fb44b85c2b524c4004b023d7928d47cb22154f8d054ea7ee8597f586605e05b52047f048278e4ac56ae958
-  languageName: node
-  linkType: hard
-
-"semver@npm:^7.7.2":
-  version: 7.7.2
-  resolution: "semver@npm:7.7.2"
-  bin:
-    semver: bin/semver.js
-  checksum: 10c0/aca305edfbf2383c22571cb7714f48cadc7ac95371b4b52362fb8eeffdfbc0de0669368b82b2b15978f8848f01d7114da65697e56cd8c37b0dab8c58e543f9ea
   languageName: node
   linkType: hard
 
