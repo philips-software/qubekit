@@ -1721,7 +1721,7 @@ export class Project {
   }
 }
 
-export class Measure {
+export class Measures {
   /**
    * Component
    * Return component with specified measures.

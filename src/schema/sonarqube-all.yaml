@@ -23,7 +23,7 @@ servers:
     description: Generated server url
 tags:
   - name: project
-  - name: measure
+  - name: measures
   - name: issue
   - name: permission
 paths:
@@ -2630,7 +2630,7 @@ paths:
   /measures/component:
     get:
       tags:
-        - measure
+        - measures
       summary: Component
       responses:
         '200':

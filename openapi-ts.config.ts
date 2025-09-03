@@ -1,8 +1,4 @@
-import {
-  createClient,
-  defaultPlugins,
-  defineConfig,
-} from '@hey-api/openapi-ts';
+import { defaultPlugins } from '@hey-api/openapi-ts';
 
 export default {
   experimentalParser: true,
