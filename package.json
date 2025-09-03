@@ -21,7 +21,7 @@
     "openapi-ts": "yarn merge-schemas && openapi-ts"
   },
   "dependencies": {
-    "@hey-api/client-fetch": "^0.10.2"
+    "@hey-api/client-fetch": "^0.13.1"
   },
   "devDependencies": {
     "@hey-api/openapi-ts": "^0.82.2",
