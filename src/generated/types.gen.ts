@@ -18,10 +18,6 @@ export type UserCreateRestRequest = {
    */
   name: string;
   /**
-   * User password. Only mandatory when creating local user, otherwise it should not be set
-   */
-  password?: string;
-  /**
    * List of SCM accounts.
    */
   scmAccounts?: Array<string>;
@@ -78,21 +74,9 @@ export type EmailConfigurationCreateRestRequest = {
    */
   username: string;
   /**
-   * For basic authentication: password used to authenticate to the SMTP server
-   */
-  basicPassword?: string;
-  /**
    * For OAuth authentication: host of the Identity Provider issuing access tokens
    */
   oauthAuthenticationHost?: string;
-  /**
-   * For OAuth authentication: Client ID provided by Microsoft Exchange when registering the application
-   */
-  oauthClientId?: string;
-  /**
-   * For OAuth authentication: Client secret provided by Microsoft Exchange when registering the application
-   */
-  oauthClientSecret?: string;
   /**
    * For OAuth authentication: Microsoft tenant
    */
@@ -243,10 +227,6 @@ export type GitlabConfigurationCreateRestRequest = {
    */
   url: string;
   /**
-   * Secret of the application
-   */
-  secret: string;
-  /**
    * Set whether to synchronize groups
    */
   synchronizeGroups: boolean;
@@ -255,10 +235,6 @@ export type GitlabConfigurationCreateRestRequest = {
    * Type of synchronization
    */
   provisioningType: 'JIT' | 'AUTO_PROVISIONING';
-  /**
-   * Gitlab token for provisioning
-   */
-  provisioningToken?: string;
   /**
    * Allow user to sign up
    */
@@ -299,23 +275,9 @@ export type GithubConfigurationCreateRestRequest = {
    */
   enabled: boolean;
   /**
-   * Client ID provided by GitHub when registering the application.
-   */
-  clientId: string;
-  /**
-   * Client password provided by GitHub when registering the application.
-   */
-  clientSecret: string;
-  /**
    * The App ID is found on your GitHub App's page on GitHub at Settings > Developer Settings > GitHub Apps.
    */
   applicationId: string;
-  /**
-   * Your GitHub App's private key. You can generate a .pem file from your GitHub App's page under Private keys.
-   * Copy and paste the whole contents of the file here.
-   *
-   */
-  privateKey: string;
   /**
    * Synchronize GitHub team with SonarQube group memberships when users log in to SonarQube.
    * For each GitHub team they belong to, users will be associated to a group of the same name if it exists in SonarQube.
@@ -1180,6 +1142,7 @@ export type RuleKey = {
 };
 
 /**
+ * Metric for a component
  * A metric captured from a project
  */
 export type Metric = {
@@ -1228,6 +1191,7 @@ export type Component = {
 };
 
 /**
+ * Issue Search Response
  * Response object from the Issue Search API
  */
 export type IssueSearchResponse = {
@@ -1339,6 +1303,7 @@ export type ProjectSearchResponse = {
 };
 
 /**
+ * Generated schema for Root
  * Response from the /measures/component endpoint
  */
 export type MeasureComponentResponse = {
@@ -1356,6 +1321,327 @@ export type MeasureComponentResponse = {
     measures: Array<Measure>;
     qualifier: string;
   };
+};
+
+export type UserCreateRestRequestWritable = {
+  /**
+   * User email
+   */
+  email?: string;
+  /**
+   * Specify if the user should be authenticated from SonarQube server or from an external authentication system. Password should not be set when local is set to false.
+   */
+  local?: boolean;
+  /**
+   * User login
+   */
+  login: string;
+  /**
+   * User name
+   */
+  name: string;
+  /**
+   * User password. Only mandatory when creating local user, otherwise it should not be set
+   */
+  password?: string;
+  /**
+   * List of SCM accounts.
+   */
+  scmAccounts?: Array<string>;
+};
+
+export type UserRestResponseForAdminsWritable = {
+  login?: string;
+  name?: string;
+  email?: string;
+  externalLogin?: string;
+  externalProvider?: string;
+  externalId?: string;
+  avatar?: string;
+  scmAccounts?: Array<string>;
+};
+
+export type EmailConfigurationCreateRestRequestWritable = {
+  /**
+   * URL of your SMTP server
+   */
+  host: string;
+  /**
+   * Port of your SMTP server (usually 25, 587 or 465)
+   */
+  port: string;
+  /**
+   * Security protocol used to connect to your SMTP server (SSLTLS is recommended)
+   */
+  securityProtocol: 'NONE' | 'SSLTLS' | 'STARTTLS';
+  /**
+   * Address emails will come from
+   */
+  fromAddress: string;
+  /**
+   * Name emails will come from (usually "SonarQube")
+   */
+  fromName: string;
+  /**
+   * Prefix added to email so they can be easily recognized (usually "[SonarQube]")
+   */
+  subjectPrefix: string;
+  /**
+   * Authentication method used to connect to the SMTP server. OAuth is only supported for Microsoft Exchange
+   */
+  authMethod: 'BASIC' | 'OAUTH';
+  /**
+   * For Basic and OAuth authentication: username used to authenticate to the SMTP server
+   */
+  username: string;
+  /**
+   * For basic authentication: password used to authenticate to the SMTP server
+   */
+  basicPassword?: string;
+  /**
+   * For OAuth authentication: host of the Identity Provider issuing access tokens
+   */
+  oauthAuthenticationHost?: string;
+  /**
+   * For OAuth authentication: Client ID provided by Microsoft Exchange when registering the application
+   */
+  oauthClientId?: string;
+  /**
+   * For OAuth authentication: Client secret provided by Microsoft Exchange when registering the application
+   */
+  oauthClientSecret?: string;
+  /**
+   * For OAuth authentication: Microsoft tenant
+   */
+  oauthTenant?: string;
+};
+
+export type EmailConfigurationResourceWritable = {
+  /**
+   * URL of your SMTP server
+   */
+  host?: string;
+  /**
+   * Port of your SMTP server (usually 25, 587 or 465)
+   */
+  port?: string;
+  /**
+   * Security protocol used to connect to your SMTP server (SSLTLS is recommended)
+   */
+  securityProtocol?: 'NONE' | 'SSLTLS' | 'STARTTLS';
+  /**
+   * Address emails will come from
+   */
+  fromAddress?: string;
+  /**
+   * Name emails will come from (usually "SonarQube")
+   */
+  fromName?: string;
+  /**
+   * Prefix added to email so they can be easily recognized (usually "[SonarQube]")
+   */
+  subjectPrefix?: string;
+  /**
+   * Authentication method used to connect to the SMTP server. OAuth is only supported for Microsoft Exchange
+   */
+  authMethod?: 'BASIC' | 'OAUTH';
+  /**
+   * For Basic and OAuth authentication: username used to authenticate to the SMTP server
+   */
+  username?: string;
+  /**
+   * For Basic authentication: has the password field been set?
+   */
+  isBasicPasswordSet?: boolean;
+  /**
+   * For OAuth authentication: host of the Identity Provider issuing access tokens
+   */
+  oauthAuthenticationHost?: string;
+  /**
+   * For OAuth authentication: has the Client ID field been set?
+   */
+  isOauthClientIdSet?: boolean;
+  /**
+   * For OAuth authentication: has the Client secret field been set?
+   */
+  isOauthClientSecretSet?: boolean;
+  /**
+   * For OAuth authentication: Microsoft tenant
+   */
+  oauthTenant?: string;
+};
+
+export type GitlabConfigurationCreateRestRequestWritable = {
+  /**
+   * Enable Gitlab authentication
+   */
+  enabled: boolean;
+  /**
+   * Gitlab Application id
+   */
+  applicationId: string;
+  /**
+   * Url of Gitlab instance for authentication (for instance https://gitlab.com)
+   */
+  url: string;
+  /**
+   * Secret of the application
+   */
+  secret: string;
+  /**
+   * Set whether to synchronize groups
+   */
+  synchronizeGroups: boolean;
+  allowedGroups: Array<string>;
+  /**
+   * Type of synchronization
+   */
+  provisioningType: 'JIT' | 'AUTO_PROVISIONING';
+  /**
+   * Gitlab token for provisioning
+   */
+  provisioningToken?: string;
+  /**
+   * Allow user to sign up
+   */
+  allowUsersToSignUp?: boolean;
+};
+
+export type GitlabConfigurationResourceWritable = {
+  enabled?: boolean;
+  /**
+   * Gitlab Application id
+   */
+  applicationId?: string;
+  /**
+   * Url of Gitlab instance for authentication (for instance https://gitlab.com/api/v4)
+   */
+  url?: string;
+  synchronizeGroups?: boolean;
+  /**
+   * Root Gitlab groups allowed to authenticate and provisioned
+   */
+  allowedGroups?: Array<string>;
+  allowUsersToSignUp?: boolean;
+  provisioningType?: 'JIT' | 'AUTO_PROVISIONING';
+};
+
+export type GithubConfigurationCreateRestRequestWritable = {
+  /**
+   * Enable GitHub authentication
+   */
+  enabled: boolean;
+  /**
+   * Client ID provided by GitHub when registering the application.
+   */
+  clientId: string;
+  /**
+   * Client password provided by GitHub when registering the application.
+   */
+  clientSecret: string;
+  /**
+   * The App ID is found on your GitHub App's page on GitHub at Settings > Developer Settings > GitHub Apps.
+   */
+  applicationId: string;
+  /**
+   * Your GitHub App's private key. You can generate a .pem file from your GitHub App's page under Private keys.
+   * Copy and paste the whole contents of the file here.
+   *
+   */
+  privateKey: string;
+  /**
+   * Synchronize GitHub team with SonarQube group memberships when users log in to SonarQube.
+   * For each GitHub team they belong to, users will be associated to a group of the same name if it exists in SonarQube.
+   *
+   */
+  synchronizeGroups: boolean;
+  /**
+   * The API url for a GitHub instance. https://api.github.com/ for Github.com, https://github.company.com/api/v3/ when using Github Enterprise
+   */
+  apiUrl: string;
+  /**
+   * The WEB url for a GitHub instance. https://github.com/ for Github.com, https://github.company.com/ when using GitHub Enterprise.
+   *
+   */
+  webUrl: string;
+  allowedOrganizations: Array<string>;
+  /**
+   * Type of synchronization
+   */
+  provisioningType: 'JIT' | 'AUTO_PROVISIONING';
+  /**
+   * Allow user to sign up
+   */
+  allowUsersToSignUp?: boolean;
+  /**
+   * Change project visibility based on GitHub repository visibility.
+   * If disabled, every provisioned project will be private in SonarQube and visible only to users with explicit GitHub permissions for the corresponding repository.
+   * Changes take effect at the next synchronization.
+   *
+   */
+  projectVisibility?: boolean;
+  /**
+   * Admin consent to synchronize permissions from GitHub
+   */
+  userConsentRequiredAfterUpgrade?: boolean;
+};
+
+export type GithubConfigurationResourceWritable = {
+  enabled?: boolean;
+  /**
+   * GitHub Application id
+   */
+  applicationId?: string;
+  synchronizeGroups?: boolean;
+  /**
+   * Url of GitHub instance for API connectivity (for instance https://api.github.com)
+   */
+  apiUrl?: string;
+  /**
+   * Url of GitHub instance for authentication (for instance https://github.com)
+   */
+  webUrl?: string;
+  /**
+   * GitHub organizations allowed to authenticate and provisioned
+   */
+  allowedOrganizations?: Array<string>;
+  provisioningType?: 'JIT' | 'AUTO_PROVISIONING';
+  allowUsersToSignUp?: boolean;
+  projectVisibility?: boolean;
+  userConsentRequiredAfterUpgrade?: boolean;
+};
+
+export type ParameterWritable = {
+  key?: string;
+  defaultValue?: string;
+};
+
+export type RuleDescriptionSectionRestResponseWritable = {
+  [key: string]: unknown;
+};
+
+export type GroupRestResponseWritable = {
+  name?: string;
+  description?: string;
+};
+
+export type ModeResourceWritable = {
+  mode: 'MQR' | 'STANDARD_EXPERIENCE';
+};
+
+export type DopSettingsResourceWritable = {
+  /**
+   * Supported DevOps Platform are: github, gitlab, azure, bitbucketcloud, bitbucket_server
+   */
+  type?: string;
+  key?: string;
+  url?: string;
+  appId?: string;
+};
+
+export type GroupsMembershipSearchRestResponseWritable = {
+  groupMemberships?: Array<unknown>;
+  page?: PageRestResponse;
 };
 
 /**
@@ -1432,7 +1718,7 @@ export type SearchResponses = {
 export type SearchResponse = SearchResponses[keyof SearchResponses];
 
 export type CreateData = {
-  body: UserCreateRestRequest;
+  body: UserCreateRestRequestWritable;
   path?: never;
   query?: never;
   url: '/v2/users-management/users';
@@ -1465,7 +1751,7 @@ export type SearchEmailConfigurationsResponse =
   SearchEmailConfigurationsResponses[keyof SearchEmailConfigurationsResponses];
 
 export type CreateEmailConfigurationData = {
-  body: EmailConfigurationCreateRestRequest;
+  body: EmailConfigurationCreateRestRequestWritable;
   path?: never;
   query?: never;
   url: '/v2/system/email-configurations';
@@ -1581,7 +1867,7 @@ export type SearchGitlabConfigurationResponse =
   SearchGitlabConfigurationResponses[keyof SearchGitlabConfigurationResponses];
 
 export type Create3Data = {
-  body: GitlabConfigurationCreateRestRequest;
+  body: GitlabConfigurationCreateRestRequestWritable;
   path?: never;
   query?: never;
   url: '/v2/dop-translation/gitlab-configurations';
@@ -1647,7 +1933,7 @@ export type SearchGithubConfigurationResponse =
   SearchGithubConfigurationResponses[keyof SearchGithubConfigurationResponses];
 
 export type CreateGithubConfigurationData = {
-  body: GithubConfigurationCreateRestRequest;
+  body: GithubConfigurationCreateRestRequestWritable;
   path?: never;
   query?: never;
   url: '/v2/dop-translation/github-configurations';
@@ -2222,7 +2508,7 @@ export type GetModeResponses = {
 export type GetModeResponse = GetModeResponses[keyof GetModeResponses];
 
 export type PatchModeData = {
-  body: ModeResource;
+  body: ModeResourceWritable;
   path?: never;
   query?: never;
   url: '/v2/clean-code-policy/mode';
