@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "lib": ["es2022"],
+    "lib": ["es2022", "DOM", "DOM.Iterable"],
     "module": "NodeNext",
     "rootDir": "./src/" /* Specify the root folder within your source files. */,
     "outDir": "./dist" /* Specify an output folder for all emitted files. */,
