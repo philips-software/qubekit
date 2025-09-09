@@ -27,12 +27,6 @@ export const UserCreateRestRequestSchema = {
       maxLength: 200,
       minLength: 0,
     },
-    password: {
-      type: 'string',
-      description:
-        'User password. Only mandatory when creating local user, otherwise it should not be set',
-      writeOnly: true,
-    },
     scmAccounts: {
       type: 'array',
       description: 'List of SCM accounts.',
@@ -142,28 +136,10 @@ export const EmailConfigurationCreateRestRequestSchema = {
       description:
         'For Basic and OAuth authentication: username used to authenticate to the SMTP server',
     },
-    basicPassword: {
-      type: 'string',
-      description:
-        'For basic authentication: password used to authenticate to the SMTP server',
-      writeOnly: true,
-    },
     oauthAuthenticationHost: {
       type: 'string',
       description:
         'For OAuth authentication: host of the Identity Provider issuing access tokens',
-    },
-    oauthClientId: {
-      type: 'string',
-      description:
-        'For OAuth authentication: Client ID provided by Microsoft Exchange when registering the application',
-      writeOnly: true,
-    },
-    oauthClientSecret: {
-      type: 'string',
-      description:
-        'For OAuth authentication: Client secret provided by Microsoft Exchange when registering the application',
-      writeOnly: true,
     },
     oauthTenant: {
       type: 'string',
@@ -420,11 +396,6 @@ export const GitlabConfigurationCreateRestRequestSchema = {
       description:
         'Url of Gitlab instance for authentication (for instance https://gitlab.com)',
     },
-    secret: {
-      type: 'string',
-      description: 'Secret of the application',
-      writeOnly: true,
-    },
     synchronizeGroups: {
       type: 'boolean',
       description: 'Set whether to synchronize groups',
@@ -440,11 +411,6 @@ export const GitlabConfigurationCreateRestRequestSchema = {
       description: 'Type of synchronization',
       enum: ['JIT', 'AUTO_PROVISIONING'],
     },
-    provisioningToken: {
-      type: 'string',
-      description: 'Gitlab token for provisioning',
-      writeOnly: true,
-    },
     allowUsersToSignUp: {
       type: 'boolean',
       description: 'Allow user to sign up',
@@ -455,7 +421,6 @@ export const GitlabConfigurationCreateRestRequestSchema = {
     'applicationId',
     'enabled',
     'provisioningType',
-    'secret',
     'synchronizeGroups',
     'url',
   ],
@@ -518,29 +483,10 @@ export const GithubConfigurationCreateRestRequestSchema = {
       type: 'boolean',
       description: 'Enable GitHub authentication',
     },
-    clientId: {
-      type: 'string',
-      description:
-        'Client ID provided by GitHub when registering the application.',
-      writeOnly: true,
-    },
-    clientSecret: {
-      type: 'string',
-      description:
-        'Client password provided by GitHub when registering the application.',
-      writeOnly: true,
-    },
     applicationId: {
       type: 'string',
       description:
         "The App ID is found on your GitHub App's page on GitHub at Settings > Developer Settings > GitHub Apps.",
-    },
-    privateKey: {
-      type: 'string',
-      description: `Your GitHub App's private key. You can generate a .pem file from your GitHub App's page under Private keys.
-Copy and paste the whole contents of the file here.
-`,
-      writeOnly: true,
     },
     synchronizeGroups: {
       type: 'boolean',
@@ -589,10 +535,7 @@ Changes take effect at the next synchronization.
     'allowedOrganizations',
     'apiUrl',
     'applicationId',
-    'clientId',
-    'clientSecret',
     'enabled',
-    'privateKey',
     'provisioningType',
     'synchronizeGroups',
     'webUrl',
@@ -2951,4 +2894,527 @@ export const MeasureComponentResponseSchema = {
     },
   },
   description: 'Response from the /measures/component endpoint',
+} as const;
+
+export const UserCreateRestRequestWritableSchema = {
+  type: 'object',
+  properties: {
+    email: {
+      type: 'string',
+      description: 'User email',
+      maxLength: 100,
+      minLength: 1,
+    },
+    local: {
+      type: 'boolean',
+      default: 'true',
+      description:
+        'Specify if the user should be authenticated from SonarQube server or from an external authentication system. Password should not be set when local is set to false.',
+    },
+    login: {
+      type: 'string',
+      description: 'User login',
+      maxLength: 100,
+      minLength: 2,
+    },
+    name: {
+      type: 'string',
+      description: 'User name',
+      maxLength: 200,
+      minLength: 0,
+    },
+    password: {
+      type: 'string',
+      description:
+        'User password. Only mandatory when creating local user, otherwise it should not be set',
+      writeOnly: true,
+    },
+    scmAccounts: {
+      type: 'array',
+      description: 'List of SCM accounts.',
+      items: {
+        type: 'string',
+      },
+    },
+  },
+  required: ['login', 'name'],
+} as const;
+
+export const UserRestResponseForAdminsWritableSchema = {
+  type: 'object',
+  properties: {
+    login: {
+      type: 'string',
+    },
+    name: {
+      type: 'string',
+    },
+    email: {
+      type: 'string',
+    },
+    externalLogin: {
+      type: 'string',
+    },
+    externalProvider: {
+      type: 'string',
+    },
+    externalId: {
+      type: 'string',
+    },
+    avatar: {
+      type: 'string',
+    },
+    scmAccounts: {
+      type: 'array',
+      items: {
+        type: 'string',
+      },
+    },
+  },
+} as const;
+
+export const EmailConfigurationCreateRestRequestWritableSchema = {
+  type: 'object',
+  properties: {
+    host: {
+      type: 'string',
+      description: 'URL of your SMTP server',
+    },
+    port: {
+      type: 'string',
+      description: 'Port of your SMTP server (usually 25, 587 or 465)',
+    },
+    securityProtocol: {
+      type: 'string',
+      description:
+        'Security protocol used to connect to your SMTP server (SSLTLS is recommended)',
+      enum: ['NONE', 'SSLTLS', 'STARTTLS'],
+    },
+    fromAddress: {
+      type: 'string',
+      description: 'Address emails will come from',
+    },
+    fromName: {
+      type: 'string',
+      description: 'Name emails will come from (usually "SonarQube")',
+    },
+    subjectPrefix: {
+      type: 'string',
+      description:
+        'Prefix added to email so they can be easily recognized (usually "[SonarQube]")',
+    },
+    authMethod: {
+      type: 'string',
+      description:
+        'Authentication method used to connect to the SMTP server. OAuth is only supported for Microsoft Exchange',
+      enum: ['BASIC', 'OAUTH'],
+    },
+    username: {
+      type: 'string',
+      description:
+        'For Basic and OAuth authentication: username used to authenticate to the SMTP server',
+    },
+    basicPassword: {
+      type: 'string',
+      description:
+        'For basic authentication: password used to authenticate to the SMTP server',
+      writeOnly: true,
+    },
+    oauthAuthenticationHost: {
+      type: 'string',
+      description:
+        'For OAuth authentication: host of the Identity Provider issuing access tokens',
+    },
+    oauthClientId: {
+      type: 'string',
+      description:
+        'For OAuth authentication: Client ID provided by Microsoft Exchange when registering the application',
+      writeOnly: true,
+    },
+    oauthClientSecret: {
+      type: 'string',
+      description:
+        'For OAuth authentication: Client secret provided by Microsoft Exchange when registering the application',
+      writeOnly: true,
+    },
+    oauthTenant: {
+      type: 'string',
+      description: 'For OAuth authentication: Microsoft tenant',
+    },
+  },
+  required: [
+    'authMethod',
+    'fromAddress',
+    'fromName',
+    'host',
+    'port',
+    'securityProtocol',
+    'subjectPrefix',
+    'username',
+  ],
+} as const;
+
+export const EmailConfigurationResourceWritableSchema = {
+  type: 'object',
+  properties: {
+    host: {
+      type: 'string',
+      description: 'URL of your SMTP server',
+    },
+    port: {
+      type: 'string',
+      description: 'Port of your SMTP server (usually 25, 587 or 465)',
+    },
+    securityProtocol: {
+      type: 'string',
+      description:
+        'Security protocol used to connect to your SMTP server (SSLTLS is recommended)',
+      enum: ['NONE', 'SSLTLS', 'STARTTLS'],
+    },
+    fromAddress: {
+      type: 'string',
+      description: 'Address emails will come from',
+    },
+    fromName: {
+      type: 'string',
+      description: 'Name emails will come from (usually "SonarQube")',
+    },
+    subjectPrefix: {
+      type: 'string',
+      description:
+        'Prefix added to email so they can be easily recognized (usually "[SonarQube]")',
+    },
+    authMethod: {
+      type: 'string',
+      description:
+        'Authentication method used to connect to the SMTP server. OAuth is only supported for Microsoft Exchange',
+      enum: ['BASIC', 'OAUTH'],
+    },
+    username: {
+      type: 'string',
+      description:
+        'For Basic and OAuth authentication: username used to authenticate to the SMTP server',
+    },
+    isBasicPasswordSet: {
+      type: 'boolean',
+      description: 'For Basic authentication: has the password field been set?',
+    },
+    oauthAuthenticationHost: {
+      type: 'string',
+      description:
+        'For OAuth authentication: host of the Identity Provider issuing access tokens',
+    },
+    isOauthClientIdSet: {
+      type: 'boolean',
+      description:
+        'For OAuth authentication: has the Client ID field been set?',
+    },
+    isOauthClientSecretSet: {
+      type: 'boolean',
+      description:
+        'For OAuth authentication: has the Client secret field been set?',
+    },
+    oauthTenant: {
+      type: 'string',
+      description: 'For OAuth authentication: Microsoft tenant',
+    },
+  },
+} as const;
+
+export const GitlabConfigurationCreateRestRequestWritableSchema = {
+  type: 'object',
+  properties: {
+    enabled: {
+      type: 'boolean',
+      description: 'Enable Gitlab authentication',
+    },
+    applicationId: {
+      type: 'string',
+      description: 'Gitlab Application id',
+    },
+    url: {
+      type: 'string',
+      description:
+        'Url of Gitlab instance for authentication (for instance https://gitlab.com)',
+    },
+    secret: {
+      type: 'string',
+      description: 'Secret of the application',
+      writeOnly: true,
+    },
+    synchronizeGroups: {
+      type: 'boolean',
+      description: 'Set whether to synchronize groups',
+    },
+    allowedGroups: {
+      type: 'array',
+      items: {
+        type: 'string',
+      },
+    },
+    provisioningType: {
+      type: 'string',
+      description: 'Type of synchronization',
+      enum: ['JIT', 'AUTO_PROVISIONING'],
+    },
+    provisioningToken: {
+      type: 'string',
+      description: 'Gitlab token for provisioning',
+      writeOnly: true,
+    },
+    allowUsersToSignUp: {
+      type: 'boolean',
+      description: 'Allow user to sign up',
+    },
+  },
+  required: [
+    'allowedGroups',
+    'applicationId',
+    'enabled',
+    'provisioningType',
+    'secret',
+    'synchronizeGroups',
+    'url',
+  ],
+} as const;
+
+export const GitlabConfigurationResourceWritableSchema = {
+  type: 'object',
+  properties: {
+    enabled: {
+      type: 'boolean',
+    },
+    applicationId: {
+      type: 'string',
+      description: 'Gitlab Application id',
+    },
+    url: {
+      type: 'string',
+      description:
+        'Url of Gitlab instance for authentication (for instance https://gitlab.com/api/v4)',
+    },
+    synchronizeGroups: {
+      type: 'boolean',
+    },
+    allowedGroups: {
+      type: 'array',
+      description: 'Root Gitlab groups allowed to authenticate and provisioned',
+      items: {
+        type: 'string',
+      },
+    },
+    allowUsersToSignUp: {
+      type: 'boolean',
+    },
+    provisioningType: {
+      type: 'string',
+      enum: ['JIT', 'AUTO_PROVISIONING'],
+    },
+  },
+} as const;
+
+export const GithubConfigurationCreateRestRequestWritableSchema = {
+  type: 'object',
+  properties: {
+    enabled: {
+      type: 'boolean',
+      description: 'Enable GitHub authentication',
+    },
+    clientId: {
+      type: 'string',
+      description:
+        'Client ID provided by GitHub when registering the application.',
+      writeOnly: true,
+    },
+    clientSecret: {
+      type: 'string',
+      description:
+        'Client password provided by GitHub when registering the application.',
+      writeOnly: true,
+    },
+    applicationId: {
+      type: 'string',
+      description:
+        "The App ID is found on your GitHub App's page on GitHub at Settings > Developer Settings > GitHub Apps.",
+    },
+    privateKey: {
+      type: 'string',
+      description: `Your GitHub App's private key. You can generate a .pem file from your GitHub App's page under Private keys.
+Copy and paste the whole contents of the file here.
+`,
+      writeOnly: true,
+    },
+    synchronizeGroups: {
+      type: 'boolean',
+      description: `Synchronize GitHub team with SonarQube group memberships when users log in to SonarQube.
+For each GitHub team they belong to, users will be associated to a group of the same name if it exists in SonarQube.
+`,
+    },
+    apiUrl: {
+      type: 'string',
+      description:
+        'The API url for a GitHub instance. https://api.github.com/ for Github.com, https://github.company.com/api/v3/ when using Github Enterprise',
+    },
+    webUrl: {
+      type: 'string',
+      description: `The WEB url for a GitHub instance. https://github.com/ for Github.com, https://github.company.com/ when using GitHub Enterprise.
+`,
+    },
+    allowedOrganizations: {
+      type: 'array',
+      items: {
+        type: 'string',
+      },
+    },
+    provisioningType: {
+      type: 'string',
+      description: 'Type of synchronization',
+      enum: ['JIT', 'AUTO_PROVISIONING'],
+    },
+    allowUsersToSignUp: {
+      type: 'boolean',
+      description: 'Allow user to sign up',
+    },
+    projectVisibility: {
+      type: 'boolean',
+      description: `Change project visibility based on GitHub repository visibility.
+If disabled, every provisioned project will be private in SonarQube and visible only to users with explicit GitHub permissions for the corresponding repository.
+Changes take effect at the next synchronization.
+`,
+    },
+    userConsentRequiredAfterUpgrade: {
+      type: 'boolean',
+      description: 'Admin consent to synchronize permissions from GitHub',
+    },
+  },
+  required: [
+    'allowedOrganizations',
+    'apiUrl',
+    'applicationId',
+    'clientId',
+    'clientSecret',
+    'enabled',
+    'privateKey',
+    'provisioningType',
+    'synchronizeGroups',
+    'webUrl',
+  ],
+} as const;
+
+export const GithubConfigurationResourceWritableSchema = {
+  type: 'object',
+  properties: {
+    enabled: {
+      type: 'boolean',
+    },
+    applicationId: {
+      type: 'string',
+      description: 'GitHub Application id',
+    },
+    synchronizeGroups: {
+      type: 'boolean',
+    },
+    apiUrl: {
+      type: 'string',
+      description:
+        'Url of GitHub instance for API connectivity (for instance https://api.github.com)',
+    },
+    webUrl: {
+      type: 'string',
+      description:
+        'Url of GitHub instance for authentication (for instance https://github.com)',
+    },
+    allowedOrganizations: {
+      type: 'array',
+      description:
+        'GitHub organizations allowed to authenticate and provisioned',
+      items: {
+        type: 'string',
+      },
+    },
+    provisioningType: {
+      type: 'string',
+      enum: ['JIT', 'AUTO_PROVISIONING'],
+    },
+    allowUsersToSignUp: {
+      type: 'boolean',
+    },
+    projectVisibility: {
+      type: 'boolean',
+    },
+    userConsentRequiredAfterUpgrade: {
+      type: 'boolean',
+    },
+  },
+} as const;
+
+export const ParameterWritableSchema = {
+  type: 'object',
+  properties: {
+    key: {
+      type: 'string',
+    },
+    defaultValue: {
+      type: 'string',
+    },
+  },
+} as const;
+
+export const RuleDescriptionSectionRestResponseWritableSchema = {
+  type: 'object',
+} as const;
+
+export const GroupRestResponseWritableSchema = {
+  type: 'object',
+  properties: {
+    name: {
+      type: 'string',
+    },
+    description: {
+      type: 'string',
+    },
+  },
+} as const;
+
+export const ModeResourceWritableSchema = {
+  type: 'object',
+  properties: {
+    mode: {
+      type: 'string',
+      enum: ['MQR', 'STANDARD_EXPERIENCE'],
+    },
+  },
+  required: ['mode'],
+} as const;
+
+export const DopSettingsResourceWritableSchema = {
+  type: 'object',
+  properties: {
+    type: {
+      type: 'string',
+      description:
+        'Supported DevOps Platform are: github, gitlab, azure, bitbucketcloud, bitbucket_server',
+    },
+    key: {
+      type: 'string',
+    },
+    url: {
+      type: 'string',
+    },
+    appId: {
+      type: 'string',
+    },
+  },
+} as const;
+
+export const GroupsMembershipSearchRestResponseWritableSchema = {
+  type: 'object',
+  properties: {
+    groupMemberships: {
+      type: 'array',
+    },
+    page: {
+      $ref: '#/components/schemas/PageRestResponse',
+    },
+  },
 } as const;

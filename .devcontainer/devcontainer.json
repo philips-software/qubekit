@@ -2,6 +2,19 @@
   "name": "QubeKit Development",
   "image": "mcr.microsoft.com/devcontainers/typescript-node:20-bookworm",
   "forwardPorts": [],
+  "mounts": [
+    // volume mount to speed up package restore
+    {
+      "source": "${localWorkspaceFolderBasename}-node_modules",
+      "target": "${containerWorkspaceFolder}/node_modules",
+      "type": "volume"
+    },
+    {
+      "source": "${localWorkspaceFolderBasename}-yarn-cache",
+      "target": "${containerWorkspaceFolder}/.yarn/cache",
+      "type": "volume"
+    }
+  ],
   "customizations": {
     "vscode": {
       "extensions": [
@@ -22,6 +35,8 @@
       }
     }
   },
-  "postCreateCommand": "yarn install",
+  "postCreateCommand": {
+    "fix_permissions": "sudo chown node node_modules"
+  },
   "remoteUser": "node"
 }
