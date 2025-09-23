@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/philips-software/qubekit/compare/v1.1.0...v1.2.0) (2025-09-23)
+
+
+### Features
+
+* Add ability to set global headers ([#83](https://github.com/philips-software/qubekit/issues/83)) ([2678cb6](https://github.com/philips-software/qubekit/commit/2678cb611563ced2c78605b8a0451d7f97fb9de6))
+
 ## [1.1.0](https://github.com/philips-software/qubekit/compare/v1.0.0...v1.1.0) (2025-06-17)
 
 
