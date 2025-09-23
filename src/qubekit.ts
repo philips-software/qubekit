@@ -1,5 +1,20 @@
 import { createQubekitClient } from './qubekitClient';
 
+export type QubekitOptions = {
+  /**
+   * The base URL of the SonarQube instance, without the version segment
+   */
+  baseURL: string;
+  /**
+   * The authentication token for the SonarQube instance
+   */
+  token: string;
+  /**
+   * Additional headers to be sent with all requests
+   */
+  headers?: Record<string, string>;
+};
+
 /**
  * Create a sonarqube client that can be used with both v1 and v2
  * endpoints.
@@ -7,7 +22,7 @@ import { createQubekitClient } from './qubekitClient';
  * @param options The required options to create a sonarqube client
  * @returns
  */
-export const createQubekit = (options: { baseURL: string; token: string }) => {
+export const createQubekit = (options: QubekitOptions) => {
   // validate that the baseurl is present, and is a valid url and is https, if not then throw an error
   if (!options.baseURL) {
     throw new Error('baseURL is required');
@@ -32,6 +47,7 @@ export const createQubekit = (options: { baseURL: string; token: string }) => {
     baseUrl: options.baseURL,
     headers: {
       Authorization: `Bearer ${options.token}`,
+      ...options.headers,
     },
   });
 };

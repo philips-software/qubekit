@@ -2906,7 +2906,7 @@ export type DownloadScaCliResponses = {
   /**
    * OK
    */
-  200: ScaCliInfoRestResponse | (Blob | File);
+  200: ScaCliInfoRestResponse | Blob | File;
 };
 
 export type DownloadScaCliResponse =
@@ -3142,7 +3142,7 @@ export type DownloadJreResponses = {
   /**
    * OK
    */
-  200: JreInfoRestResponse | (Blob | File);
+  200: JreInfoRestResponse | Blob | File;
 };
 
 export type DownloadJreResponse =
@@ -3159,7 +3159,7 @@ export type DownloadScannerEngineResponses = {
   /**
    * OK
    */
-  200: EngineInfoRestResponse | (Blob | File);
+  200: EngineInfoRestResponse | Blob | File;
 };
 
 export type DownloadScannerEngineResponse =
