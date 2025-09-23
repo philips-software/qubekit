@@ -12,7 +12,7 @@ export type QubekitOptions = {
   /**
    * Additional headers to be sent with all requests
    */
-  headers?: Record<string, unknown>;
+  headers?: Record<string, string>;
 };
 
 /**
