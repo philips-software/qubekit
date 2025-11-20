@@ -5836,6 +5836,32 @@ components:
                 type: string
             required:
               - message
+    Unauthorized:
+      description: >-
+        Authentication is required to access the requested resource. The client
+        must include the appropriate credentials.
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - message
+            properties:
+              message:
+                type: string
+    Forbidden:
+      description: >-
+        The server understood the request, but refuses to authorize it. Ensure
+        the client has appropriate permissions.
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - message
+            properties:
+              message:
+                type: string
   parameters:
     p:
       in: query
