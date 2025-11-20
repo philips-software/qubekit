@@ -1337,7 +1337,7 @@ export type UserTokenDetails = {
    */
   createdAt: Date;
   /**
-   * Last date the token was used
+   * Last date the token was used (updated hourly)
    */
   lastConnectionDate?: Date;
   /**
@@ -1345,17 +1345,30 @@ export type UserTokenDetails = {
    */
   expirationDate?: Date;
   /**
+   * Whether the token has expired
+   */
+  isExpired?: boolean;
+  /**
    * Token type
    */
-  type?: 'USER_TOKEN' | 'GLOBAL_ANALYSIS_TOKEN' | 'PROJECT_ANALYSIS_TOKEN';
+  type:
+    | 'USER_TOKEN'
+    | 'GLOBAL_ANALYSIS_TOKEN'
+    | 'PROJECT_ANALYSIS_TOKEN'
+    | 'PROJECT_BADGE_TOKEN';
   /**
-   * Project key for PROJECT_ANALYSIS_TOKEN
+   * Project details for PROJECT_ANALYSIS_TOKEN
    */
-  projectKey?: string;
-  /**
-   * Project name for PROJECT_ANALYSIS_TOKEN
-   */
-  projectName?: string;
+  project?: {
+    /**
+     * Project key
+     */
+    key: string;
+    /**
+     * Project name
+     */
+    name: string;
+  };
 };
 
 /**
@@ -1376,6 +1389,10 @@ export type UserTokenSearchResponse = {
  */
 export type UserTokenGenerateResponse = {
   /**
+   * User login
+   */
+  login: string;
+  /**
    * Token name
    */
   name: string;
@@ -1388,21 +1405,17 @@ export type UserTokenGenerateResponse = {
    */
   createdAt: Date;
   /**
-   * User login
-   */
-  login?: string;
-  /**
    * Token type
    */
-  type?: 'USER_TOKEN' | 'GLOBAL_ANALYSIS_TOKEN' | 'PROJECT_ANALYSIS_TOKEN';
+  type:
+    | 'USER_TOKEN'
+    | 'GLOBAL_ANALYSIS_TOKEN'
+    | 'PROJECT_ANALYSIS_TOKEN'
+    | 'PROJECT_BADGE_TOKEN';
   /**
    * Project key for PROJECT_ANALYSIS_TOKEN
    */
   projectKey?: string;
-  /**
-   * Project name for PROJECT_ANALYSIS_TOKEN
-   */
-  projectName?: string;
   /**
    * Token expiration date
    */
@@ -3952,15 +3965,19 @@ export type GenerateUserTokenData = {
      */
     login?: string;
     /**
-     * Token type
+     * Token type (default is USER_TOKEN)
      */
-    type?: 'USER_TOKEN' | 'GLOBAL_ANALYSIS_TOKEN' | 'PROJECT_ANALYSIS_TOKEN';
+    type?:
+      | 'USER_TOKEN'
+      | 'GLOBAL_ANALYSIS_TOKEN'
+      | 'PROJECT_ANALYSIS_TOKEN'
+      | 'PROJECT_BADGE_TOKEN';
     /**
-     * Project key (required for PROJECT_ANALYSIS_TOKEN type)
+     * Project key (required for PROJECT_ANALYSIS_TOKEN and PROJECT_BADGE_TOKEN types)
      */
     projectKey?: string;
     /**
-     * Token expiration date (format YYYY-MM-DD)
+     * Token expiration date in ISO 8601 date format (YYYY-MM-DD)
      */
     expirationDate?: Date;
   };

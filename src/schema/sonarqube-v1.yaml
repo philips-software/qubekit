@@ -1067,9 +1067,10 @@ paths:
               - USER_TOKEN
               - GLOBAL_ANALYSIS_TOKEN
               - PROJECT_ANALYSIS_TOKEN
+              - PROJECT_BADGE_TOKEN
           explode: true
           required: false
-          description: Token type
+          description: Token type (default is USER_TOKEN)
           allowReserved: false
         - in: query
           name: projectKey
@@ -1078,7 +1079,7 @@ paths:
             type: string
           explode: true
           required: false
-          description: Project key (required for PROJECT_ANALYSIS_TOKEN type)
+          description: Project key (required for PROJECT_ANALYSIS_TOKEN and PROJECT_BADGE_TOKEN types)
           allowReserved: false
         - in: query
           name: expirationDate
@@ -1088,7 +1089,7 @@ paths:
             format: date
           explode: true
           required: false
-          description: Token expiration date (format YYYY-MM-DD)
+          description: Token expiration date in ISO 8601 date format (YYYY-MM-DD)
           allowReserved: false
       responses:
         '200':
@@ -1684,6 +1685,7 @@ components:
       required:
         - name
         - createdAt
+        - type
       properties:
         name:
           type: string
@@ -1695,24 +1697,35 @@ components:
         lastConnectionDate:
           type: string
           format: date-time
-          description: Last date the token was used
+          description: Last date the token was used (updated hourly)
         expirationDate:
           type: string
-          format: date
+          format: date-time
           description: Token expiration date
+        isExpired:
+          type: boolean
+          description: Whether the token has expired
         type:
           type: string
           enum:
             - USER_TOKEN
             - GLOBAL_ANALYSIS_TOKEN
             - PROJECT_ANALYSIS_TOKEN
+            - PROJECT_BADGE_TOKEN
           description: Token type
-        projectKey:
-          type: string
-          description: Project key for PROJECT_ANALYSIS_TOKEN
-        projectName:
-          type: string
-          description: Project name for PROJECT_ANALYSIS_TOKEN
+        project:
+          type: object
+          description: Project details for PROJECT_ANALYSIS_TOKEN
+          required:
+            - key
+            - name
+          properties:
+            key:
+              type: string
+              description: Project key
+            name:
+              type: string
+              description: Project name
       description: A user token
     UserTokenSearchResponse:
       type: object
@@ -1732,10 +1745,15 @@ components:
       type: object
       title: User Token Generate Response
       required:
+        - login
         - name
         - token
         - createdAt
+        - type
       properties:
+        login:
+          type: string
+          description: User login
         name:
           type: string
           description: Token name
@@ -1746,25 +1764,20 @@ components:
           type: string
           format: date-time
           description: Token creation date
-        login:
-          type: string
-          description: User login
         type:
           type: string
           enum:
             - USER_TOKEN
             - GLOBAL_ANALYSIS_TOKEN
             - PROJECT_ANALYSIS_TOKEN
+            - PROJECT_BADGE_TOKEN
           description: Token type
         projectKey:
           type: string
           description: Project key for PROJECT_ANALYSIS_TOKEN
-        projectName:
-          type: string
-          description: Project name for PROJECT_ANALYSIS_TOKEN
         expirationDate:
           type: string
-          format: date
+          format: date-time
           description: Token expiration date
       description: Response from the user token generate endpoint
   responses:

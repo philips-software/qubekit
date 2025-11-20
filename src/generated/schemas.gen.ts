@@ -2899,7 +2899,7 @@ export const MeasureComponentResponseSchema = {
 export const UserTokenDetailsSchema = {
   type: 'object',
   title: 'User Token Details',
-  required: ['name', 'createdAt'],
+  required: ['name', 'createdAt', 'type'],
   properties: {
     name: {
       type: 'string',
@@ -2913,25 +2913,41 @@ export const UserTokenDetailsSchema = {
     lastConnectionDate: {
       type: 'string',
       format: 'date-time',
-      description: 'Last date the token was used',
+      description: 'Last date the token was used (updated hourly)',
     },
     expirationDate: {
       type: 'string',
-      format: 'date',
+      format: 'date-time',
       description: 'Token expiration date',
+    },
+    isExpired: {
+      type: 'boolean',
+      description: 'Whether the token has expired',
     },
     type: {
       type: 'string',
-      enum: ['USER_TOKEN', 'GLOBAL_ANALYSIS_TOKEN', 'PROJECT_ANALYSIS_TOKEN'],
+      enum: [
+        'USER_TOKEN',
+        'GLOBAL_ANALYSIS_TOKEN',
+        'PROJECT_ANALYSIS_TOKEN',
+        'PROJECT_BADGE_TOKEN',
+      ],
       description: 'Token type',
     },
-    projectKey: {
-      type: 'string',
-      description: 'Project key for PROJECT_ANALYSIS_TOKEN',
-    },
-    projectName: {
-      type: 'string',
-      description: 'Project name for PROJECT_ANALYSIS_TOKEN',
+    project: {
+      type: 'object',
+      description: 'Project details for PROJECT_ANALYSIS_TOKEN',
+      required: ['key', 'name'],
+      properties: {
+        key: {
+          type: 'string',
+          description: 'Project key',
+        },
+        name: {
+          type: 'string',
+          description: 'Project name',
+        },
+      },
     },
   },
   description: 'A user token',
@@ -2959,8 +2975,12 @@ export const UserTokenSearchResponseSchema = {
 export const UserTokenGenerateResponseSchema = {
   type: 'object',
   title: 'User Token Generate Response',
-  required: ['name', 'token', 'createdAt'],
+  required: ['login', 'name', 'token', 'createdAt', 'type'],
   properties: {
+    login: {
+      type: 'string',
+      description: 'User login',
+    },
     name: {
       type: 'string',
       description: 'Token name',
@@ -2974,26 +2994,23 @@ export const UserTokenGenerateResponseSchema = {
       format: 'date-time',
       description: 'Token creation date',
     },
-    login: {
-      type: 'string',
-      description: 'User login',
-    },
     type: {
       type: 'string',
-      enum: ['USER_TOKEN', 'GLOBAL_ANALYSIS_TOKEN', 'PROJECT_ANALYSIS_TOKEN'],
+      enum: [
+        'USER_TOKEN',
+        'GLOBAL_ANALYSIS_TOKEN',
+        'PROJECT_ANALYSIS_TOKEN',
+        'PROJECT_BADGE_TOKEN',
+      ],
       description: 'Token type',
     },
     projectKey: {
       type: 'string',
       description: 'Project key for PROJECT_ANALYSIS_TOKEN',
     },
-    projectName: {
-      type: 'string',
-      description: 'Project name for PROJECT_ANALYSIS_TOKEN',
-    },
     expirationDate: {
       type: 'string',
-      format: 'date',
+      format: 'date-time',
       description: 'Token expiration date',
     },
   },
