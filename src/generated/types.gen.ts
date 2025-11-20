@@ -139,6 +139,403 @@ export type EmailConfigurationResource = {
   oauthTenant?: string;
 };
 
+export type LicenseProfilesCreateRestRequest = {
+  /**
+   * The name of the license policy
+   */
+  name: string;
+  /**
+   * Whether this license policy is the default or not
+   */
+  default?: boolean;
+};
+
+export type LicenseProfileResource = {
+  id?: string;
+  key?: string;
+  name?: string;
+  default?: boolean;
+  actions?: LicenseProfileSingleActions;
+  updatedAt?: string;
+};
+
+export type LicenseProfileSingleActions = {
+  edit?: boolean;
+  setAsDefault?: boolean;
+  associateProjects?: boolean;
+  delete?: boolean;
+};
+
+export type UpdateAssigneeRestRequest = {
+  /**
+   * Issue release key
+   */
+  issueReleaseKey: string;
+  /**
+   * Assignee login
+   */
+  assigneeLogin?: string;
+};
+
+export type AffectedPackageResource = {
+  purl?: string;
+  /**
+   * The maintainer's overall recommendation, if available
+   */
+  recommendation?: 'ignore' | 'upgrade' | 'upgrade_or_workaround';
+  recommendationDetails?: VulnerabilityRecommendationDetailsResource;
+  versionOptions?: Array<VersionOptionResource>;
+  affectedVersions?: Array<string>;
+  unaffectedVersions?: string;
+};
+
+export type IssueReleaseBranchResource = {
+  uuid?: string;
+  key?: string;
+  isPullRequest?: boolean;
+  projectKey?: string;
+  projectName?: string;
+  legacyProjectUuid?: string;
+  organizationUuid?: string;
+};
+
+export type IssueReleaseDetailsResource = {
+  key?: string;
+  severity?: string;
+  originalSeverity?: string;
+  manualSeverity?: string;
+  showIncreasedSeverityWarning?: boolean;
+  release?: ReleaseSearchResource;
+  type?: 'VULNERABILITY' | 'PROHIBITED_LICENSE';
+  quality?: 'MAINTAINABILITY' | 'RELIABILITY' | 'SECURITY';
+  status?: string;
+  createdAt?: string;
+  assignee?: UserResource;
+  commentCount?: number;
+  vulnerability?: VulnerabilityResource;
+  spdxLicenseId?: string;
+  transitions?: Array<'CONFIRM' | 'REOPEN' | 'SAFE' | 'FIXED' | 'ACCEPT'>;
+  actions?: Array<'COMMENT' | 'ASSIGN' | 'SET_SEVERITY'>;
+  branch?: IssueReleaseBranchResource;
+};
+
+export type ReleaseSearchResource = {
+  key?: string;
+  branchUuid?: string;
+  packageUrl?: string;
+  packageManager?: string;
+  packageName?: string;
+  version?: string;
+  licenseExpression?: string;
+  known?: boolean;
+  knownPackage?: boolean;
+  newlyIntroduced?: boolean;
+  directSummary?: boolean;
+  scopeSummary?: string;
+  productionScopeSummary?: boolean;
+  dependencyFilePaths?: Array<string>;
+};
+
+export type UserResource = {
+  login?: string;
+  name?: string;
+  avatar?: string;
+  active?: boolean;
+};
+
+export type VersionOptionResource = {
+  /**
+   * The version being presented as an option
+   */
+  version?: string;
+  /**
+   * Vulnerability IDs affecting this version
+   */
+  vulnerabilityIds?: Array<string>;
+  /**
+   * Is this version a pre-release version
+   */
+  prerelease?: boolean;
+  /**
+   * Describes which vulnerabilities are fixed
+   */
+  fixLevel?: 'COMPLETE' | 'PARTIAL' | 'NONE' | 'UNKNOWN';
+  /**
+   * How the frontend should label this version
+   */
+  descriptionCode?:
+    | 'VERSION_IN_USE'
+    | 'NEAREST_PARTIAL'
+    | 'NEAREST_COMPLETE'
+    | 'LATEST_PARTIAL'
+    | 'LATEST_COMPLETE'
+    | 'LATEST_STABLE'
+    | 'LATEST_PRERELEASE'
+    | 'UNKNOWN';
+};
+
+export type VulnerabilityRecommendationDetailsResource = {
+  impactScore?: number;
+  impactDescription?: string;
+  realIssue?: boolean;
+  falsePositiveReason?: string;
+  includesDev?: boolean;
+  specificMethodsAffected?: boolean;
+  specificMethodsDescription?: string;
+  otherConditions?: boolean;
+  otherConditionsDescription?: string;
+  workaroundAvailable?: boolean;
+  workaroundDescription?: string;
+  visibility?: string;
+};
+
+export type VulnerabilityReportResource = {
+  id?: string;
+  url?: string;
+  type?: string;
+  cvssScore?: string;
+  cvssSeverity?: string;
+  withdrawnAt?: string;
+};
+
+export type VulnerabilityResource = {
+  vulnerabilityId?: string;
+  reports?: Array<VulnerabilityReportResource>;
+  description?: string;
+  epssPercentile?: string;
+  epssProbability?: string;
+  knownExploited?: boolean;
+  cweIds?: Array<string>;
+  publishedOn?: string;
+  affectedPackages?: Array<AffectedPackageResource>;
+  withdrawn?: boolean;
+};
+
+export type IssueReleaseSetSeverityRestRequest = {
+  /**
+   * Issue release key
+   */
+  issueReleaseKey: string;
+  /**
+   * Software Quality
+   */
+  quality: 'MAINTAINABILITY' | 'RELIABILITY' | 'SECURITY';
+  /**
+   * Severity
+   */
+  severity: 'INFO' | 'LOW' | 'MEDIUM' | 'HIGH' | 'BLOCKER';
+};
+
+export type IssueReleaseClearSeverityWarningRestRequest = {
+  /**
+   * Issue release key
+   */
+  issueReleaseKey: string;
+};
+
+export type IssueReleaseStatusTransitionRequest = {
+  /**
+   * Issue release key
+   */
+  issueReleaseKey: string;
+  /**
+   * Transition key
+   */
+  transitionKey: 'CONFIRM' | 'REOPEN' | 'SAFE' | 'FIXED' | 'ACCEPT';
+  /**
+   * Transition comment
+   */
+  comment?: string;
+};
+
+export type IssueReleaseAddCommentRestRequest = {
+  /**
+   * Issue release key
+   */
+  issueReleaseKey: string;
+  /**
+   * comment
+   */
+  comment?: string;
+};
+
+export type AzureBillingRestResponse = {
+  success?: boolean;
+  message?: string;
+};
+
+export type PostJiraWorkItemRequestResource = {
+  /**
+   * Resource identifier
+   */
+  resourceId: string;
+  /**
+   * Resource type
+   */
+  resourceType: 'SONAR_ISSUE' | 'DEPENDENCY_RISK';
+  /**
+   * Sonar project identifier
+   */
+  sonarProjectId: string;
+  /**
+   * Work type identifier
+   */
+  workTypeId: string;
+  /**
+   * Work item summary
+   */
+  summary: string;
+  /**
+   * Work item description
+   */
+  description: string;
+};
+
+export type JiraWorkItemResource = {
+  /**
+   * Work item identifier
+   */
+  readonly id?: string;
+  /**
+   * Jira issue identifier
+   */
+  readonly jiraIssueId?: string;
+  /**
+   * Jira issue key
+   */
+  readonly jiraIssueKey?: string;
+  /**
+   * Jira issue URL
+   */
+  readonly jiraIssueUrl?: string;
+  /**
+   * Jira issue status
+   */
+  readonly jiraIssueStatus?: string;
+};
+
+export type PostJiraProjectBindingRequestResource = {
+  /**
+   * Sonar project identifier
+   */
+  sonarProjectId: string;
+  /**
+   * Jira instance binding identifier
+   */
+  jiraOrganizationId: string;
+  /**
+   * Jira project key
+   */
+  jiraProjectKey: string;
+};
+
+export type JiraProjectBindingResource = {
+  /**
+   * Jira project binding identifier
+   */
+  readonly id?: string;
+  /**
+   * Sonar project identifier
+   */
+  readonly sonarProjectId?: string;
+  /**
+   * Jira instance binding identifier
+   */
+  readonly jiraOrganizationId?: string;
+  /**
+   * Jira project key
+   */
+  readonly jiraProjectKey?: string;
+};
+
+export type PostJiraOrganizationBindingRequestResource = {
+  /**
+   * Base64-encoded OAuth state parameter
+   */
+  state: string;
+  /**
+   * OAuth authorization code (no whitespace)
+   */
+  authorizationCode: string;
+};
+
+export type JiraOrganizationBindingResource = {
+  /**
+   * Jira instance binding identifier
+   */
+  readonly id?: string;
+  /**
+   * Sonar organization UUID
+   */
+  readonly sonarOrganizationUuid?: string;
+  /**
+   * Jira instance URL
+   */
+  readonly jiraInstanceUrl?: string;
+  /**
+   * User who created or reauthorized the jira connection
+   */
+  readonly createdBy?: string;
+  /**
+   * Creation timestamp
+   */
+  readonly createdAt?: bigint;
+};
+
+export type OAuthResource = {
+  /**
+   * The resource's cloud ID
+   */
+  readonly cloudId?: string;
+  /**
+   * The resource's URL
+   */
+  readonly url?: string;
+};
+
+export type PostJiraOrganizationBindingResponseResource = {
+  binding?: JiraOrganizationBindingResource;
+  /**
+   * Array of available resources to bind the instance to
+   */
+  readonly resources: Array<OAuthResource>;
+};
+
+/**
+ * User binding creation request
+ */
+export type UserBindingCreationRequest = {
+  bindingData: UserBindingCreationRequestBindingData;
+  userId: string;
+};
+
+export type UserBindingCreationRequestBindingData = {
+  code: string;
+};
+
+export type UserBindingResponse = {
+  id?: string;
+  user_id?: string;
+  slack_user_id?: string;
+  slack_workspace_id?: string;
+  slack_workspace_name?: string;
+  created_at?: bigint;
+};
+
+export type IntegrationConfigurationPostRequest = {
+  integrationType: 'SLACK';
+  clientId: string;
+  clientSecret: string;
+  signingSecret: string;
+};
+
+export type IntegrationConfigurationResponse = {
+  id?: string;
+  integrationType?: 'SLACK';
+  clientId?: string;
+  appId?: string;
+};
+
 export type AwarenessBannerClickedRequest = {
   bannerType?: 'ENABLE' | 'LEARN_MORE';
 };
@@ -148,10 +545,20 @@ export type AwarenessBannerClickedResponse = {
 };
 
 export type FixSuggestionPostRequest = {
+  projectKey?: string;
   /**
    * Issue key
    */
-  issueId: string;
+  issueId?: string;
+  issue?: Issue;
+};
+
+export type Issue = {
+  message: string;
+  startLine: number;
+  endLine: number;
+  ruleKey: string;
+  sourceCode: string;
 };
 
 export type ChangeDto = {
@@ -165,6 +572,31 @@ export type FixSuggestionResponse = {
   issueId?: string;
   explanation?: string;
   changes?: Array<ChangeDto>;
+};
+
+export type LicenseRestRequest = {
+  /**
+   * New license key
+   */
+  licenseKey?: string;
+};
+
+export type LicenseUploadActivationRequest = {
+  /**
+   * Contents of a valid .lic file
+   */
+  license?: string;
+  /**
+   * License key for the license
+   */
+  licenseKey?: string;
+};
+
+export type LegacyLicenseRestRequest = {
+  /**
+   * New license key
+   */
+  licenseKey?: string;
 };
 
 export type GitlabSynchronizationRunResource = {
@@ -571,18 +1003,34 @@ export type GroupMembershipRestResponse = {
   readonly userId?: string;
 };
 
+export type AtlassianAuthenticationDetailsResource = {
+  /**
+   * Atlassian 3LO App Client ID
+   */
+  clientId?: string;
+  /**
+   * Atlassian 3LO App Secret
+   */
+  secret?: string;
+};
+
+export type AtlassianAuthenticationDetailsResultResource = {
+  /**
+   * Atlassian 3LO App Client ID
+   */
+  readonly clientId?: string;
+};
+
 export type UpdateFieldListString = {
   value?: Array<string>;
   defined?: boolean;
 };
 
-export type UpdateFieldString = {
-  value?: string;
-  defined?: boolean;
-};
-
 export type UserUpdateRestRequest = {
-  login?: UpdateFieldString;
+  /**
+   * User login
+   */
+  login?: string;
   /**
    * User first name and last name
    */
@@ -664,6 +1112,87 @@ export type EmailConfigurationUpdateRestRequest = {
   oauthTenant?: string;
 };
 
+export type LicenseProfilesUpdateRestRequest = {
+  /**
+   * The name of the license policy
+   */
+  name?: string;
+  /**
+   * Whether this license policy is the default or not
+   */
+  default?: boolean;
+};
+
+export type LicensePolicyLicenseUpdateRestRequest = {
+  /**
+   * The new status of this license.
+   */
+  policy: 'ALLOW' | 'DENY';
+};
+
+export type LicensePolicyLicenseResource = {
+  id?: string;
+  spdxLicenseId?: string;
+  name?: string;
+  category?:
+    | 'UNKNOWN'
+    | 'COPYLEFT_WEAK'
+    | 'COPYLEFT_STRONG'
+    | 'COPYLEFT_NETWORK'
+    | 'COPYLEFT_MAXIMAL'
+    | 'PERMISSIVE_STANDARD'
+    | 'PERMISSIVE_AMATEUR';
+  /**
+   * The policy status of this license.
+   */
+  policy?: 'ALLOW' | 'DENY';
+};
+
+export type LicenseProfileCategoryUpdateRestRequest = {
+  /**
+   * The new status of this category.
+   */
+  policy: 'ALLOW' | 'DENY';
+};
+
+export type LicenseProfileCategoryResource = {
+  id?: string;
+  key?:
+    | 'UNKNOWN'
+    | 'COPYLEFT_WEAK'
+    | 'COPYLEFT_STRONG'
+    | 'COPYLEFT_NETWORK'
+    | 'COPYLEFT_MAXIMAL'
+    | 'PERMISSIVE_STANDARD'
+    | 'PERMISSIVE_AMATEUR';
+  /**
+   * The policy status of this category.
+   */
+  policy?: 'ALLOW' | 'DENY';
+};
+
+export type AssignedProjectsUpdateRestRequest = {
+  /**
+   * The id of the license profile that should be used when analyzing the project for license issues.
+   */
+  licenseProfileUuid: string;
+  /**
+   * The key of the project that should be assigned to the license profile.
+   */
+  projectKey: string;
+};
+
+export type IssueReleaseUpdateCommentRestRequest = {
+  /**
+   * Issue release change key
+   */
+  issueReleaseChangeKey: string;
+  /**
+   * Comment text
+   */
+  comment: string;
+};
+
 export type FeatureEnablementRequest = {
   /**
    * Whether SCA is enabled or not
@@ -673,6 +1202,113 @@ export type FeatureEnablementRequest = {
 
 export type FeatureEnablementResource = {
   enablement?: boolean;
+};
+
+export type JiraWorkTypesSelectionResource = {
+  /**
+   * The Sonar project ID
+   */
+  sonarProjectId?: string;
+  /**
+   * An array with the selected work type ids
+   */
+  selectedWorkTypes?: Array<string>;
+};
+
+export type PatchJiraProjectBindingRequestResource = {
+  /**
+   * Sonar project identifier
+   */
+  sonarProjectId: string;
+  /**
+   * Jira project key
+   */
+  jiraProjectKey: string;
+};
+
+export type PatchJiraOrganizationBindingRequestResource = {
+  /**
+   * Sonar organization UUID
+   */
+  sonarOrganizationUuid: string;
+  /**
+   * Jira cloud ID to bind with the organization
+   */
+  jiraCloudId: string;
+  /**
+   * Jira instance URL
+   */
+  jiraInstanceUrl: string;
+};
+
+export type RuleTypeMapping = {
+  /**
+   * Rule type
+   */
+  type: 'CODE_SMELL' | 'BUG' | 'VULNERABILITY' | 'SECURITY_HOTSPOT';
+  /**
+   * List of severities
+   */
+  severities: Array<'BLOCKER' | 'CRITICAL' | 'MAJOR' | 'MINOR' | 'INFO'>;
+};
+
+export type SandboxSettingsResource = {
+  /**
+   * Whether sandbox is enabled globally
+   */
+  enabled?: boolean;
+  /**
+   * Default value for projects
+   */
+  defaultValue?: boolean;
+  /**
+   * Allow projects to override settings
+   */
+  allowOverride?: boolean;
+  /**
+   * Software quality mappings (MQR mode)
+   */
+  softwareQualities?: Array<SoftwareQualityMapping>;
+  /**
+   * Rule type mappings (Standard Experience mode)
+   */
+  types?: Array<RuleTypeMapping>;
+};
+
+export type SoftwareQualityMapping = {
+  /**
+   * Software quality
+   */
+  softwareQuality: 'MAINTAINABILITY' | 'RELIABILITY' | 'SECURITY';
+  /**
+   * List of impact severities
+   */
+  impactSeverities: Array<'INFO' | 'LOW' | 'MEDIUM' | 'HIGH' | 'BLOCKER'>;
+};
+
+export type SandboxSettingsProjectResource = {
+  /**
+   * Whether sandbox is enabled for this project
+   */
+  enabled?: boolean;
+  /**
+   * Software quality mappings (MQR mode)
+   */
+  softwareQualities?: Array<SoftwareQualityMapping>;
+  /**
+   * Rule type mappings (Standard Experience mode)
+   */
+  types?: Array<RuleTypeMapping>;
+  /**
+   * Whether project settings override instance settings
+   */
+  overridden?: boolean;
+};
+
+export type IntegrationConfigurationPatchRequest = {
+  clientId?: string;
+  clientSecret?: string;
+  signingSecret?: string;
 };
 
 export type DevOpsPermissionMappingUpdateRequest = {
@@ -822,23 +1458,66 @@ export type EmailConfigurationSearchRestResponse = {
   page?: PageRestResponse;
 };
 
-export type ReleaseSearchResource = {
-  key?: string;
+export type SelfTestHttpCallResource = {
+  attemptedUrl?: string;
+  attemptedMethod?: string;
+  responseCode?: number;
+  responseBody?: string;
+  responseBodyAppearsValid?: boolean;
+  responseHeaders?: Array<Array<string>>;
+};
+
+export type SelfTestResponse = {
+  featureEnabled?: boolean;
+  selfTestPassed?: boolean;
+  cliVersionCheck?: SelfTestHttpCallResource;
+  vulnerabilityDetailsCheck?: SelfTestHttpCallResource;
+};
+
+export type SelfTestSpringConfigurationResponse = {
+  springVersion?: string;
+};
+
+export type RiskReportItem = {
+  projectKey?: string;
+  projectName?: string;
+  branchKey?: string;
+  riskTitle?: string;
+  riskType?: 'VULNERABILITY' | 'PROHIBITED_LICENSE';
+  riskSeverity?: 'INFO' | 'LOW' | 'MEDIUM' | 'HIGH' | 'BLOCKER';
+  riskStatus?: 'OPEN' | 'ACCEPT' | 'CONFIRM' | 'SAFE' | 'FIXED';
+  statusChanges?: Array<StatusChange>;
+  vulnerabilityId?: string;
+  cvssScore?: number;
+  cweIds?: Array<string>;
+  publishedOn?: string;
+  createdAt?: string;
   packageUrl?: string;
-  packageManager?: string;
-  packageName?: string;
-  version?: string;
-  licenseExpression?: string;
-  known?: boolean;
-  newInPullRequest?: boolean;
-  directSummary?: boolean;
-  scopeSummary?: string;
-  dependencyFilePaths?: Array<string>;
+  riskUrl?: string;
+  dependencyChains?: Array<Array<string>>;
+  scope?: string;
+  productionScope?: boolean;
+};
+
+export type StatusChange = {
+  comment?: string;
+  newStatus?: string;
+  createdAt?: string;
+};
+
+export type BranchResource = {
+  uuid?: string;
+  key?: string;
+  isPullRequest?: boolean;
+  projectKey?: string;
+  projectName?: string;
 };
 
 export type ReleasesSearchRestResponse = {
   releases?: Array<ReleaseSearchResource>;
   packageManagerCounts?: Array<ScaReleaseByPackageManagerCountDto>;
+  branches?: Array<BranchResource>;
+  countWithoutFilters?: number;
   page?: PageRestResponse;
 };
 
@@ -855,14 +1534,17 @@ export type DependencyResource = {
   userDependencyFilePath?: string;
   lockfileDependencyFilePath?: string;
   chains?: Array<Array<string>>;
-  newInPullRequest?: boolean;
+  newlyIntroduced?: boolean;
 };
 
 export type IssueResource = {
   key?: string;
   severity?: string;
-  type?: string;
+  showIncreasedSeverityWarning?: boolean;
+  type?: 'VULNERABILITY' | 'PROHIBITED_LICENSE';
+  quality?: 'MAINTAINABILITY' | 'RELIABILITY' | 'SECURITY';
   createdAt?: string;
+  assignee?: UserResource;
   vulnerabilityId?: string;
   cweIds?: Array<string>;
   cvssScore?: string;
@@ -871,119 +1553,100 @@ export type IssueResource = {
 
 export type ReleaseDetailResource = {
   key?: string;
+  branchUuid?: string;
   packageUrl?: string;
   packageManager?: string;
   packageName?: string;
   version?: string;
   licenseExpression?: string;
   known?: boolean;
-  newInPullRequest?: boolean;
+  knownPackage?: boolean;
+  newlyIntroduced?: boolean;
   directSummary?: boolean;
   scopeSummary?: string;
   productionScopeSummary?: boolean;
   dependencies?: Array<DependencyResource>;
   issues?: Array<IssueResource>;
+  branch?: BranchResource;
 };
 
-export type DependencyRiskResource = {
-  key?: string;
-  severity?: string;
-  release?: ReleaseSearchResource;
-  type?: string;
-  createdAt?: string;
-  vulnerabilityId?: string;
-  cweIds?: Array<string>;
-  cvssScore?: string;
-  spdxLicenseId?: string;
+export type LicenseProfileCollectionActions = {
+  create?: boolean;
 };
 
-export type DependencyRisksSearchRestResponse = {
-  issuesReleases?: Array<DependencyRiskResource>;
+export type LicenseProfileIndexRestResponse = {
+  licenseProfiles?: Array<LicenseProfileResource>;
+  actions?: LicenseProfileCollectionActions;
+};
+
+export type LicenseProfileDetailsResource = {
+  profile?: LicenseProfileResource;
+  categories?: Array<LicenseProfileCategoryResource>;
+  licenses?: Array<LicensePolicyLicenseResource>;
+};
+
+export type AssignableProjectResource = {
+  projectKey?: string;
+  projectName?: string;
+  assignedToLicenseProfile?: boolean;
+};
+
+export type AssignableProjectsIndexRestResponse = {
+  assignableProjects?: Array<AssignableProjectResource>;
   page?: PageRestResponse;
 };
 
-export type AffectedPackageResource = {
-  purl?: string;
-  recommendation?: string;
-  recommendationDetails?: VulnerabilityRecommendationDetailsResource;
-  versionOptions?: Array<VersionOptionResource>;
-  affectedVersions?: Array<string>;
-  unaffectedVersions?: string;
-};
-
-export type DependencyRiskDetailsResource = {
+export type IssueReleaseResource = {
   key?: string;
   severity?: string;
+  originalSeverity?: string;
+  manualSeverity?: string;
+  showIncreasedSeverityWarning?: boolean;
   release?: ReleaseSearchResource;
-  type?: string;
+  type?: 'VULNERABILITY' | 'PROHIBITED_LICENSE';
+  quality?: 'MAINTAINABILITY' | 'RELIABILITY' | 'SECURITY';
+  status?: string;
   createdAt?: string;
-  vulnerability?: VulnerabilityResource;
-  spdxLicenseId?: string;
-};
-
-export type VersionOptionResource = {
-  /**
-   * The version being presented as an option
-   */
-  version?: string;
-  /**
-   * Vulnerability IDs affecting this version
-   */
-  vulnerabilityIds?: Array<string>;
-  /**
-   * Is this version a pre-release version
-   */
-  prerelease?: boolean;
-  /**
-   * Describes which vulnerabilities are fixed
-   */
-  fixLevel?: 'COMPLETE' | 'PARTIAL' | 'NONE' | 'UNKNOWN';
-  /**
-   * How the frontend should label this version
-   */
-  descriptionCode?:
-    | 'VERSION_IN_USE'
-    | 'NEAREST_PARTIAL'
-    | 'NEAREST_COMPLETE'
-    | 'LATEST_PARTIAL'
-    | 'LATEST_COMPLETE'
-    | 'LATEST_STABLE'
-    | 'LATEST_PRERELEASE'
-    | 'UNKNOWN';
-};
-
-export type VulnerabilityRecommendationDetailsResource = {
-  impactScore?: number;
-  impactDescription?: string;
-  realIssue?: boolean;
-  falsePositiveReason?: string;
-  includesDev?: boolean;
-  specificMethodsAffected?: boolean;
-  specificMethodsDescription?: string;
-  otherConditions?: boolean;
-  otherConditionsDescription?: string;
-  workaroundAvailable?: boolean;
-  workaroundDescription?: string;
-  visibility?: string;
-};
-
-export type VulnerabilityReportResource = {
-  id?: string;
-  url?: string;
-  type?: string;
-  cvssScore?: string;
-  cvssSeverity?: string;
-};
-
-export type VulnerabilityResource = {
+  assignee?: UserResource;
+  commentCount?: number;
   vulnerabilityId?: string;
-  reports?: Array<VulnerabilityReportResource>;
-  description?: string;
-  epssPercentile?: string;
-  epssProbability?: string;
-  knownExploited?: boolean;
   cweIds?: Array<string>;
-  affectedPackages?: Array<AffectedPackageResource>;
+  cvssScore?: string;
+  withdrawn?: boolean;
+  spdxLicenseId?: string;
+  transitions?: Array<'CONFIRM' | 'REOPEN' | 'SAFE' | 'FIXED' | 'ACCEPT'>;
+  actions?: Array<'COMMENT' | 'ASSIGN' | 'SET_SEVERITY'>;
+};
+
+export type IssuesReleasesSearchRestResponse = {
+  issuesReleases?: Array<IssueReleaseResource>;
+  branches?: Array<IssueReleaseBranchResource>;
+  countWithoutFilters?: number;
+  page?: PageRestResponse;
+};
+
+export type IssueReleaseChangeDiffResource = {
+  fieldName?: string;
+  oldValue?: string;
+  newValue?: string;
+};
+
+export type IssueReleaseChangeResource = {
+  key?: string;
+  createdAt?: string;
+  user?: UserResource;
+  markdownComment?: string;
+  htmlComment?: string;
+  changeData?: Array<IssueReleaseChangeDiffResource>;
+  actions?: Array<'EDIT_COMMENT' | 'DELETE_COMMENT'>;
+};
+
+export type IssuesReleasesChangesRestResponse = {
+  changelog?: Array<IssueReleaseChangeResource>;
+};
+
+export type ScaFeatureEnabledResource = {
+  enabled?: boolean;
 };
 
 export type ScaCliInfoRestResponse = {
@@ -992,6 +1655,101 @@ export type ScaCliInfoRestResponse = {
   sha256?: string;
   os?: string;
   arch?: string;
+};
+
+export type AnalysisErrorResource = {
+  code?:
+    | 'UNKNOWN'
+    | 'NO_DEPENDENCIES_FOUND'
+    | 'DEPENDENCY_FILES_PARSE_ERROR'
+    | 'UNSUPPORTED_PLATFORM'
+    | 'INEXACT_VERSIONS'
+    | 'MISSING_LOCKFILE';
+  path?: string;
+  message?: string;
+};
+
+export type AnalysisResource = {
+  status?: 'FAILED' | 'OUTDATED' | 'COMPLETED';
+  failedReason?: string;
+  errors?: Array<AnalysisErrorResource>;
+  parsedFiles?: Array<string>;
+};
+
+export type JiraWorkTypeFieldResultResource = {
+  /**
+   * The field key
+   */
+  readonly key?: string;
+  /**
+   * The field name
+   */
+  readonly name?: string;
+  /**
+   * Whether the field is required
+   */
+  readonly required?: boolean;
+  /**
+   * Whether the field has a default value
+   */
+  readonly hasDefaultValue?: boolean;
+};
+
+export type JiraWorkTypeResultResource = {
+  /**
+   * the Jira work type id
+   */
+  readonly id?: string;
+  /**
+   * the Jira work type name
+   */
+  readonly name?: string;
+  /**
+   * the Jira work type description
+   */
+  readonly description?: string;
+  /**
+   * true, if the Jira work type is a subtask
+   */
+  readonly subtask?: boolean;
+  /**
+   * the Jira work type hierarchy
+   */
+  readonly hierarchyLevel?: number;
+  /**
+   * true, if the Jira work type is selected
+   */
+  readonly selected?: boolean;
+  /**
+   * Array of field metadata for the specified work type. (Optional)
+   */
+  readonly fields?: Array<JiraWorkTypeFieldResultResource>;
+};
+
+export type JiraProjectResultResource = {
+  /**
+   * the name of the project
+   */
+  readonly name?: string;
+  /**
+   * the key of the project
+   */
+  readonly key?: string;
+};
+
+export type LinkedIssuesCountResource = {
+  /**
+   * Count of linked Jira issues
+   */
+  readonly count?: number;
+};
+
+export type IntegrationConfigurationSearchResponse = {
+  integrationConfigurations?: Array<IntegrationConfigurationResponse>;
+};
+
+export type SupportedRulesDto = {
+  rules?: Array<string>;
 };
 
 export type LlmModelDto = {
@@ -1014,12 +1772,6 @@ export type ServiceInfo = {
     | 'SUCCESS'
     | 'TIMEOUT'
     | 'UNAUTHORIZED';
-  isEnabled?: boolean;
-  subscriptionType?: 'EARLY_ACCESS' | 'PAID' | 'NOT_PAID';
-};
-
-export type SubscriptionTypeResponse = {
-  subscriptionType?: 'EARLY_ACCESS' | 'PAID' | 'NOT_PAID';
 };
 
 export type FixSuggestionIssueResponse = {
@@ -1044,6 +1796,48 @@ export type ProviderResponseDto = {
   key?: string;
   modelKey?: string;
   endpoint?: string;
+};
+
+export type PurchasableFeatureRestResponse = {
+  featureKey?: string;
+  parent?: string;
+  isEnabled?: boolean;
+  isAvailable?: boolean;
+  url?: string;
+};
+
+export type LicenseFeatureRestResponse = {
+  name?: string;
+  parent?: string;
+  startDate?: string;
+  endDate?: string;
+};
+
+export type LicenseRestResponse = {
+  expirationDate?: string;
+  lastRefreshDate?: string;
+  edition?: string;
+  features?: Array<LicenseFeatureRestResponse>;
+  maxLoc?: bigint;
+  loc?: bigint;
+  serverId?: string;
+  type?: string;
+  contactEmail?: string;
+  remainingLocThreshold?: bigint;
+  canActivateGracePeriod?: boolean;
+  gracePeriodEndDate?: string;
+  gracePeriodExpired?: boolean;
+  extraDays?: number;
+  startDate?: string;
+  activatedOnline?: boolean;
+  licenseKey?: string;
+  expired?: boolean;
+  validEdition?: boolean;
+  validServerId?: boolean;
+  officialDistribution?: boolean;
+  supported?: boolean;
+  legacy?: boolean;
+  disabled?: boolean;
 };
 
 export type ProjectBinding = {
@@ -1098,6 +1892,19 @@ export type GroupsSearchRestResponse = {
 export type GroupsMembershipSearchRestResponse = {
   groupMemberships?: Array<GroupMembershipRestResponse>;
   page?: PageRestResponse;
+};
+
+export type E = {
+  id?: string;
+  branchId?: string;
+  type?: 'file_graph' | 'namespace_graph';
+  ecosystem?: 'java' | 'js' | 'ts' | 'py' | 'cs' | 'xoo';
+  perspectiveKey?: string;
+  graphVersion?: string;
+};
+
+export type P = {
+  graphs?: Array<E>;
 };
 
 export type JreInfoRestResponse = {
@@ -1647,7 +2454,7 @@ export type GroupsMembershipSearchRestResponseWritable = {
 /**
  * Current page
  */
-export type P = number;
+export type P2 = number;
 
 /**
  * Page size. Must be greater than 0 and less or equal than 500
@@ -1767,6 +2574,443 @@ export type CreateEmailConfigurationResponses = {
 export type CreateEmailConfigurationResponse =
   CreateEmailConfigurationResponses[keyof CreateEmailConfigurationResponses];
 
+export type IndexData = {
+  body?: never;
+  path?: never;
+  query?: {
+    /**
+     * If provided, filter to the license profile that is used to analyze the project (if one exists).
+     *
+     */
+    projectKey?: string;
+  };
+  url: '/v2/sca/license-profiles';
+};
+
+export type IndexResponses = {
+  /**
+   * OK
+   */
+  200: LicenseProfileIndexRestResponse;
+};
+
+export type IndexResponse = IndexResponses[keyof IndexResponses];
+
+export type Create1Data = {
+  body: LicenseProfilesCreateRestRequest;
+  path?: never;
+  query?: never;
+  url: '/v2/sca/license-profiles';
+};
+
+export type Create1Responses = {
+  /**
+   * Created
+   */
+  201: LicenseProfileResource;
+};
+
+export type Create1Response = Create1Responses[keyof Create1Responses];
+
+export type UpdateAssigneeData = {
+  body: UpdateAssigneeRestRequest;
+  path?: never;
+  query?: never;
+  url: '/v2/sca/issues-releases/update-assignee';
+};
+
+export type UpdateAssigneeResponses = {
+  /**
+   * OK
+   */
+  200: IssueReleaseDetailsResource;
+};
+
+export type UpdateAssigneeResponse =
+  UpdateAssigneeResponses[keyof UpdateAssigneeResponses];
+
+export type SetSeverityData = {
+  body: IssueReleaseSetSeverityRestRequest;
+  path?: never;
+  query?: never;
+  url: '/v2/sca/issues-releases/set-severity';
+};
+
+export type SetSeverityResponses = {
+  /**
+   * OK
+   */
+  200: IssueReleaseDetailsResource;
+};
+
+export type SetSeverityResponse =
+  SetSeverityResponses[keyof SetSeverityResponses];
+
+export type ClearSeverityWarningData = {
+  body: IssueReleaseClearSeverityWarningRestRequest;
+  path?: never;
+  query?: never;
+  url: '/v2/sca/issues-releases/clear-severity-warning';
+};
+
+export type ClearSeverityWarningResponses = {
+  /**
+   * OK
+   */
+  200: IssueReleaseDetailsResource;
+};
+
+export type ClearSeverityWarningResponse =
+  ClearSeverityWarningResponses[keyof ClearSeverityWarningResponses];
+
+export type TransitionIssueReleaseData = {
+  body: IssueReleaseStatusTransitionRequest;
+  path?: never;
+  query?: never;
+  url: '/v2/sca/issues-releases/change-status';
+};
+
+export type TransitionIssueReleaseResponses = {
+  /**
+   * OK
+   */
+  200: IssueReleaseDetailsResource;
+};
+
+export type TransitionIssueReleaseResponse =
+  TransitionIssueReleaseResponses[keyof TransitionIssueReleaseResponses];
+
+export type AddCommentData = {
+  body: IssueReleaseAddCommentRestRequest;
+  path?: never;
+  query?: never;
+  url: '/v2/sca/issues-releases/add-comment';
+};
+
+export type AddCommentResponses = {
+  /**
+   * OK
+   */
+  200: unknown;
+};
+
+export type BillAzureAccountData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: '/v2/marketplace/azure/billing';
+};
+
+export type BillAzureAccountResponses = {
+  /**
+   * OK
+   */
+  200: AzureBillingRestResponse;
+};
+
+export type BillAzureAccountResponse =
+  BillAzureAccountResponses[keyof BillAzureAccountResponses];
+
+export type 곳Data = {
+  body?: never;
+  path?: never;
+  query: {
+    sonarProjectId: string;
+    resourceId: string;
+    resourceType: 'SONAR_ISSUE' | 'DEPENDENCY_RISK';
+  };
+  url: '/v2/jira/work-items';
+};
+
+export type 곳Responses = {
+  /**
+   * No Content
+   */
+  204: void;
+};
+
+export type 곳Response = 곳Responses[keyof 곳Responses];
+
+export type य़Data = {
+  body?: never;
+  path?: never;
+  query: {
+    sonarProjectId: string;
+    resourceId: string;
+    resourceType: 'SONAR_ISSUE' | 'DEPENDENCY_RISK';
+  };
+  url: '/v2/jira/work-items';
+};
+
+export type य़Responses = {
+  /**
+   * OK
+   */
+  200: JiraWorkItemResource;
+};
+
+export type य़Response = य़Responses[keyof य़Responses];
+
+export type य़1Data = {
+  body: PostJiraWorkItemRequestResource;
+  path?: never;
+  query?: never;
+  url: '/v2/jira/work-items';
+};
+
+export type य़1Responses = {
+  /**
+   * Created
+   */
+  201: JiraWorkItemResource;
+};
+
+export type य़1Response = य़1Responses[keyof य़1Responses];
+
+export type 곳1Data = {
+  body?: never;
+  path?: never;
+  query: {
+    sonarProjectId: string;
+  };
+  url: '/v2/jira/project-bindings';
+};
+
+export type 곳1Responses = {
+  /**
+   * No Content
+   */
+  204: void;
+};
+
+export type 곳1Response = 곳1Responses[keyof 곳1Responses];
+
+export type य़2Data = {
+  body?: never;
+  path?: never;
+  query: {
+    sonarProjectId: string;
+  };
+  url: '/v2/jira/project-bindings';
+};
+
+export type य़2Responses = {
+  /**
+   * OK
+   */
+  200: JiraProjectBindingResource;
+};
+
+export type य़2Response = य़2Responses[keyof य़2Responses];
+
+export type य़4Data = {
+  body: PatchJiraProjectBindingRequestResource;
+  path?: never;
+  query?: never;
+  url: '/v2/jira/project-bindings';
+};
+
+export type य़4Responses = {
+  /**
+   * OK
+   */
+  200: JiraProjectBindingResource;
+};
+
+export type य़4Response = य़4Responses[keyof य़4Responses];
+
+export type य़3Data = {
+  body: PostJiraProjectBindingRequestResource;
+  path?: never;
+  query?: never;
+  url: '/v2/jira/project-bindings';
+};
+
+export type य़3Responses = {
+  /**
+   * Created
+   */
+  201: JiraProjectBindingResource;
+};
+
+export type य़3Response = य़3Responses[keyof य़3Responses];
+
+export type 곳2Data = {
+  body?: never;
+  path?: never;
+  query: {
+    sonarOrganizationUuid: string;
+  };
+  url: '/v2/jira/organization-bindings';
+};
+
+export type 곳2Responses = {
+  /**
+   * No Content
+   */
+  204: void;
+};
+
+export type 곳2Response = 곳2Responses[keyof 곳2Responses];
+
+export type य़5Data = {
+  body?: never;
+  path?: never;
+  query: {
+    sonarOrganizationUuid: string;
+  };
+  url: '/v2/jira/organization-bindings';
+};
+
+export type य़5Responses = {
+  /**
+   * OK
+   */
+  200: JiraOrganizationBindingResource;
+};
+
+export type य़5Response = य़5Responses[keyof य़5Responses];
+
+export type य़7Data = {
+  body: PatchJiraOrganizationBindingRequestResource;
+  path?: never;
+  query?: never;
+  url: '/v2/jira/organization-bindings';
+};
+
+export type य़7Responses = {
+  /**
+   * Created
+   */
+  201: JiraOrganizationBindingResource;
+};
+
+export type य़7Response = य़7Responses[keyof य़7Responses];
+
+export type य़6Data = {
+  body: PostJiraOrganizationBindingRequestResource;
+  path?: never;
+  query?: never;
+  url: '/v2/jira/organization-bindings';
+};
+
+export type य़6Responses = {
+  /**
+   * Created
+   */
+  201: PostJiraOrganizationBindingResponseResource;
+};
+
+export type य़6Response = य़6Responses[keyof य़6Responses];
+
+export type CreateUserBindingData = {
+  body: UserBindingCreationRequest;
+  path?: never;
+  query?: never;
+  url: '/v2/integrations/user-bindings';
+};
+
+export type CreateUserBindingErrors = {
+  /**
+   * Invalid request data
+   */
+  400: unknown;
+  /**
+   * Authentication required
+   */
+  401: unknown;
+  /**
+   * Insufficient permissions
+   */
+  403: unknown;
+  /**
+   * User binding already exists
+   */
+  409: unknown;
+  /**
+   * Internal server error
+   */
+  500: unknown;
+};
+
+export type CreateUserBindingResponses = {
+  /**
+   * User binding created successfully
+   */
+  201: UserBindingResponse;
+};
+
+export type CreateUserBindingResponse =
+  CreateUserBindingResponses[keyof CreateUserBindingResponses];
+
+export type HandleSlashCommandData = {
+  body: string;
+  path?: never;
+  query?: never;
+  url: '/v2/integrations/slack/slash-commands';
+};
+
+export type HandleSlashCommandResponses = {
+  /**
+   * OK
+   */
+  200: unknown;
+};
+
+export type HandleEventData = {
+  body: string;
+  path?: never;
+  query?: never;
+  url: '/v2/integrations/slack/events';
+};
+
+export type HandleEventResponses = {
+  /**
+   * OK
+   */
+  200: string;
+};
+
+export type HandleEventResponse =
+  HandleEventResponses[keyof HandleEventResponses];
+
+export type GetData = {
+  body?: never;
+  path?: never;
+  query: {
+    /**
+     * Integration type
+     */
+    integrationType: 'SLACK';
+  };
+  url: '/v2/integrations/integration-configurations';
+};
+
+export type GetResponses = {
+  /**
+   * OK
+   */
+  200: IntegrationConfigurationSearchResponse;
+};
+
+export type GetResponse = GetResponses[keyof GetResponses];
+
+export type Create2Data = {
+  body: IntegrationConfigurationPostRequest;
+  path?: never;
+  query?: never;
+  url: '/v2/integrations/integration-configurations';
+};
+
+export type Create2Responses = {
+  /**
+   * Created
+   */
+  201: IntegrationConfigurationResponse;
+};
+
+export type Create2Response = Create2Responses[keyof Create2Responses];
+
 export type CreateAwarenessBannerClickedData = {
   body: AwarenessBannerClickedRequest;
   path?: never;
@@ -1784,37 +3028,119 @@ export type CreateAwarenessBannerClickedResponses = {
 export type CreateAwarenessBannerClickedResponse =
   CreateAwarenessBannerClickedResponses[keyof CreateAwarenessBannerClickedResponses];
 
-export type Create1Data = {
+export type Create3Data = {
   body: FixSuggestionPostRequest;
   path?: never;
   query?: never;
   url: '/v2/fix-suggestions/ai-suggestions';
 };
 
-export type Create1Responses = {
+export type Create3Responses = {
   /**
    * OK
    */
   200: FixSuggestionResponse;
 };
 
-export type Create1Response = Create1Responses[keyof Create1Responses];
+export type Create3Response = Create3Responses[keyof Create3Responses];
 
-export type Create2Data = {
+export type SetLicenseData = {
+  body: LicenseRestRequest;
+  path?: never;
+  query?: never;
+  url: '/v2/entitlements/online-activation';
+};
+
+export type SetLicenseResponses = {
+  /**
+   * OK
+   */
+  200: unknown;
+};
+
+export type DeactivateLicenseData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: '/v2/entitlements/offline-deactivation';
+};
+
+export type DeactivateLicenseResponses = {
+  /**
+   * OK
+   */
+  200: Blob | File;
+};
+
+export type DeactivateLicenseResponse =
+  DeactivateLicenseResponses[keyof DeactivateLicenseResponses];
+
+export type RetrieveRequestFileData = {
+  body?: never;
+  headers: {
+    /**
+     * The unique license key associated with the license, in the format 'ABCD-EFGH-IJKL-MNOP'. Required in the 'License-Key' HTTP header for offline activation.
+     */
+    'License-Key': string;
+  };
+  path?: never;
+  query?: never;
+  url: '/v2/entitlements/offline-activation';
+};
+
+export type RetrieveRequestFileResponses = {
+  /**
+   * OK
+   */
+  200: Blob | File;
+};
+
+export type RetrieveRequestFileResponse =
+  RetrieveRequestFileResponses[keyof RetrieveRequestFileResponses];
+
+export type UploadLicenseData = {
+  body: LicenseUploadActivationRequest;
+  path?: never;
+  query?: never;
+  url: '/v2/entitlements/offline-activation';
+};
+
+export type UploadLicenseResponses = {
+  /**
+   * OK
+   */
+  200: unknown;
+};
+
+export type SetLegacyLicenseData = {
+  body: LegacyLicenseRestRequest;
+  path?: never;
+  query?: never;
+  url: '/v2/entitlements/legacy-activation';
+};
+
+export type SetLegacyLicenseResponses = {
+  /**
+   * OK
+   */
+  200: unknown;
+};
+
+export type Create4Data = {
   body?: never;
   path?: never;
   query?: never;
   url: '/v2/dop-translation/gitlab-synchronization-runs';
 };
 
-export type Create2Responses = {
+export type Create4Responses = {
   /**
    * OK
    */
   200: GitlabSynchronizationRunResource;
 };
 
-export type Create2Response = Create2Responses[keyof Create2Responses];
+export type Create4Response = Create4Responses[keyof Create4Responses];
 
 export type FetchAllData = {
   body?: never;
@@ -1866,21 +3192,21 @@ export type SearchGitlabConfigurationResponses = {
 export type SearchGitlabConfigurationResponse =
   SearchGitlabConfigurationResponses[keyof SearchGitlabConfigurationResponses];
 
-export type Create3Data = {
+export type Create5Data = {
   body: GitlabConfigurationCreateRestRequestWritable;
   path?: never;
   query?: never;
   url: '/v2/dop-translation/gitlab-configurations';
 };
 
-export type Create3Responses = {
+export type Create5Responses = {
   /**
    * OK
    */
   200: GitlabConfigurationResource;
 };
 
-export type Create3Response = Create3Responses[keyof Create3Responses];
+export type Create5Response = Create5Responses[keyof Create5Responses];
 
 export type FetchAll1Data = {
   body?: never;
@@ -1966,21 +3292,21 @@ export type CreateBoundProjectResponses = {
 export type CreateBoundProjectResponse =
   CreateBoundProjectResponses[keyof CreateBoundProjectResponses];
 
-export type Create4Data = {
+export type Create6Data = {
   body: RuleCreateRestRequest;
   path?: never;
   query?: never;
   url: '/v2/clean-code-policy/rules';
 };
 
-export type Create4Responses = {
+export type Create6Responses = {
   /**
    * OK
    */
   200: RuleRestResponse;
 };
 
-export type Create4Response = Create4Responses[keyof Create4Responses];
+export type Create6Response = Create6Responses[keyof Create6Responses];
 
 export type Search1Data = {
   body?: never;
@@ -1995,6 +3321,10 @@ export type Search1Data = {
      * This parameter performs a partial match (contains), it is case insensitive.
      */
     q?: string;
+    /**
+     * Filter groups containing the user. Only available for system administrators. Using != operator will search for groups without the user.
+     */
+    userId?: string;
     /**
      * Number of results per page. A value of 0 will only return the pagination information.
      */
@@ -2016,21 +3346,21 @@ export type Search1Responses = {
 
 export type Search1Response = Search1Responses[keyof Search1Responses];
 
-export type Create5Data = {
+export type Create7Data = {
   body: GroupCreateRestRequest;
   path?: never;
   query?: never;
   url: '/v2/authorizations/groups';
 };
 
-export type Create5Responses = {
+export type Create7Responses = {
   /**
    * Created
    */
   201: GroupRestResponse;
 };
 
-export type Create5Response = Create5Responses[keyof Create5Responses];
+export type Create7Response = Create7Responses[keyof Create7Responses];
 
 export type Search2Data = {
   body?: never;
@@ -2065,21 +3395,53 @@ export type Search2Responses = {
 
 export type Search2Response = Search2Responses[keyof Search2Responses];
 
-export type Create6Data = {
+export type Create8Data = {
   body: GroupMembershipCreateRestRequest;
   path?: never;
   query?: never;
   url: '/v2/authorizations/group-memberships';
 };
 
-export type Create6Responses = {
+export type Create8Responses = {
   /**
    * Created
    */
   201: GroupMembershipRestResponse;
 };
 
-export type Create6Response = Create6Responses[keyof Create6Responses];
+export type Create8Response = Create8Responses[keyof Create8Responses];
+
+export type य़8Data = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: '/v2/atlassian/application-configuration';
+};
+
+export type य़8Responses = {
+  /**
+   * OK
+   */
+  200: AtlassianAuthenticationDetailsResultResource;
+};
+
+export type य़8Response = य़8Responses[keyof य़8Responses];
+
+export type य़9Data = {
+  body: AtlassianAuthenticationDetailsResource;
+  path?: never;
+  query?: never;
+  url: '/v2/atlassian/application-configuration';
+};
+
+export type य़9Responses = {
+  /**
+   * OK
+   */
+  200: AtlassianAuthenticationDetailsResultResource;
+};
+
+export type य़9Response = य़9Responses[keyof य़9Responses];
 
 export type DeactivateData = {
   body?: never;
@@ -2209,6 +3571,209 @@ export type UpdateEmailConfigurationResponses = {
 export type UpdateEmailConfigurationResponse =
   UpdateEmailConfigurationResponses[keyof UpdateEmailConfigurationResponses];
 
+export type DeleteData = {
+  body?: never;
+  path: {
+    /**
+     * The id of the license profile
+     */
+    'license-profile-key': string;
+  };
+  query?: never;
+  url: '/v2/sca/license-profiles/{license-profile-key}';
+};
+
+export type DeleteResponses = {
+  /**
+   * No Content
+   */
+  204: void;
+};
+
+export type DeleteResponse = DeleteResponses[keyof DeleteResponses];
+
+export type Get1Data = {
+  body?: never;
+  path: {
+    /**
+     * The license profile key.
+     */
+    'license-profile-key': string;
+  };
+  query?: never;
+  url: '/v2/sca/license-profiles/{license-profile-key}';
+};
+
+export type Get1Responses = {
+  /**
+   * OK
+   */
+  200: LicenseProfileDetailsResource;
+};
+
+export type Get1Response = Get1Responses[keyof Get1Responses];
+
+export type UpdateData = {
+  body: LicenseProfilesUpdateRestRequest;
+  path: {
+    /**
+     * The id of the license profile
+     */
+    'license-profile-key': string;
+  };
+  query?: never;
+  url: '/v2/sca/license-profiles/{license-profile-key}';
+};
+
+export type UpdateResponses = {
+  /**
+   * OK
+   */
+  200: LicenseProfileResource;
+};
+
+export type UpdateResponse = UpdateResponses[keyof UpdateResponses];
+
+export type PatchLicenseData = {
+  body: LicensePolicyLicenseUpdateRestRequest;
+  path: {
+    /**
+     * The license profile key.
+     */
+    'license-profile-key': string;
+    /**
+     * The license ID.
+     */
+    'license-policy-id': string;
+  };
+  query?: never;
+  url: '/v2/sca/license-profiles/{license-profile-key}/licenses/{license-policy-id}';
+};
+
+export type PatchLicenseResponses = {
+  /**
+   * OK
+   */
+  200: LicensePolicyLicenseResource;
+};
+
+export type PatchLicenseResponse =
+  PatchLicenseResponses[keyof PatchLicenseResponses];
+
+export type PatchCategoryData = {
+  body: LicenseProfileCategoryUpdateRestRequest;
+  path: {
+    /**
+     * The license profile key.
+     */
+    'license-profile-key': string;
+    /**
+     * The category key.
+     */
+    'category-key':
+      | 'UNKNOWN'
+      | 'COPYLEFT_WEAK'
+      | 'COPYLEFT_STRONG'
+      | 'COPYLEFT_NETWORK'
+      | 'COPYLEFT_MAXIMAL'
+      | 'PERMISSIVE_STANDARD'
+      | 'PERMISSIVE_AMATEUR';
+  };
+  query?: never;
+  url: '/v2/sca/license-profiles/{license-profile-key}/categories/{category-key}';
+};
+
+export type PatchCategoryResponses = {
+  /**
+   * OK
+   */
+  200: LicenseProfileCategoryResource;
+};
+
+export type PatchCategoryResponse =
+  PatchCategoryResponses[keyof PatchCategoryResponses];
+
+export type Update1Data = {
+  body: AssignedProjectsUpdateRestRequest;
+  path?: never;
+  query?: never;
+  url: '/v2/sca/license-profiles/assigned-projects';
+};
+
+export type Update1Responses = {
+  /**
+   * The provided project has been assigned to the license profile.
+   */
+  200: LicenseProfileResource;
+};
+
+export type Update1Response = Update1Responses[keyof Update1Responses];
+
+export type DeleteCommentData = {
+  body?: never;
+  path: {
+    /**
+     * The key of the (issue,release) pair.
+     */
+    key: string;
+  };
+  query: {
+    /**
+     * Issue release change key
+     */
+    issueReleaseChangeKey: string;
+  };
+  url: '/v2/sca/issues-releases/{key}/changelog';
+};
+
+export type DeleteCommentResponses = {
+  /**
+   * OK
+   */
+  200: unknown;
+};
+
+export type GetChangelogData = {
+  body?: never;
+  path: {
+    /**
+     * The key of the (issue,release) pair.
+     */
+    key: string;
+  };
+  query?: never;
+  url: '/v2/sca/issues-releases/{key}/changelog';
+};
+
+export type GetChangelogResponses = {
+  /**
+   * OK
+   */
+  200: IssuesReleasesChangesRestResponse;
+};
+
+export type GetChangelogResponse =
+  GetChangelogResponses[keyof GetChangelogResponses];
+
+export type UpdateCommentData = {
+  body: IssueReleaseUpdateCommentRestRequest;
+  path: {
+    /**
+     * The key of the (issue,release) pair.
+     */
+    key: string;
+  };
+  query?: never;
+  url: '/v2/sca/issues-releases/{key}/changelog';
+};
+
+export type UpdateCommentResponses = {
+  /**
+   * OK
+   */
+  200: unknown;
+};
+
 export type GetFeatureEnablementData = {
   body?: never;
   path?: never;
@@ -2243,6 +3808,155 @@ export type UpdateFeatureEnablementResponses = {
 export type UpdateFeatureEnablementResponse =
   UpdateFeatureEnablementResponses[keyof UpdateFeatureEnablementResponses];
 
+export type य़10Data = {
+  body?: never;
+  path?: never;
+  query: {
+    jiraProjectKey: string;
+    sonarOrganizationUuid: string;
+    sonarProjectId?: string;
+    includeFields?: boolean;
+  };
+  url: '/v2/jira/work-types';
+};
+
+export type य़10Responses = {
+  /**
+   * OK
+   */
+  200: Array<JiraWorkTypeResultResource>;
+};
+
+export type य़10Response = य़10Responses[keyof य़10Responses];
+
+export type य़11Data = {
+  body: JiraWorkTypesSelectionResource;
+  path?: never;
+  query?: never;
+  url: '/v2/jira/work-types';
+};
+
+export type य़11Responses = {
+  /**
+   * OK
+   */
+  200: unknown;
+};
+
+export type GetSandboxSettingsData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: '/v2/issues/sandbox-settings';
+};
+
+export type GetSandboxSettingsResponses = {
+  /**
+   * OK
+   */
+  200: SandboxSettingsResource;
+};
+
+export type GetSandboxSettingsResponse =
+  GetSandboxSettingsResponses[keyof GetSandboxSettingsResponses];
+
+export type PatchSandboxSettingsData = {
+  body: SandboxSettingsResource;
+  path?: never;
+  query?: never;
+  url: '/v2/issues/sandbox-settings';
+};
+
+export type PatchSandboxSettingsResponses = {
+  /**
+   * OK
+   */
+  200: SandboxSettingsResource;
+};
+
+export type PatchSandboxSettingsResponse =
+  PatchSandboxSettingsResponses[keyof PatchSandboxSettingsResponses];
+
+export type GetProjectSandboxSettingsData = {
+  body?: never;
+  path: {
+    projectKey: string;
+  };
+  query?: never;
+  url: '/v2/issues/sandbox-settings/{projectKey}';
+};
+
+export type GetProjectSandboxSettingsResponses = {
+  /**
+   * OK
+   */
+  200: SandboxSettingsProjectResource;
+};
+
+export type GetProjectSandboxSettingsResponse =
+  GetProjectSandboxSettingsResponses[keyof GetProjectSandboxSettingsResponses];
+
+export type PatchProjectSandboxSettingsData = {
+  body: SandboxSettingsProjectResource;
+  path: {
+    projectKey: string;
+  };
+  query?: never;
+  url: '/v2/issues/sandbox-settings/{projectKey}';
+};
+
+export type PatchProjectSandboxSettingsResponses = {
+  /**
+   * OK
+   */
+  200: SandboxSettingsProjectResource;
+};
+
+export type PatchProjectSandboxSettingsResponse =
+  PatchProjectSandboxSettingsResponses[keyof PatchProjectSandboxSettingsResponses];
+
+export type Delete1Data = {
+  body?: never;
+  path: {
+    /**
+     * ID of the integration configuration
+     */
+    id: string;
+  };
+  query?: never;
+  url: '/v2/integrations/integration-configurations/{id}';
+};
+
+export type Delete1Responses = {
+  /**
+   * No Content
+   */
+  204: void;
+};
+
+export type Delete1Response = Delete1Responses[keyof Delete1Responses];
+
+export type Update2Data = {
+  body: IntegrationConfigurationPatchRequest;
+  path: {
+    /**
+     * ID of the integration configuration
+     */
+    id: string;
+  };
+  query?: never;
+  url: '/v2/integrations/integration-configurations/{id}';
+};
+
+export type Update2Responses = {
+  /**
+   * OK
+   */
+  200: IntegrationConfigurationResponse;
+};
+
+export type Update2Response = Update2Responses[keyof Update2Responses];
+
 export type GetFeatureEnablement1Data = {
   body?: never;
   path?: never;
@@ -2276,6 +3990,50 @@ export type UpdateFeatureEnablement1Responses = {
 
 export type UpdateFeatureEnablement1Response =
   UpdateFeatureEnablement1Responses[keyof UpdateFeatureEnablement1Responses];
+
+export type DeleteLicenseData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: '/v2/entitlements/license';
+};
+
+export type DeleteLicenseResponses = {
+  /**
+   * OK
+   */
+  200: unknown;
+};
+
+export type GetLicenseData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: '/v2/entitlements/license';
+};
+
+export type GetLicenseResponses = {
+  /**
+   * OK
+   */
+  200: LicenseRestResponse;
+};
+
+export type GetLicenseResponse = GetLicenseResponses[keyof GetLicenseResponses];
+
+export type RefreshLicenseData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: '/v2/entitlements/license';
+};
+
+export type RefreshLicenseResponses = {
+  /**
+   * OK
+   */
+  200: unknown;
+};
 
 export type DeleteMappingData = {
   body?: never;
@@ -2650,26 +4408,63 @@ export type GetHealthResponses = {
 
 export type GetHealthResponse = GetHealthResponses[keyof GetHealthResponses];
 
+export type PerformSelfTestData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: '/v2/sca/self-test';
+};
+
+export type PerformSelfTestResponses = {
+  /**
+   * OK
+   */
+  200: SelfTestResponse;
+};
+
+export type PerformSelfTestResponse =
+  PerformSelfTestResponses[keyof PerformSelfTestResponses];
+
+export type PerformSpringConfigurationSelfTestData = {
+  body?: never;
+  path?: never;
+  query: {
+    selfTestName: string;
+  };
+  url: '/v2/sca/self-test/spring-configuration';
+};
+
+export type PerformSpringConfigurationSelfTestResponses = {
+  /**
+   * OK
+   */
+  200: SelfTestSpringConfigurationResponse;
+};
+
+export type PerformSpringConfigurationSelfTestResponse =
+  PerformSpringConfigurationSelfTestResponses[keyof PerformSpringConfigurationSelfTestResponses];
+
 export type GenerateReportData = {
   body?: never;
   path?: never;
   query: {
     /**
-     * Key of the project to build report for
+     * Key of the component (project, application, portfolio) to build report for
      */
-    projectKey: string;
+    component: string;
     /**
      * Key of the branch to build report for
      */
-    branchKey?: string;
+    branch?: string;
     /**
      * Type of report to generate.
      * The `Accept` header sent by the client determines the format of the report.
      * Currently supported: cyclonedx (application/vnd.cyclonedx+json), cyclonedx (application/vnd.cyclonedx+xml),
-     * spdx (application/vnd.spdx+json), spdx (application/vnd.spdx+xml)
+     * spdx_23 (application/spdx+json), spdx_23 (application/spdx+xml),
+     * spdx_30 (application/spdx+json)
      *
      */
-    type: 'cyclonedx' | 'spdx_23';
+    type: 'cyclonedx' | 'spdx_23' | 'spdx_30';
   };
   url: '/v2/sca/sbom-reports';
 };
@@ -2684,20 +4479,49 @@ export type GenerateReportResponses = {
 export type GenerateReportResponse =
   GenerateReportResponses[keyof GenerateReportResponses];
 
+export type GetReportData = {
+  body?: never;
+  path?: never;
+  query: {
+    /**
+     * Key of the component (project, application, portfolio) to build report for
+     */
+    component: string;
+    /**
+     * Key of the branch to build report for
+     */
+    branch?: string;
+    /**
+     * Type of risk to filter the report by. If not provided, all risks types are included.
+     */
+    riskType?: 'VULNERABILITY' | 'PROHIBITED_LICENSE';
+  };
+  url: '/v2/sca/risk-reports';
+};
+
+export type GetReportResponses = {
+  /**
+   * The report in the desired output format
+   */
+  200: Array<RiskReportItem>;
+};
+
+export type GetReportResponse = GetReportResponses[keyof GetReportResponses];
+
 export type Search3Data = {
   body?: never;
   path?: never;
   query: {
     /**
-     * Key of the project to fetch all dependencies from
+     * Key of the component (project, application, or portfolio) to fetch all dependencies from
      */
     projectKey: string;
     /**
-     * Key of the Branch to fetch all dependencies from. If not provided, the default branch will be used unless a Pull Request Key is provided.
+     * Key of the branch to fetch all dependencies from. If not provided, the default branch will be used unless a pull request key is provided.
      */
     branchKey?: string;
     /**
-     * Key of the Pull Request to fetch all dependencies from.
+     * Key of the pull request to fetch all dependencies from.
      */
     pullRequestKey?: string;
     /**
@@ -2705,9 +4529,9 @@ export type Search3Data = {
      */
     direct?: boolean;
     /**
-     * Filter on the newInPullRequest attribute. TRUE stands for only releases introduced vs. the target branch, FALSE for releases shared with target.
+     * Filter on the newlyIntroduced attribute. TRUE stands for only releases introduced vs. the target branch, FALSE for releases shared with target.
      */
-    newInPullRequest?: boolean;
+    newlyIntroduced?: boolean;
     /**
      * Filter on the productionScope attribute. TRUE stands for only production dependencies, FALSE for only not in production. If a release is both, it matches both.
      */
@@ -2763,54 +4587,64 @@ export type FetchReleaseResponses = {
 export type FetchReleaseResponse =
   FetchReleaseResponses[keyof FetchReleaseResponses];
 
+export type Index1Data = {
+  body?: never;
+  path?: never;
+  query: {
+    /**
+     * The key of the license profile whose assignable projects should be retrieved.
+     *
+     */
+    licenseProfileUuid: string;
+    /**
+     *   Providing this parameter filters by whether projects are assigned to the license profile or not.
+     * Omitting this parameter includes all projects which can be assigned to the license profile,
+     * regardless of whether they are already assigned to the license profile.
+     *
+     */
+    assignedToLicenseProfile?: boolean;
+    /**
+     *   Providing this parameter performs a partial match (contains and case insensitive) on the project name.
+     *
+     */
+    q?: string;
+    /**
+     * Number of results per page. A value of 0 will only return the pagination information.
+     */
+    pageSize?: number;
+    /**
+     * 1-based page index
+     */
+    pageIndex?: number;
+  };
+  url: '/v2/sca/license-profiles/assignable-projects';
+};
+
+export type Index1Responses = {
+  /**
+   * OK
+   */
+  200: AssignableProjectsIndexRestResponse;
+};
+
+export type Index1Response = Index1Responses[keyof Index1Responses];
+
 export type Search4Data = {
   body?: never;
   path?: never;
   query: {
     /**
-     * Key of the project to fetch all dependency risks from
+     * Key of the component (project, application, portfolio) to fetch all dependency risks from.
      */
     projectKey: string;
     /**
-     * Key of the branch to fetch all dependency risks from. If not provided, the default branch will be used unless a Pull Request Key is provided.
+     * Key of the branch to fetch all dependency risks from. If not provided, the default branch will be used unless a pull request key is provided.
      */
     branchKey?: string;
     /**
-     * Key of the Pull Request to fetch all dependency risks from.
+     * Key of the pull request to fetch all dependency risks from.
      */
     pullRequestKey?: string;
-    /**
-     * Filter on the package manager
-     */
-    packageManagers?: Array<string>;
-    /**
-     * Filter on the issue type
-     */
-    types?: Array<string>;
-    /**
-     * Filter on the severity
-     */
-    severities?: Array<string>;
-    /**
-     * Filter on the package name This parameter performs a partial match (contains and case insensitive) on the package name.
-     */
-    packageName?: string;
-    /**
-     * Filter on the vulnerability IDThis parameter performs a partial match (contains and case insensitive) on the vulnerability ID.
-     */
-    vulnerabilityId?: string;
-    /**
-     * Filter on the newInPullRequest attribute. TRUE stands for only releases introduced vs. the target branch, FALSE for releases shared with target.
-     */
-    newInPullRequest?: boolean;
-    /**
-     * Filter on the direct attribute. TRUE stands for only direct dependencies, FALSE for only transitive. If a release is both, it matches both.
-     */
-    direct?: boolean;
-    /**
-     * Filter on the productionScope attribute. TRUE stands for only production dependencies, FALSE for only not in production. If a release is both, it matches both.
-     */
-    productionScope?: boolean;
     /**
      * Sort order
      */
@@ -2821,6 +4655,58 @@ export type Search4Data = {
       | '-severity'
       | '+cvssScore'
       | '-cvssScore';
+    /**
+     * Filter on the package manager
+     */
+    packageManagers?: Array<string>;
+    /**
+     * Filter on the issue type
+     */
+    types?: Array<string>;
+    /**
+     * Filter on the quality domain
+     */
+    qualities?: Array<string>;
+    /**
+     * Filter on the severity
+     */
+    severities?: Array<string>;
+    /**
+     * Filter on the status
+     */
+    statuses?: Array<string>;
+    /**
+     * Filter on the package name. This parameter performs a partial match (contains and case insensitive) on the package name.
+     */
+    packageName?: string;
+    /**
+     * Filter on the vulnerability ID. This parameter performs a partial match (contains and case insensitive) on the vulnerability ID.
+     */
+    vulnerabilityId?: string;
+    /**
+     * Filter on the isNew attribute. TRUE stands for only releases introduced vs. the target branch, FALSE for releases shared with target.
+     */
+    newlyIntroduced?: boolean;
+    /**
+     * Filter on the direct attribute. TRUE stands for only direct dependencies, FALSE for only transitive. If a release is both, it matches both.
+     */
+    direct?: boolean;
+    /**
+     * Filter on the productionScope attribute. TRUE stands for only production dependencies, FALSE for only not in production. If a release is both, it matches both.
+     */
+    productionScope?: boolean;
+    /**
+     * Filter on assignee logins.
+     */
+    assignees?: Array<string>;
+    /**
+     * Filter on project keys.
+     */
+    projects?: Array<string>;
+    /**
+     * Filter on whether the issue is assigned or not.
+     */
+    assigned?: boolean;
     /**
      * Number of results per page. A value of 0 will only return the pagination information.
      */
@@ -2837,12 +4723,12 @@ export type Search4Responses = {
   /**
    * OK
    */
-  200: DependencyRisksSearchRestResponse;
+  200: IssuesReleasesSearchRestResponse;
 };
 
 export type Search4Response = Search4Responses[keyof Search4Responses];
 
-export type FetchDependencyRiskData = {
+export type FetchIssueReleaseData = {
   body?: never;
   path: {
     /**
@@ -2854,15 +4740,79 @@ export type FetchDependencyRiskData = {
   url: '/v2/sca/issues-releases/{key}';
 };
 
-export type FetchDependencyRiskResponses = {
+export type FetchIssueReleaseResponses = {
   /**
    * OK
    */
-  200: DependencyRiskDetailsResource;
+  200: IssueReleaseDetailsResource;
 };
 
-export type FetchDependencyRiskResponse =
-  FetchDependencyRiskResponses[keyof FetchDependencyRiskResponses];
+export type FetchIssueReleaseResponse =
+  FetchIssueReleaseResponses[keyof FetchIssueReleaseResponses];
+
+export type GetAllAssigneesData = {
+  body?: never;
+  path?: never;
+  query: {
+    /**
+     * Key of the project to fetch all assignee users from.
+     */
+    projectKey: string;
+    /**
+     * Key of the branch to fetch all assignee users from. If not provided, the default branch will be used unless a pull request key is provided.
+     */
+    branchKey?: string;
+    /**
+     * Key of the pull request to fetch all assignee users from.
+     */
+    pullRequestKey?: string;
+  };
+  url: '/v2/sca/issues-releases/all-assignees';
+};
+
+export type GetAllAssigneesResponses = {
+  /**
+   * OK
+   */
+  200: Array<UserResource>;
+};
+
+export type GetAllAssigneesResponse =
+  GetAllAssigneesResponses[keyof GetAllAssigneesResponses];
+
+export type GetFeatureEnabledData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: '/v2/sca/enabled';
+};
+
+export type GetFeatureEnabledResponses = {
+  /**
+   * OK
+   */
+  200: ScaFeatureEnabledResource;
+};
+
+export type GetFeatureEnabledResponse =
+  GetFeatureEnabledResponses[keyof GetFeatureEnabledResponses];
+
+export type GetFeatureEnabled1Data = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: '/v2/sca/feature-enabled';
+};
+
+export type GetFeatureEnabled1Responses = {
+  /**
+   * OK
+   */
+  200: ScaFeatureEnabledResource;
+};
+
+export type GetFeatureEnabled1Response =
+  GetFeatureEnabled1Responses[keyof GetFeatureEnabled1Responses];
 
 export type GetScaClisMetadataData = {
   body?: never;
@@ -2906,11 +4856,148 @@ export type DownloadScaCliResponses = {
   /**
    * OK
    */
-  200: ScaCliInfoRestResponse | Blob | File;
+  200: ScaCliInfoRestResponse;
 };
 
 export type DownloadScaCliResponse =
   DownloadScaCliResponses[keyof DownloadScaCliResponses];
+
+export type FetchAnalysisData = {
+  body?: never;
+  path?: never;
+  query: {
+    /**
+     * Key of the project to fetch analysis status from
+     */
+    projectKey: string;
+    /**
+     * Key of the branch to fetch analysis status from. If not provided, the default branch will be used unless a pull request key is provided.
+     */
+    branchKey?: string;
+    /**
+     * Key of the pull request to fetch analysis status from.
+     */
+    pullRequestKey?: string;
+  };
+  url: '/v2/sca/analyses';
+};
+
+export type FetchAnalysisResponses = {
+  /**
+   * OK
+   */
+  200: AnalysisResource;
+};
+
+export type FetchAnalysisResponse =
+  FetchAnalysisResponses[keyof FetchAnalysisResponses];
+
+export type य़12Data = {
+  body?: never;
+  path?: never;
+  query: {
+    sonarProjectId: string;
+  };
+  url: '/v2/jira/user-actions';
+};
+
+export type य़12Responses = {
+  /**
+   * OK
+   */
+  200: Array<string>;
+};
+
+export type य़12Response = य़12Responses[keyof य़12Responses];
+
+export type य़13Data = {
+  body?: never;
+  path?: never;
+  query: {
+    sonarOrganizationUuid: string;
+  };
+  url: '/v2/jira/projects';
+};
+
+export type य़13Responses = {
+  /**
+   * OK
+   */
+  200: Array<JiraProjectResultResource>;
+};
+
+export type य़13Response = य़13Responses[keyof य़13Responses];
+
+export type य़14Data = {
+  body?: never;
+  path: {
+    sonarProjectId: string;
+  };
+  query?: never;
+  url: '/v2/jira/linked-issues-count/{sonarProjectId}';
+};
+
+export type य़14Responses = {
+  /**
+   * OK
+   */
+  200: LinkedIssuesCountResource;
+};
+
+export type य़14Response = य़14Responses[keyof य़14Responses];
+
+export type GetUserBindingData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: '/v2/integrations/user-bindings/{id}';
+};
+
+export type GetUserBindingErrors = {
+  /**
+   * Authentication required
+   */
+  401: unknown;
+  /**
+   * Insufficient permissions
+   */
+  403: unknown;
+  /**
+   * User binding not found
+   */
+  404: unknown;
+  /**
+   * Internal server error
+   */
+  500: unknown;
+};
+
+export type GetUserBindingResponses = {
+  /**
+   * User binding retrieved successfully
+   */
+  200: UserBindingResponse;
+};
+
+export type GetUserBindingResponse =
+  GetUserBindingResponses[keyof GetUserBindingResponses];
+
+export type SupportedRulesData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: '/v2/fix-suggestions/supported-rules';
+};
+
+export type SupportedRulesResponses = {
+  /**
+   * OK
+   */
+  200: SupportedRulesDto;
+};
+
+export type SupportedRulesResponse =
+  SupportedRulesResponses[keyof SupportedRulesResponses];
 
 export type GetLlmProvidersData = {
   body?: never;
@@ -2929,40 +5016,23 @@ export type GetLlmProvidersResponses = {
 export type GetLlmProvidersResponse =
   GetLlmProvidersResponses[keyof GetLlmProvidersResponses];
 
-export type GetData = {
+export type Get2Data = {
   body?: never;
   path?: never;
   query?: never;
   url: '/v2/fix-suggestions/service-info';
 };
 
-export type GetResponses = {
+export type Get2Responses = {
   /**
    * OK
    */
   200: ServiceInfo;
 };
 
-export type GetResponse = GetResponses[keyof GetResponses];
+export type Get2Response = Get2Responses[keyof Get2Responses];
 
-export type GetSubscriptionTypeData = {
-  body?: never;
-  path?: never;
-  query?: never;
-  url: '/v2/fix-suggestions/service-info/subscription-type';
-};
-
-export type GetSubscriptionTypeResponses = {
-  /**
-   * OK
-   */
-  200: SubscriptionTypeResponse;
-};
-
-export type GetSubscriptionTypeResponse =
-  GetSubscriptionTypeResponses[keyof GetSubscriptionTypeResponses];
-
-export type Get1Data = {
+export type Get3Data = {
   body?: never;
   path: {
     issueId: string;
@@ -2971,14 +5041,31 @@ export type Get1Data = {
   url: '/v2/fix-suggestions/issues/{issueId}';
 };
 
-export type Get1Responses = {
+export type Get3Responses = {
   /**
    * OK
    */
   200: FixSuggestionIssueResponse;
 };
 
-export type Get1Response = Get1Responses[keyof Get1Responses];
+export type Get3Response = Get3Responses[keyof Get3Responses];
+
+export type GetPurchasableFeaturesData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: '/v2/entitlements/purchasable-features';
+};
+
+export type GetPurchasableFeaturesResponses = {
+  /**
+   * OK
+   */
+  200: Array<PurchasableFeatureRestResponse>;
+};
+
+export type GetPurchasableFeaturesResponse =
+  GetPurchasableFeaturesResponses[keyof GetPurchasableFeaturesResponses];
 
 export type GetProjectBindingByProjectIdData = {
   body?: never;
@@ -2994,6 +5081,12 @@ export type GetProjectBindingByProjectIdData = {
      * Filter on the DevOps Platform setting id.
      */
     dopSettingId?: string;
+    /**
+     * Filter on the repository URL.
+     * This parameter can be in different formats, the traditional URL or the git remote URL (https or ssh).
+     *
+     */
+    repositoryUrl?: string;
     /**
      * Number of results per page. A value of 0 will only return the pagination information.
      */
@@ -3055,7 +5148,72 @@ export type FetchAllDopSettingsResponses = {
 export type FetchAllDopSettingsResponse =
   FetchAllDopSettingsResponses[keyof FetchAllDopSettingsResponses];
 
-export type 踼Data = {
+export type य़15Data = {
+  body?: never;
+  path?: never;
+  query: {
+    sonarOrganizationKey: string;
+    sonarOrganizationUuid: string;
+  };
+  url: '/v2/atlassian/auth-url';
+};
+
+export type य़15Responses = {
+  /**
+   * OK
+   */
+  200: string;
+};
+
+export type य़15Response = य़15Responses[keyof य़15Responses];
+
+export type य़16Data = {
+  body?: never;
+  path?: never;
+  query: {
+    /**
+     * The key of the project.
+     */
+    projectKey: string;
+    /**
+     * The key of the branch.
+     */
+    branchKey: string;
+  };
+  url: '/v2/architecture/graphs';
+};
+
+export type य़16Responses = {
+  /**
+   * OK
+   */
+  200: P;
+};
+
+export type य़16Response = य़16Responses[keyof य़16Responses];
+
+export type य़17Data = {
+  body?: never;
+  path: {
+    /**
+     * id of the graph data.
+     */
+    id: string;
+  };
+  query?: never;
+  url: '/v2/architecture/graphs/{id}';
+};
+
+export type य़17Responses = {
+  /**
+   * OK
+   */
+  200: string;
+};
+
+export type य़17Response = य़17Responses[keyof य़17Responses];
+
+export type य़18Data = {
   body?: never;
   path?: never;
   query: {
@@ -3075,14 +5233,14 @@ export type 踼Data = {
   url: '/v2/architecture/file-graph';
 };
 
-export type 踼Responses = {
+export type य़18Responses = {
   /**
    * OK
    */
   200: string;
 };
 
-export type 踼Response = 踼Responses[keyof 踼Responses];
+export type य़18Response = य़18Responses[keyof य़18Responses];
 
 export type GetVersionData = {
   body?: never;
@@ -3142,7 +5300,7 @@ export type DownloadJreResponses = {
   /**
    * OK
    */
-  200: JreInfoRestResponse | Blob | File;
+  200: JreInfoRestResponse;
 };
 
 export type DownloadJreResponse =
@@ -3159,7 +5317,7 @@ export type DownloadScannerEngineResponses = {
   /**
    * OK
    */
-  200: EngineInfoRestResponse | Blob | File;
+  200: EngineInfoRestResponse;
 };
 
 export type DownloadScannerEngineResponse =
@@ -3187,7 +5345,25 @@ export type GetActiveRulesResponses = {
 export type GetActiveRulesResponse =
   GetActiveRulesResponses[keyof GetActiveRulesResponses];
 
-export type DeleteData = {
+export type Delete2Data = {
+  body?: never;
+  path: {
+    'project-key': string;
+  };
+  query?: never;
+  url: '/v2/sca/license-profiles/assigned-projects/{project-key}';
+};
+
+export type Delete2Responses = {
+  /**
+   * No Content
+   */
+  204: void;
+};
+
+export type Delete2Response = Delete2Responses[keyof Delete2Responses];
+
+export type Delete3Data = {
   body?: never;
   path: {
     /**
@@ -3199,14 +5375,14 @@ export type DeleteData = {
   url: '/v2/authorizations/group-memberships/{id}';
 };
 
-export type DeleteResponses = {
+export type Delete3Responses = {
   /**
    * No Content
    */
   204: void;
 };
 
-export type DeleteResponse = DeleteResponses[keyof DeleteResponses];
+export type Delete3Response = Delete3Responses[keyof Delete3Responses];
 
 export type SearchIssuesData = {
   body?: never;
@@ -3814,5 +5990,5 @@ export type GetAListOfProjectsAndLicenseUsageResponse =
   GetAListOfProjectsAndLicenseUsageResponses[keyof GetAListOfProjectsAndLicenseUsageResponses];
 
 export type ClientOptions = {
-  baseUrl: 'http://sonarqube.internal.philips/api/v2' | (string & {});
+  baseUrl: 'http://next.sonarqube.com/sonarqube/api/v2' | (string & {});
 };

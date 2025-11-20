@@ -7,11 +7,10 @@ info:
 
 
     The SonarQube API v2 is a REST API which enables you to interact with
-    SonarQube programmatically. Endpoint listed here should work as expected.
+    SonarQube programmatically.
 
-    However, you should not consider the API stable for now as it is still under
-    development. New releases of SonarQube can bring changes to existing
-    endpoint definitions.
+    While not all endpoints of the former Web API are available yet, the ones
+    available are stable and can be used in production environments.
 
 
     # SonarQube V1 API
@@ -19,7 +18,7 @@ info:
 
     API definition for Sonarqube Server v1 API
 servers:
-  - url: 'http://sonarqube.internal.philips/api/v2'
+  - url: 'http://next.sonarqube.com/sonarqube/api/v2'
     description: Generated server url
 tags:
   - name: project
@@ -30,7 +29,7 @@ paths:
   /v2/users-management/users:
     get:
       tags:
-        - user-controller
+        - Users Management
       summary: Users search
       description: |2
           Get a list of users. By default, only active users are returned.
@@ -173,6 +172,8 @@ paths:
               Filter users belonging to group. Only available for system
               administrators. Using != operator will exclude users from this
               group.
+            internal: 'true'
+          x-internal: 'true'
         - name: pageSize
           in: query
           description: >-
@@ -197,6 +198,7 @@ paths:
             format: int32
             default: 1
             description: 1-based page index
+            exclusiveMinimum: 0
             minimum: 1
       responses:
         '200':
@@ -207,7 +209,7 @@ paths:
                 $ref: '#/components/schemas/UsersSearchRestResponse'
     post:
       tags:
-        - user-controller
+        - Users Management
       summary: User creation
       description: |2
           Create a user.
@@ -230,7 +232,7 @@ paths:
   /v2/system/email-configurations:
     get:
       tags:
-        - email-configuration-controller
+        - System
       summary: Search email configurations
       description: |2
           Get the list of email configurations.
@@ -247,7 +249,7 @@ paths:
       x-sonar-internal: 'true'
     post:
       tags:
-        - email-configuration-controller
+        - System
       summary: Create an email configuration
       description: |2
           Create a new email configuration.
@@ -268,10 +270,602 @@ paths:
               schema:
                 $ref: '#/components/schemas/EmailConfigurationResource'
       x-sonar-internal: 'true'
+  /v2/sca/license-profiles:
+    get:
+      tags:
+        - License Profiles
+      summary: List license profiles
+      description: |2
+          List the license profiles that have been configured for use when evaluating license issues.
+      operationId: index
+      parameters:
+        - name: projectKey
+          in: query
+          description: >
+            If provided, filter to the license profile that is used to analyze
+            the project (if one exists).
+          required: false
+          schema:
+            type: string
+            description: >
+              If provided, filter to the license profile that is used to analyze
+              the project (if one exists).
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LicenseProfileIndexRestResponse'
+      x-sonar-internal: 'true'
+    post:
+      tags:
+        - License Profiles
+      summary: Create new license profile
+      description: |2
+          Create a new license profile for projects to use when evaluating license issues.
+      operationId: create_1
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LicenseProfilesCreateRestRequest'
+        required: true
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LicenseProfileResource'
+      x-sonar-internal: 'true'
+  /v2/sca/issues-releases/update-assignee:
+    post:
+      tags:
+        - Issues-Releases
+      summary: 'Update the assignee of an (issue,release) pair'
+      description: |
+        Update the assignee of an (issue,release) pair (dependency risk).
+
+        This is an internal API and is subject to change without notice.
+      operationId: updateAssignee
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateAssigneeRestRequest'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IssueReleaseDetailsResource'
+      x-sonar-internal: 'true'
+  /v2/sca/issues-releases/set-severity:
+    post:
+      tags:
+        - Issues-Releases
+      summary: Manually change the severity of an issue-release pair
+      description: |
+        Change the severity of a (issue,release) pair (dependency risk).
+
+        This is an internal API and is subject to change without notice.
+      operationId: setSeverity
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IssueReleaseSetSeverityRestRequest'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IssueReleaseDetailsResource'
+      x-sonar-internal: 'true'
+  /v2/sca/issues-releases/clear-severity-warning:
+    post:
+      tags:
+        - Issues-Releases
+      summary: >-
+        Dismiss the increased severity warning for an issue-release pair after
+        reviewing the warning
+      description: >
+        Dismiss the increased severity warning for an (issue,release) pair
+        (dependency risk) after reviewing the warning.
+
+
+        This is an internal API and is subject to change without notice.
+      operationId: clearSeverityWarning
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IssueReleaseClearSeverityWarningRestRequest'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IssueReleaseDetailsResource'
+      x-sonar-internal: 'true'
+  /v2/sca/issues-releases/change-status:
+    post:
+      tags:
+        - Issues-Releases
+      summary: Transition an issue-release pair to a new status
+      description: >
+        Transition a single (issue,release) pair (dependency risk) to a new
+        status with a comment about why the status is changing.
+
+
+        This is an internal API and is subject to change without notice.
+      operationId: transitionIssueRelease
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IssueReleaseStatusTransitionRequest'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IssueReleaseDetailsResource'
+      x-sonar-internal: 'true'
+  /v2/sca/issues-releases/add-comment:
+    post:
+      tags:
+        - Issues-Releases
+      summary: Add a comment to an issue-release pair
+      description: |
+        Add a comment to a (issue,release) pair (dependency risk).
+
+        This is an internal API and is subject to change without notice.
+      operationId: addComment
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IssueReleaseAddCommentRestRequest'
+        required: true
+      responses:
+        '200':
+          description: OK
+      x-sonar-internal: 'true'
+  /v2/marketplace/azure/billing:
+    post:
+      tags:
+        - Marketplace Azure
+      summary: Bills user's Azure account with the cost of SonarQube Server license
+      description: >-
+        Used by admin to bill user's Azure account with the cost of SonarQube
+        Server license.
+      operationId: billAzureAccount
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AzureBillingRestResponse'
+  /v2/jira/work-items:
+    get:
+      tags:
+        - Jira
+      summary: Fetch Jira work items
+      description: |
+        Fetch the Jira work items for a specific Sonar project and resource.
+        Accepts only authenticated requests.
+      operationId: य़
+      parameters:
+        - name: sonarProjectId
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: resourceId
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: resourceType
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - SONAR_ISSUE
+              - DEPENDENCY_RISK
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JiraWorkItemResource'
+      x-sonar-internal: 'true'
+    post:
+      tags:
+        - Jira
+      summary: Create Jira work item
+      description: >
+        Create a Jira work item for a specific resource.
+
+        Accepts only authenticated requests with issue administration
+        permission.
+      operationId: य़_1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostJiraWorkItemRequestResource'
+        required: true
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JiraWorkItemResource'
+      x-sonar-internal: 'true'
+    delete:
+      tags:
+        - Jira
+      summary: Delete Jira work items
+      description: |
+        Delete the Jira work items associated with a specific resource.
+      operationId: 곳
+      parameters:
+        - name: sonarProjectId
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: resourceId
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: resourceType
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - SONAR_ISSUE
+              - DEPENDENCY_RISK
+      responses:
+        '204':
+          description: No Content
+      x-sonar-internal: 'true'
+  /v2/jira/project-bindings:
+    get:
+      tags:
+        - Jira
+      summary: Fetch Jira project bindings
+      description: |
+        Fetch the Jira project binding for a specific Sonar project.
+        Accepts only authenticated requests.
+      operationId: य़_2
+      parameters:
+        - name: sonarProjectId
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JiraProjectBindingResource'
+      x-sonar-internal: 'true'
+    post:
+      tags:
+        - Jira
+      summary: Create or update Jira project binding
+      description: |
+        Create or update a Jira project binding for a specific Sonar project.
+        Accepts only authenticated requests.
+      operationId: य़_3
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostJiraProjectBindingRequestResource'
+        required: true
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JiraProjectBindingResource'
+      x-sonar-internal: 'true'
+    delete:
+      tags:
+        - Jira
+      summary: Delete Jira project binding
+      description: |
+        Delete the Jira project binding for a specific Sonar project.
+        Accepts only authenticated requests.
+      operationId: 곳_1
+      parameters:
+        - name: sonarProjectId
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: No Content
+      x-sonar-internal: 'true'
+    patch:
+      tags:
+        - Jira
+      summary: Update Jira project binding
+      description: |
+        Update an existing Jira project binding for a specific Sonar project.
+        Accepts only authenticated requests.
+      operationId: य़_4
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchJiraProjectBindingRequestResource'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JiraProjectBindingResource'
+      x-sonar-internal: 'true'
+  /v2/jira/organization-bindings:
+    get:
+      tags:
+        - Jira
+      summary: Fetch the Jira instance binding
+      description: |
+        Fetch the Jira instance binding.
+        Requires global administrator permission.
+      operationId: य़_5
+      parameters:
+        - name: sonarOrganizationUuid
+          in: query
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JiraOrganizationBindingResource'
+      x-sonar-internal: 'true'
+    post:
+      tags:
+        - Jira
+      summary: Create a new Jira instance binding
+      description: >
+        Receives the 3LO state and authorization code parameters and attempts to
+        create an instance binding.
+
+        If successful, returns the binding. Otherwise, returns a list of
+        available resources.
+
+        Requires global administrator permission.
+      operationId: य़_6
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostJiraOrganizationBindingRequestResource'
+        required: true
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: >-
+                  #/components/schemas/PostJiraOrganizationBindingResponseResource
+      x-sonar-internal: 'true'
+    delete:
+      tags:
+        - Jira
+      summary: Delete the Jira instance binding
+      description: |
+        Deletes the Jira instance binding from the database.
+        Requires global administrator permission.
+      operationId: 곳_2
+      parameters:
+        - name: sonarOrganizationUuid
+          in: query
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: No Content
+      x-sonar-internal: 'true'
+    patch:
+      tags:
+        - Jira
+      summary: >-
+        Binds the specified pending instance binding with the specified jira
+        cloud ID
+      description: >
+        Binds the specified pending instance binding with the specified jira
+        cloud ID
+      operationId: य़_7
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchJiraOrganizationBindingRequestResource'
+        required: true
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JiraOrganizationBindingResource'
+      x-sonar-internal: 'true'
+  /v2/integrations/user-bindings:
+    post:
+      tags:
+        - Slack User Bindings
+      summary: Create Slack user binding
+      description: >
+        Creates a new user binding between a SonarQube user and their Slack
+        account.
+
+        This endpoint is used during the Slack OAuth flow when users connect
+        their accounts
+
+        via the /sonarqube-server connect slash command.
+      operationId: createUserBinding
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserBindingCreationRequest'
+        required: true
+      responses:
+        '201':
+          description: User binding created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserBindingResponse'
+        '400':
+          description: Invalid request data
+        '401':
+          description: Authentication required
+        '403':
+          description: Insufficient permissions
+        '409':
+          description: User binding already exists
+        '500':
+          description: Internal server error
+      x-sonar-internal: 'true'
+  /v2/integrations/slack/slash-commands:
+    post:
+      tags:
+        - slack-slash-command-controller
+      summary: Handle Slack Slash Commands
+      description: >
+        Handles incoming Slack slash command requests and command processing.
+
+        The request body is form-encoded and contains command details. Signature
+        validation is performed via
+
+        SlackSlashCommandSignatureValidationAdvice before reaching this
+        controller.
+      operationId: handleSlashCommand
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: string
+        required: true
+      responses:
+        '200':
+          description: OK
+      x-sonar-internal: 'true'
+  /v2/integrations/slack/events:
+    post:
+      tags:
+        - slack-event-controller
+      summary: Handle Slack Events API
+      description: >
+        Handles incoming Slack Events API requests including URL verification
+        and workspace lifecycle events.
+
+        The request body is JSON and contains event details. Signature
+        validation is performed via
+
+        SlackEventsSignatureValidationAdvice before reaching this controller.
+      operationId: handleEvent
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+      x-sonar-internal: 'true'
+  /v2/integrations/integration-configurations:
+    get:
+      tags:
+        - integration-configurations-controller
+      summary: Get integration configurations.
+      description: Requires global administrator permission.
+      operationId: get
+      parameters:
+        - name: integrationType
+          in: query
+          description: Integration type
+          required: true
+          schema:
+            type: string
+            enum:
+              - SLACK
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IntegrationConfigurationSearchResponse'
+      x-sonar-internal: 'true'
+    post:
+      tags:
+        - integration-configurations-controller
+      summary: Create a configuration for an integration.
+      description: Requires global administrator permission.
+      operationId: create_2
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IntegrationConfigurationPostRequest'
+        required: true
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IntegrationConfigurationResponse'
+      x-sonar-internal: 'true'
   /v2/fix-suggestions/feature-enablements/awareness-banner-interactions:
     post:
       tags:
-        - feature-enablement-controller
+        - Fix Suggestions
       summary: Starts a GitLab synchronization run.
       operationId: createAwarenessBannerClicked
       requestBody:
@@ -291,10 +885,10 @@ paths:
   /v2/fix-suggestions/ai-suggestions:
     post:
       tags:
-        - fix-suggestion-controller
+        - Fix Suggestions
       summary: Suggest a fix for the given issueId
       description: Requires Code Viewer permission.
-      operationId: create_1
+      operationId: create_3
       requestBody:
         content:
           application/json:
@@ -308,14 +902,116 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FixSuggestionResponse'
+  /v2/entitlements/online-activation:
+    post:
+      tags:
+        - Entitlements
+      summary: Sets the license
+      description: |2
+          Only third party license keys are accepted.
+          Requires 'Administer System' permission.
+      operationId: setLicense
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LicenseRestRequest'
+        required: true
+      responses:
+        '200':
+          description: OK
+      x-sonar-internal: 'true'
+  /v2/entitlements/offline-deactivation:
+    post:
+      tags:
+        - Entitlements
+      summary: Deactivates offline license
+      description: |2
+          This method is for users who activated the license using offline method. It should be used to
+          fully deactivate the license (i.e. in cases of migrating the installation to a new server).
+      operationId: deactivateLicense
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+                format: binary
+      x-sonar-internal: 'true'
+  /v2/entitlements/offline-activation:
+    get:
+      tags:
+        - Entitlements
+      summary: Retrieve a valid .req file for offline activation
+      description: |2
+          Retrieves a .req file for offline activation of a license.
+          Requires 'Administer System' permission.
+      operationId: retrieveRequestFile
+      parameters:
+        - name: License-Key
+          in: header
+          description: >-
+            The unique license key associated with the license, in the format
+            'ABCD-EFGH-IJKL-MNOP'. Required in the 'License-Key' HTTP header for
+            offline activation.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+                format: binary
+      x-sonar-internal: 'true'
+    post:
+      tags:
+        - Entitlements
+      summary: Uploads a license
+      description: |2
+          The content of the request body should be the text of the license file, along with a valid license key.
+          Requires 'Administer System' permission.
+      operationId: uploadLicense
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LicenseUploadActivationRequest'
+        required: true
+      responses:
+        '200':
+          description: OK
+      x-sonar-internal: 'true'
+  /v2/entitlements/legacy-activation:
+    post:
+      tags:
+        - Entitlements
+      summary: Sets the license
+      description: |2
+          Only license keys received from Sonar are accepted.
+          Requires 'Administer System' permission.
+      operationId: setLegacyLicense
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LegacyLicenseRestRequest'
+        required: true
+      responses:
+        '200':
+          description: OK
+      x-sonar-internal: 'true'
   /v2/dop-translation/gitlab-synchronization-runs:
     post:
       tags:
-        - gitlab-synchronization-run-controller
+        - Dop Translation
       summary: Starts a GitLab synchronization run.
       description: |2
           Adds a new GitLab synchronization run in the background tasks. Requires sys-admins permissions.
-      operationId: create_2
+      operationId: create_4
       responses:
         '200':
           description: OK
@@ -327,7 +1023,7 @@ paths:
   /v2/dop-translation/gitlab-permission-mappings:
     get:
       tags:
-        - gitlab-permission-mappings-controller
+        - Dop Translation
       summary: Fetch permissions mapping
       description: >-
         Get the list of all the existing roles with their permission mappings.
@@ -343,7 +1039,7 @@ paths:
       x-sonar-internal: 'true'
     post:
       tags:
-        - gitlab-permission-mappings-controller
+        - Dop Translation
       summary: Create a permission mapping for a custom role
       description: Requires 'Administer System' permission.
       operationId: createMapping
@@ -364,7 +1060,7 @@ paths:
   /v2/dop-translation/gitlab-configurations:
     get:
       tags:
-        - gitlab-configuration-controller
+        - Dop Translation
       summary: Search GitLab configs
       description: |2
           Get the list of GitLab configurations.
@@ -381,13 +1077,13 @@ paths:
       x-sonar-internal: 'true'
     post:
       tags:
-        - gitlab-configuration-controller
+        - Dop Translation
       summary: Create Gitlab configuration
       description: |2
           Create a new Gitlab configuration.
           Note that only a single configuration can exist at a time.
           Requires 'Administer System' permission.
-      operationId: create_3
+      operationId: create_5
       requestBody:
         content:
           application/json:
@@ -405,7 +1101,7 @@ paths:
   /v2/dop-translation/github-permission-mappings:
     get:
       tags:
-        - github-permission-mappings-controller
+        - Dop Translation
       summary: Fetch permissions mapping
       description: >-
         Get the list of all the existing roles with their permission mappings.
@@ -421,7 +1117,7 @@ paths:
       x-sonar-internal: 'true'
     post:
       tags:
-        - github-permission-mappings-controller
+        - Dop Translation
       summary: Create a permission mapping for a custom role
       description: Requires 'Administer System' permission.
       operationId: createMapping_1
@@ -442,7 +1138,7 @@ paths:
   /v2/dop-translation/github-configurations:
     get:
       tags:
-        - github-configuration-controller
+        - Dop Translation
       summary: Search GitHub configs
       description: |2
           Get the list of GitHub configurations.
@@ -459,7 +1155,7 @@ paths:
       x-sonar-internal: 'true'
     post:
       tags:
-        - github-configuration-controller
+        - Dop Translation
       summary: Create GitHub configuration
       description: |2
           Create a new GitHub configuration.
@@ -483,7 +1179,7 @@ paths:
   /v2/dop-translation/bound-projects:
     post:
       tags:
-        - bound-projects-controller
+        - Dop Translation
       summary: >-
         Create a SonarQube project with the information from the provided DevOps
         platform project.
@@ -513,12 +1209,12 @@ paths:
   /v2/clean-code-policy/rules:
     post:
       tags:
-        - rule-controller
+        - Clean Code Policy
       summary: Custom rule creation
       description: |2
           Create a custom rule.
           Requires the 'Administer Quality Profiles' permission.
-      operationId: create_4
+      operationId: create_6
       requestBody:
         content:
           application/json:
@@ -532,10 +1228,11 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RuleRestResponse'
+      x-internal: 'true'
   /v2/authorizations/groups:
     get:
       tags:
-        - group-controller
+        - Authorizations
       summary: Group search
       description: |2
           Get the list of groups.
@@ -568,6 +1265,21 @@ paths:
 
               This parameter performs a partial match (contains), it is case
               insensitive.
+        - name: userId
+          in: query
+          description: >-
+            Filter groups containing the user. Only available for system
+            administrators. Using != operator will search for groups without the
+            user.
+          required: false
+          schema:
+            type: string
+            description: >-
+              Filter groups containing the user. Only available for system
+              administrators. Using != operator will search for groups without
+              the user.
+            internal: 'true'
+          x-internal: 'true'
         - name: pageSize
           in: query
           description: >-
@@ -592,6 +1304,7 @@ paths:
             format: int32
             default: 1
             description: 1-based page index
+            exclusiveMinimum: 0
             minimum: 1
       responses:
         '200':
@@ -602,10 +1315,10 @@ paths:
                 $ref: '#/components/schemas/GroupsSearchRestResponse'
     post:
       tags:
-        - group-controller
+        - Authorizations
       summary: Create a new group
       description: Create a new group.
-      operationId: create_5
+      operationId: create_7
       requestBody:
         content:
           application/json:
@@ -622,7 +1335,7 @@ paths:
   /v2/authorizations/group-memberships:
     get:
       tags:
-        - group-membership-controller
+        - Authorizations
       summary: Search across group memberships
       description: |2
           Get the list of groups and members matching the query.
@@ -674,6 +1387,7 @@ paths:
             format: int32
             default: 1
             description: 1-based page index
+            exclusiveMinimum: 0
             minimum: 1
       responses:
         '200':
@@ -684,10 +1398,10 @@ paths:
                 $ref: '#/components/schemas/GroupsMembershipSearchRestResponse'
     post:
       tags:
-        - group-membership-controller
+        - Authorizations
       summary: Add a group membership
       description: Add a user to a group.
-      operationId: create_6
+      operationId: create_8
       requestBody:
         content:
           application/json:
@@ -701,10 +1415,50 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/GroupMembershipRestResponse'
+  /v2/atlassian/application-configuration:
+    get:
+      tags:
+        - Atlassian
+      summary: Fetch the Atlassian Authentication details if they exist
+      description: |
+        Fetch the Atlassian Authentication details if they exist.
+        Specifically, only the client ID is returned for security purposes.
+      operationId: य़_8
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: >-
+                  #/components/schemas/AtlassianAuthenticationDetailsResultResource
+      x-sonar-internal: 'true'
+    post:
+      tags:
+        - Atlassian
+      summary: Create/Update the Atlassian Authentication details
+      description: |
+        Create/Update the Atlassian Authentication details.
+      operationId: य़_9
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AtlassianAuthenticationDetailsResource'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: >-
+                  #/components/schemas/AtlassianAuthenticationDetailsResultResource
+      x-sonar-internal: 'true'
   '/v2/users-management/users/{id}':
     get:
       tags:
-        - user-controller
+        - Users Management
       summary: Fetch a single user
       description: >
         Fetch a single user.
@@ -736,7 +1490,7 @@ paths:
                 $ref: '#/components/schemas/UserRestResponseForAdmins'
     delete:
       tags:
-        - user-controller
+        - Users Management
       summary: Deactivate a user
       description: Deactivates a user. Requires Administer System permission.
       operationId: deactivate
@@ -759,7 +1513,7 @@ paths:
           description: No Content
     patch:
       tags:
-        - user-controller
+        - Users Management
       summary: Update a user
       description: |
         Update users attributes.
@@ -786,7 +1540,7 @@ paths:
   '/v2/system/email-configurations/{id}':
     get:
       tags:
-        - email-configuration-controller
+        - System
       summary: Fetch an email configuration
       description: |
         Fetch a Email configuration. Requires 'Administer System' permission.
@@ -808,7 +1562,7 @@ paths:
       x-sonar-internal: 'true'
     delete:
       tags:
-        - email-configuration-controller
+        - System
       summary: Delete an email configuration
       description: |
         Delete an email configuration.
@@ -827,7 +1581,7 @@ paths:
       x-sonar-internal: 'true'
     patch:
       tags:
-        - email-configuration-controller
+        - System
       summary: Update an email configuration
       description: |
         Update an email configuration. Requires 'Administer System' permission.
@@ -852,11 +1606,261 @@ paths:
               schema:
                 $ref: '#/components/schemas/EmailConfigurationResource'
       x-sonar-internal: 'true'
+  '/v2/sca/license-profiles/{license-profile-key}':
+    get:
+      tags:
+        - License Profiles
+      summary: Get the license policy for a given profile
+      description: |
+        Get the license policy for a given profile.
+      operationId: get_1
+      parameters:
+        - name: license-profile-key
+          in: path
+          description: The license profile key.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LicenseProfileDetailsResource'
+      x-sonar-internal: 'true'
+    delete:
+      tags:
+        - License Profiles
+      summary: Delete the license profile
+      description: Delete the license profile.
+      operationId: delete
+      parameters:
+        - name: license-profile-key
+          in: path
+          description: The id of the license profile
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: No Content
+      x-sonar-internal: 'true'
+    patch:
+      tags:
+        - License Profiles
+      summary: Update the license profile
+      description: |2
+          Update the license profile for projects to use when evaluating license issues.
+      operationId: update
+      parameters:
+        - name: license-profile-key
+          in: path
+          description: The id of the license profile
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LicenseProfilesUpdateRestRequest'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LicenseProfileResource'
+      x-sonar-internal: 'true'
+  '/v2/sca/license-profiles/{license-profile-key}/licenses/{license-policy-id}':
+    patch:
+      tags:
+        - License Profiles
+      summary: Update the policy for a single license
+      description: |2
+          Update the policy for a single license in the license profile.
+      operationId: patchLicense
+      parameters:
+        - name: license-profile-key
+          in: path
+          description: The license profile key.
+          required: true
+          schema:
+            type: string
+        - name: license-policy-id
+          in: path
+          description: The license ID.
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LicensePolicyLicenseUpdateRestRequest'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LicensePolicyLicenseResource'
+      x-sonar-internal: 'true'
+  '/v2/sca/license-profiles/{license-profile-key}/categories/{category-key}':
+    patch:
+      tags:
+        - License Profiles
+      summary: Update the policy for a license category
+      description: |2
+          Update the policy for an entire category in the license profile.
+      operationId: patchCategory
+      parameters:
+        - name: license-profile-key
+          in: path
+          description: The license profile key.
+          required: true
+          schema:
+            type: string
+        - name: category-key
+          in: path
+          description: The category key.
+          required: true
+          schema:
+            type: string
+            enum:
+              - UNKNOWN
+              - COPYLEFT_WEAK
+              - COPYLEFT_STRONG
+              - COPYLEFT_NETWORK
+              - COPYLEFT_MAXIMAL
+              - PERMISSIVE_STANDARD
+              - PERMISSIVE_AMATEUR
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LicenseProfileCategoryUpdateRestRequest'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LicenseProfileCategoryResource'
+      x-sonar-internal: 'true'
+  /v2/sca/license-profiles/assigned-projects:
+    patch:
+      tags:
+        - License Profiles
+      summary: Assign project to license profile
+      description: |2
+          Configure which license profile should be used when analyzing a project for license issues.
+      operationId: update_1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssignedProjectsUpdateRestRequest'
+        required: true
+      responses:
+        '200':
+          description: The provided project has been assigned to the license profile.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LicenseProfileResource'
+      x-sonar-internal: 'true'
+  '/v2/sca/issues-releases/{key}/changelog':
+    get:
+      tags:
+        - Issues-Releases
+      summary: Get the changelog for a single issue-release pair
+      description: >
+        Get the changelog for a single (issue,release) pair (dependency risk),
+        using the key from the search endpoint.
+
+
+        This is an internal API and is subject to change without notice.
+      operationId: getChangelog
+      parameters:
+        - name: key
+          in: path
+          description: 'The key of the (issue,release) pair.'
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IssuesReleasesChangesRestResponse'
+      x-sonar-internal: 'true'
+    delete:
+      tags:
+        - Issues-Releases
+      summary: Delete a comment from an issue-release pair
+      description: |
+        Delete a comment from a (issue,release) pair (dependency risk).
+
+        This is an internal API and is subject to change without notice.
+      operationId: deleteComment
+      parameters:
+        - name: key
+          in: path
+          description: 'The key of the (issue,release) pair.'
+          required: true
+          schema:
+            type: string
+        - name: issueReleaseChangeKey
+          in: query
+          description: Issue release change key
+          required: true
+          schema:
+            type: string
+            description: Issue release change key
+      responses:
+        '200':
+          description: OK
+      x-sonar-internal: 'true'
+    patch:
+      tags:
+        - Issues-Releases
+      summary: Update a comment on an issue-release pair
+      description: |
+        Update a comment on a (issue,release) pair (dependency risk).
+
+        This is an internal API and is subject to change without notice.
+      operationId: updateComment
+      parameters:
+        - name: key
+          in: path
+          description: 'The key of the (issue,release) pair.'
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IssueReleaseUpdateCommentRestRequest'
+        required: true
+      responses:
+        '200':
+          description: OK
+      x-sonar-internal: 'true'
   /v2/sca/feature-enablements:
     get:
       tags:
-        - k
-      summary: Get the status of SCA enablement
+        - Feature Enablement
+      summary: >-
+        Get the status of SCA feature opt-in (should only be used for the
+        configuration UX in frontend)
       operationId: getFeatureEnablement
       responses:
         '200':
@@ -868,8 +1872,10 @@ paths:
       x-sonar-internal: 'true'
     patch:
       tags:
-        - k
-      summary: Update SCA enablement settings
+        - Feature Enablement
+      summary: >-
+        Update SCA feature opt-in (should only be used for the configuration UX
+        in frontend)
       operationId: updateFeatureEnablement
       requestBody:
         content:
@@ -885,10 +1891,243 @@ paths:
               schema:
                 $ref: '#/components/schemas/FeatureEnablementResource'
       x-sonar-internal: 'true'
+  /v2/jira/work-types:
+    get:
+      tags:
+        - Jira
+      summary: >-
+        Returns a list of all the available Jira work types for a specific Jira
+        project
+      description: >
+        Returns a list of all the available Jira work types for a specific Jira
+        project.
+
+        Also checks which work types are selected for a given sonar project.
+        Conditionally, also includes field metadata.
+      operationId: य़_10
+      parameters:
+        - name: jiraProjectKey
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: sonarOrganizationUuid
+          in: query
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: sonarProjectId
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: includeFields
+          in: query
+          required: false
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/JiraWorkTypeResultResource'
+      x-sonar-internal: 'true'
+    patch:
+      tags:
+        - Jira
+      summary: Saves the selected Jira work types for a project
+      description: >
+        Receives a Jira project key and a list of work type and stores the work
+        types.
+      operationId: य़_11
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JiraWorkTypesSelectionResource'
+        required: true
+      responses:
+        '200':
+          description: OK
+      x-sonar-internal: 'true'
+  /v2/issues/sandbox-settings:
+    get:
+      tags:
+        - Issues
+      summary: Fetch instance sandbox settings
+      description: >
+        Fetch the current instance-level sandbox settings.
+
+        Returns configuration including enabled status, default value,
+        allowOverride setting, and software qualities or rule types based on
+        current mode.
+
+        Requires 'Administer System' permission.
+      operationId: getSandboxSettings
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SandboxSettingsResource'
+      x-sonar-internal: 'true'
+    patch:
+      tags:
+        - Issues
+      summary: Update instance sandbox settings
+      description: >
+        Update the instance-level sandbox settings.
+
+        Cannot enable sandbox without providing software qualities or rule types
+        unless they already exist.
+
+        When disabling allowOverride, all project-level software quality
+        overrides are deleted.
+
+        Requires 'Administer System' permission.
+      operationId: patchSandboxSettings
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SandboxSettingsResource'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SandboxSettingsResource'
+      x-sonar-internal: 'true'
+  '/v2/issues/sandbox-settings/{projectKey}':
+    get:
+      tags:
+        - Issues
+      summary: Fetch project sandbox settings
+      description: >
+        Fetch the sandbox settings for a specific project.
+
+        Returns effective configuration including enabled status, software
+        qualities overrides, and whether settings are inherited from instance or
+        overridden at project level.
+
+        Requires 'Administer Project' permission.
+      operationId: getProjectSandboxSettings
+      parameters:
+        - name: projectKey
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SandboxSettingsProjectResource'
+      x-sonar-internal: 'true'
+    patch:
+      tags:
+        - Issues
+      summary: Update project sandbox settings
+      description: >
+        Update the sandbox settings for a specific project.
+
+        The enabled setting can be changed independently of software quality
+        overrides.
+
+        When allowOverride is disabled at instance level, software quality
+        changes are not allowed but enabled changes are still permitted.
+
+        Setting overridden=false removes project-level software quality
+        overrides to inherit from instance settings.
+
+        Requires 'Administer Project' permission and instance sandbox must be
+        enabled.
+      operationId: patchProjectSandboxSettings
+      parameters:
+        - name: projectKey
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SandboxSettingsProjectResource'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SandboxSettingsProjectResource'
+      x-sonar-internal: 'true'
+  '/v2/integrations/integration-configurations/{id}':
+    delete:
+      tags:
+        - integration-configurations-controller
+      summary: Delete an integration configuration and all its related data.
+      description: >
+        Requires global administrator permission.
+
+        This will permanently delete the integration configuration, all
+        associated workspaces, user bindings, and subscriptions.
+      operationId: delete_1
+      parameters:
+        - name: id
+          in: path
+          description: ID of the integration configuration
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: No Content
+      x-sonar-internal: 'true'
+    patch:
+      tags:
+        - integration-configurations-controller
+      summary: Update an integration configuration.
+      description: Requires global administrator permission.
+      operationId: update_2
+      parameters:
+        - name: id
+          in: path
+          description: ID of the integration configuration
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IntegrationConfigurationPatchRequest'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IntegrationConfigurationResponse'
+      x-sonar-internal: 'true'
   /v2/fix-suggestions/feature-enablements:
     get:
       tags:
-        - feature-enablement-controller
+        - Fix Suggestions
       summary: Fetch the Ai CodeFix feature enablement configurations
       operationId: getFeatureEnablement_1
       responses:
@@ -898,9 +2137,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FeatureEnablementResponse'
+      x-sonar-internal: 'true'
     patch:
       tags:
-        - feature-enablement-controller
+        - Fix Suggestions
       summary: Enable/Disable the AI CodeFix feature at the instance or project level
       operationId: updateFeatureEnablement_1
       requestBody:
@@ -912,10 +2152,52 @@ paths:
       responses:
         '204':
           description: No Content
+      x-sonar-internal: 'true'
+  /v2/entitlements/license:
+    get:
+      tags:
+        - Entitlements
+      summary: Returns information about the license
+      description: |2
+          Returns information about the current license.
+          Requires 'Administer System' permission.
+      operationId: getLicense
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LicenseRestResponse'
+      x-sonar-internal: 'true'
+    delete:
+      tags:
+        - Entitlements
+      summary: Deletes the existing license
+      description: |2
+          Deletes the license. Both license keys received from Sonar and from 3rd party system can be removed.
+          Requires 'Administer System' permission.
+      operationId: deleteLicense
+      responses:
+        '200':
+          description: OK
+      x-sonar-internal: 'true'
+    patch:
+      tags:
+        - Entitlements
+      summary: Refreshes the existing license
+      description: |2
+          Fetches the latest information about the license and updates it on the SonarQube Server instance.
+          Requires 'Administer System' permission.
+      operationId: refreshLicense
+      responses:
+        '200':
+          description: OK
+      x-sonar-internal: 'true'
   '/v2/dop-translation/gitlab-permission-mappings/{role}':
     delete:
       tags:
-        - gitlab-permission-mappings-controller
+        - Dop Translation
       summary: Delete a single permission mappings
       description: Requires 'Administer System' permission.
       operationId: deleteMapping
@@ -932,7 +2214,7 @@ paths:
       x-sonar-internal: 'true'
     patch:
       tags:
-        - gitlab-permission-mappings-controller
+        - Dop Translation
       summary: Update a single permission mapping
       description: Requires 'Administer System' permission.
       operationId: updateMapping
@@ -960,7 +2242,7 @@ paths:
   '/v2/dop-translation/gitlab-configurations/{id}':
     get:
       tags:
-        - gitlab-configuration-controller
+        - Dop Translation
       summary: Fetch a GitLab configuration
       description: |
         Fetch a GitLab configuration. Requires 'Administer System' permission.
@@ -982,7 +2264,7 @@ paths:
       x-sonar-internal: 'true'
     delete:
       tags:
-        - gitlab-configuration-controller
+        - Dop Translation
       summary: Delete a GitLab configuration
       description: |
         Delete a GitLab configuration.
@@ -1001,7 +2283,7 @@ paths:
       x-sonar-internal: 'true'
     patch:
       tags:
-        - gitlab-configuration-controller
+        - Dop Translation
       summary: Update a Gitlab configuration
       description: |
         Update a Gitlab configuration. Requires 'Administer System' permission.
@@ -1029,7 +2311,7 @@ paths:
   '/v2/dop-translation/github-permission-mappings/{role}':
     delete:
       tags:
-        - github-permission-mappings-controller
+        - Dop Translation
       summary: Delete a single permission mappings
       description: Requires 'Administer System' permission.
       operationId: deleteMapping_1
@@ -1046,7 +2328,7 @@ paths:
       x-sonar-internal: 'true'
     patch:
       tags:
-        - github-permission-mappings-controller
+        - Dop Translation
       summary: Update a single permission mapping
       description: Requires 'Administer System' permission.
       operationId: updateMapping_1
@@ -1074,7 +2356,7 @@ paths:
   '/v2/dop-translation/github-configurations/{id}':
     get:
       tags:
-        - github-configuration-controller
+        - Dop Translation
       summary: Fetch a GitHub configuration
       description: |
         Fetch a GitHub configuration. Requires 'Administer System' permission.
@@ -1096,7 +2378,7 @@ paths:
       x-sonar-internal: 'true'
     delete:
       tags:
-        - github-configuration-controller
+        - Dop Translation
       summary: Delete a GitHub configuration
       description: |
         Delete a GitHub configuration.
@@ -1115,7 +2397,7 @@ paths:
       x-sonar-internal: 'true'
     patch:
       tags:
-        - github-configuration-controller
+        - Dop Translation
       summary: Update a GitHub configuration
       description: |
         Update a GitHub configuration. Requires 'Administer System' permission.
@@ -1143,7 +2425,7 @@ paths:
   /v2/clean-code-policy/mode:
     get:
       tags:
-        - mode-controller
+        - Clean Code Policy
       summary: Retrieve current instance Mode
       description: >
         Fetch the current instance mode. Can be Multi-Quality Rules (MQR) Mode
@@ -1159,7 +2441,7 @@ paths:
       x-sonar-internal: 'true'
     patch:
       tags:
-        - mode-controller
+        - Clean Code Policy
       summary: Update current instance Mode
       description: >
         Update the current instance mode. Can be Multi-Quality Rules (MQR) Mode
@@ -1184,7 +2466,7 @@ paths:
   '/v2/authorizations/groups/{id}':
     get:
       tags:
-        - group-controller
+        - Authorizations
       summary: Fetch a single group
       description: Fetch a single group.
       operationId: fetchGroup
@@ -1204,7 +2486,7 @@ paths:
                 $ref: '#/components/schemas/GroupRestResponse'
     delete:
       tags:
-        - group-controller
+        - Authorizations
       summary: Deletes a group
       description: Deletes a group.
       operationId: deleteGroup
@@ -1220,7 +2502,7 @@ paths:
           description: No Content
     patch:
       tags:
-        - group-controller
+        - Authorizations
       summary: Update a group
       description: |
         Update a group name or description.
@@ -1247,7 +2529,7 @@ paths:
   /v2/system/migrations-status:
     get:
       tags:
-        - database-migrations-controller
+        - System
       summary: 'Gets the status of ongoing database migrations, if any'
       description: >-
         Return the detailed status of ongoing database migrations including
@@ -1264,7 +2546,7 @@ paths:
   /v2/system/liveness:
     get:
       tags:
-        - liveness-controller
+        - System
       summary: >-
         Provide liveness of SonarQube, meant to be used as a liveness probe on
         Kubernetes
@@ -1290,7 +2572,7 @@ paths:
   /v2/system/health:
     get:
       tags:
-        - health-controller
+        - System
       operationId: getHealth
       parameters:
         - name: X-Sonar-Passcode
@@ -1305,13 +2587,60 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Health'
+  /v2/sca/self-test:
+    get:
+      tags:
+        - Self Test
+      summary: Run a self test
+      description: >
+        Run a self test that the dependency analysis (SCA) feature is enabled
+        and
+
+        able to reach the cloud services it relies on.
+
+
+        This is an internal API and is subject to change without notice.
+      operationId: performSelfTest
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SelfTestResponse'
+      x-sonar-internal: 'true'
+  /v2/sca/self-test/spring-configuration:
+    get:
+      tags:
+        - Self Test
+      summary: Run a self test that Spring is configured as expected
+      description: |
+        Run a self test that Spring is set up and working as we expect.
+
+        This is an internal API and is subject to change without notice.
+      operationId: performSpringConfigurationSelfTest
+      parameters:
+        - name: selfTestName
+          in: query
+          required: true
+          schema:
+            type: string
+            minLength: 1
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SelfTestSpringConfigurationResponse'
+      x-sonar-internal: 'true'
   /v2/sca/sbom-reports:
     get:
       tags:
-        - k
+        - SBOM Reports
       summary: Get a software bill of materials (SBOM) report
       description: >
-        Return a report based on the dependencies in this project's branch,
+        Return a report based on the dependencies in this component's branch,
         using
 
         the type parameter and Accept header to select the report to generate.
@@ -1326,30 +2655,22 @@ paths:
           * JSON & XML
         * SPDX 2.3: https://spdx.github.io/spdx-spec/v2.3/
           * JSON & XML
-
-        Theoretically you could send just the MIME type for the format you
-        wanted
-
-        as the Accept header and get that report. However, there may be other
-
-        formats that don't have a specific MIME type attached -- think two
-
-        different flavors of a CSV report, for example. In that case, we still
-
-        need a specific report type parameter to help differentiate more.
-
-
-        This is an internal API and is subject to change without notice.
+        * SPDX 3.0: https://spdx.github.io/spdx-spec/v3.0.1/
+          * JSON
       operationId: generateReport
       parameters:
-        - name: projectKey
+        - name: component
           in: query
-          description: Key of the project to build report for
+          description: >-
+            Key of the component (project, application, portfolio) to build
+            report for
           required: true
           schema:
             type: string
-            description: Key of the project to build report for
-        - name: branchKey
+            description: >-
+              Key of the component (project, application, portfolio) to build
+              report for
+        - name: branch
           in: query
           description: Key of the branch to build report for
           required: false
@@ -1367,7 +2688,9 @@ paths:
             Currently supported: cyclonedx (application/vnd.cyclonedx+json),
             cyclonedx (application/vnd.cyclonedx+xml),
 
-            spdx (application/vnd.spdx+json), spdx (application/vnd.spdx+xml)
+            spdx_23 (application/spdx+json), spdx_23 (application/spdx+xml),
+
+            spdx_30 (application/spdx+json)
           required: true
           schema:
             type: string
@@ -1380,10 +2703,13 @@ paths:
               Currently supported: cyclonedx (application/vnd.cyclonedx+json),
               cyclonedx (application/vnd.cyclonedx+xml),
 
-              spdx (application/vnd.spdx+json), spdx (application/vnd.spdx+xml)
+              spdx_23 (application/spdx+json), spdx_23 (application/spdx+xml),
+
+              spdx_30 (application/spdx+json)
             enum:
               - cyclonedx
               - spdx_23
+              - spdx_30
       responses:
         '200':
           description: The desired report in the desired output format
@@ -1400,60 +2726,135 @@ paths:
             application/spdx+xml:
               schema:
                 type: string
-      x-sonar-internal: 'true'
+      x-sonar-public: 'true'
+  /v2/sca/risk-reports:
+    get:
+      tags:
+        - Risk Reports
+      summary: >-
+        Get a report for all the current SCA dependency risks for a given
+        component and branch
+      description: >
+        Returns list of all risks for a given component and branch. CSV format
+        is available by setting `Accept: text/csv` in your request headers.
+      operationId: getReport
+      parameters:
+        - name: component
+          in: query
+          description: >-
+            Key of the component (project, application, portfolio) to build
+            report for
+          required: true
+          schema:
+            type: string
+            description: >-
+              Key of the component (project, application, portfolio) to build
+              report for
+        - name: branch
+          in: query
+          description: Key of the branch to build report for
+          required: false
+          schema:
+            type: string
+            description: Key of the branch to build report for
+        - name: riskType
+          in: query
+          description: >-
+            Type of risk to filter the report by. If not provided, all risks
+            types are included.
+          required: false
+          schema:
+            type: string
+            description: >-
+              Type of risk to filter the report by. If not provided, all risks
+              types are included.
+            enum:
+              - VULNERABILITY
+              - PROHIBITED_LICENSE
+      responses:
+        '200':
+          description: The report in the desired output format
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RiskReportItem'
+            text/csv:
+              schema:
+                type: string
+      x-sonar-public: 'true'
   /v2/sca/releases:
     get:
       tags:
-        - k
+        - Releases
       summary: Search for releases
-      description: |
+      description: >
         Search for package releases that appear in the analyzed project,
-        as determined by software composition analysis.
+
+        application, or portfolio, as determined by software composition
+        analysis.
+
 
         This endpoint returns one result for each release,
+
         rather than one result for each time a release is pulled in.
+
         Each result may appear in multiple files or scopes that
+
         all use the same version of the affected package.
 
+
         The search results do not include full details on the dependencies
+
         that pull in each release, only a summary. To get the full dependency
+
         details, use the /releases/{key} endpoint for a single release.
 
+
         In the terminology of this endpoint, a "release" is a version of
+
         a package like "lodash 1.2.3", and a "dependency" is a specific file
+
         and scope that pulls in the release such as "subproject/pom.xml test".
+
         Each returned release may have multiple dependencies.
+
 
         This is an internal API and is subject to change without notice.
       operationId: search_3
       parameters:
         - name: projectKey
           in: query
-          description: Key of the project to fetch all dependencies from
+          description: >-
+            Key of the component (project, application, or portfolio) to fetch
+            all dependencies from
           required: true
           schema:
             type: string
-            description: Key of the project to fetch all dependencies from
+            description: >-
+              Key of the component (project, application, or portfolio) to fetch
+              all dependencies from
         - name: branchKey
           in: query
           description: >-
-            Key of the Branch to fetch all dependencies from. If not provided,
-            the default branch will be used unless a Pull Request Key is
+            Key of the branch to fetch all dependencies from. If not provided,
+            the default branch will be used unless a pull request key is
             provided.
           required: false
           schema:
             type: string
             description: >-
-              Key of the Branch to fetch all dependencies from. If not provided,
-              the default branch will be used unless a Pull Request Key is
+              Key of the branch to fetch all dependencies from. If not provided,
+              the default branch will be used unless a pull request key is
               provided.
         - name: pullRequestKey
           in: query
-          description: Key of the Pull Request to fetch all dependencies from.
+          description: Key of the pull request to fetch all dependencies from.
           required: false
           schema:
             type: string
-            description: Key of the Pull Request to fetch all dependencies from.
+            description: Key of the pull request to fetch all dependencies from.
         - name: direct
           in: query
           description: >-
@@ -1465,17 +2866,17 @@ paths:
             description: >-
               Filter on the direct attribute. TRUE stands for direct
               dependencies, FALSE for transitive dependencies.
-        - name: newInPullRequest
+        - name: newlyIntroduced
           in: query
           description: >-
-            Filter on the newInPullRequest attribute. TRUE stands for only
+            Filter on the newlyIntroduced attribute. TRUE stands for only
             releases introduced vs. the target branch, FALSE for releases shared
             with target.
           required: false
           schema:
             type: boolean
             description: >-
-              Filter on the newInPullRequest attribute. TRUE stands for only
+              Filter on the newlyIntroduced attribute. TRUE stands for only
               releases introduced vs. the target branch, FALSE for releases
               shared with target.
         - name: productionScope
@@ -1535,6 +2936,7 @@ paths:
             format: int32
             default: 1
             description: 1-based page index
+            exclusiveMinimum: 0
             minimum: 1
       responses:
         '200':
@@ -1547,7 +2949,7 @@ paths:
   '/v2/sca/releases/{key}':
     get:
       tags:
-        - k
+        - Releases
       summary: Get a single release
       description: |
         Fetch a single release by its key.
@@ -1577,15 +2979,93 @@ paths:
               schema:
                 $ref: '#/components/schemas/ReleaseDetailResource'
       x-sonar-internal: 'true'
+  /v2/sca/license-profiles/assignable-projects:
+    get:
+      tags:
+        - License Profiles
+      summary: License profile assignable projects
+      description: |2
+          List the projects that can be assigned to the license profile. Assigning the
+          project to a license profile will cause that license profile to be used when
+          analyzing the project for license issues.
+      operationId: index_1
+      parameters:
+        - name: licenseProfileUuid
+          in: query
+          description: >
+            The key of the license profile whose assignable projects should be
+            retrieved.
+          required: true
+          schema:
+            type: string
+            description: >
+              The key of the license profile whose assignable projects should be
+              retrieved.
+        - name: assignedToLicenseProfile
+          in: query
+          description: |2
+              Providing this parameter filters by whether projects are assigned to the license profile or not.
+              Omitting this parameter includes all projects which can be assigned to the license profile,
+              regardless of whether they are already assigned to the license profile.
+          required: false
+          schema:
+            type: boolean
+            description: |2
+                Providing this parameter filters by whether projects are assigned to the license profile or not.
+                Omitting this parameter includes all projects which can be assigned to the license profile,
+                regardless of whether they are already assigned to the license profile.
+        - name: q
+          in: query
+          description: |2
+              Providing this parameter performs a partial match (contains and case insensitive) on the project name.
+          required: false
+          schema:
+            type: string
+            description: |2
+                Providing this parameter performs a partial match (contains and case insensitive) on the project name.
+        - name: pageSize
+          in: query
+          description: >-
+            Number of results per page. A value of 0 will only return the
+            pagination information.
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 50
+            description: >-
+              Number of results per page. A value of 0 will only return the
+              pagination information.
+            maximum: 500
+            minimum: 0
+        - name: pageIndex
+          in: query
+          description: 1-based page index
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 1
+            description: 1-based page index
+            exclusiveMinimum: 0
+            minimum: 1
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AssignableProjectsIndexRestResponse'
+      x-sonar-internal: 'true'
   /v2/sca/issues-releases:
     get:
       tags:
-        - k
+        - Issues-Releases
       summary: Search for issue-release pairs
       description: |
         Search for software composition analysis issues (dependency risks)
         of a project, paired with releases that appear in the analyzed
-        project.
+        project, application, or portfolio.
 
         This endpoint returns one result for each (issue,release) pair,
         rather than one result for each distinct issue. So for example
@@ -1601,39 +3081,55 @@ paths:
         "CVE-1234", and a "dependency" is a specific file and scope that
         pulls in the release such as "subproject/pom.xml test".
 
-        The dependencyRisks attribute in the result is deprecated; please
-        use issuesReleases instead.
-
         This is an internal API and is subject to change without notice.
       operationId: search_4
       parameters:
         - name: projectKey
           in: query
-          description: Key of the project to fetch all dependency risks from
+          description: >-
+            Key of the component (project, application, portfolio) to fetch all
+            dependency risks from.
           required: true
           schema:
             type: string
-            description: Key of the project to fetch all dependency risks from
+            description: >-
+              Key of the component (project, application, portfolio) to fetch
+              all dependency risks from.
         - name: branchKey
           in: query
           description: >-
             Key of the branch to fetch all dependency risks from. If not
-            provided, the default branch will be used unless a Pull Request Key
+            provided, the default branch will be used unless a pull request key
             is provided.
           required: false
           schema:
             type: string
             description: >-
               Key of the branch to fetch all dependency risks from. If not
-              provided, the default branch will be used unless a Pull Request
-              Key is provided.
+              provided, the default branch will be used unless a pull request
+              key is provided.
         - name: pullRequestKey
           in: query
-          description: Key of the Pull Request to fetch all dependency risks from.
+          description: Key of the pull request to fetch all dependency risks from.
           required: false
           schema:
             type: string
-            description: Key of the Pull Request to fetch all dependency risks from.
+            description: Key of the pull request to fetch all dependency risks from.
+        - name: sort
+          in: query
+          description: Sort order
+          required: false
+          schema:
+            type: string
+            default: +identity
+            description: Sort order
+            enum:
+              - +identity
+              - '-identity'
+              - +severity
+              - '-severity'
+              - +cvssScore
+              - '-cvssScore'
         - name: packageManagers
           in: query
           required: false
@@ -1652,6 +3148,15 @@ paths:
             items:
               type: string
             uniqueItems: true
+        - name: qualities
+          in: query
+          required: false
+          schema:
+            type: array
+            description: Filter on the quality domain
+            items:
+              type: string
+            uniqueItems: true
         - name: severities
           in: query
           required: false
@@ -1661,41 +3166,50 @@ paths:
             items:
               type: string
             uniqueItems: true
+        - name: statuses
+          in: query
+          required: false
+          schema:
+            type: array
+            description: Filter on the status
+            items:
+              type: string
+            uniqueItems: true
         - name: packageName
           in: query
           description: >-
-            Filter on the package name This parameter performs a partial match
+            Filter on the package name. This parameter performs a partial match
             (contains and case insensitive) on the package name.
           required: false
           schema:
             type: string
             description: >-
-              Filter on the package name This parameter performs a partial match
-              (contains and case insensitive) on the package name.
+              Filter on the package name. This parameter performs a partial
+              match (contains and case insensitive) on the package name.
         - name: vulnerabilityId
           in: query
           description: >-
-            Filter on the vulnerability IDThis parameter performs a partial
+            Filter on the vulnerability ID. This parameter performs a partial
             match (contains and case insensitive) on the vulnerability ID.
           required: false
           schema:
             type: string
             description: >-
-              Filter on the vulnerability IDThis parameter performs a partial
+              Filter on the vulnerability ID. This parameter performs a partial
               match (contains and case insensitive) on the vulnerability ID.
-        - name: newInPullRequest
+        - name: newlyIntroduced
           in: query
           description: >-
-            Filter on the newInPullRequest attribute. TRUE stands for only
-            releases introduced vs. the target branch, FALSE for releases shared
-            with target.
+            Filter on the isNew attribute. TRUE stands for only releases
+            introduced vs. the target branch, FALSE for releases shared with
+            target.
           required: false
           schema:
             type: boolean
             description: >-
-              Filter on the newInPullRequest attribute. TRUE stands for only
-              releases introduced vs. the target branch, FALSE for releases
-              shared with target.
+              Filter on the isNew attribute. TRUE stands for only releases
+              introduced vs. the target branch, FALSE for releases shared with
+              target.
         - name: direct
           in: query
           description: >-
@@ -1722,21 +3236,31 @@ paths:
               Filter on the productionScope attribute. TRUE stands for only
               production dependencies, FALSE for only not in production. If a
               release is both, it matches both.
-        - name: sort
+        - name: assignees
           in: query
-          description: Sort order
           required: false
           schema:
-            type: string
-            default: +identity
-            description: Sort order
-            enum:
-              - +identity
-              - '-identity'
-              - +severity
-              - '-severity'
-              - +cvssScore
-              - '-cvssScore'
+            type: array
+            description: Filter on assignee logins.
+            items:
+              type: string
+            uniqueItems: true
+        - name: projects
+          in: query
+          required: false
+          schema:
+            type: array
+            description: Filter on project keys.
+            items:
+              type: string
+            uniqueItems: true
+        - name: assigned
+          in: query
+          description: Filter on whether the issue is assigned or not.
+          required: false
+          schema:
+            type: boolean
+            description: Filter on whether the issue is assigned or not.
         - name: pageSize
           in: query
           description: >-
@@ -1761,6 +3285,7 @@ paths:
             format: int32
             default: 1
             description: 1-based page index
+            exclusiveMinimum: 0
             minimum: 1
       responses:
         '200':
@@ -1768,12 +3293,12 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DependencyRisksSearchRestResponse'
+                $ref: '#/components/schemas/IssuesReleasesSearchRestResponse'
       x-sonar-internal: 'true'
   '/v2/sca/issues-releases/{key}':
     get:
       tags:
-        - k
+        - Issues-Releases
       summary: Get a single issue-release pair
       description: >
         Fetch a single (issue,release) pair (dependency risk), using the key
@@ -1781,7 +3306,7 @@ paths:
 
 
         This is an internal API and is subject to change without notice.
-      operationId: fetchDependencyRisk
+      operationId: fetchIssueRelease
       parameters:
         - name: key
           in: path
@@ -1795,12 +3320,92 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DependencyRiskDetailsResource'
+                $ref: '#/components/schemas/IssueReleaseDetailsResource'
+      x-sonar-internal: 'true'
+  /v2/sca/issues-releases/all-assignees:
+    get:
+      tags:
+        - Issues-Releases
+      summary: Get the list of users assigned to at least one issue in a given branch
+      description: |
+        Get the list of users assigned to at least one issue in a given branch.
+      operationId: getAllAssignees
+      parameters:
+        - name: projectKey
+          in: query
+          description: Key of the project to fetch all assignee users from.
+          required: true
+          schema:
+            type: string
+            description: Key of the project to fetch all assignee users from.
+        - name: branchKey
+          in: query
+          description: >-
+            Key of the branch to fetch all assignee users from. If not provided,
+            the default branch will be used unless a pull request key is
+            provided.
+          required: false
+          schema:
+            type: string
+            description: >-
+              Key of the branch to fetch all assignee users from. If not
+              provided, the default branch will be used unless a pull request
+              key is provided.
+        - name: pullRequestKey
+          in: query
+          description: Key of the pull request to fetch all assignee users from.
+          required: false
+          schema:
+            type: string
+            description: Key of the pull request to fetch all assignee users from.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserResource'
+      x-sonar-internal: 'true'
+  /v2/sca/enabled:
+    get:
+      tags:
+        - SCA Enabled
+      summary: >-
+        Get whether SCA is licensed and set up for a resource's organization or
+        enterprise, prefer the /feature-enabled path in new code
+      operationId: getFeatureEnabled
+      parameters: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScaFeatureEnabledResource'
+      x-sonar-internal: 'true'
+  /v2/sca/feature-enabled:
+    get:
+      tags:
+        - SCA Enabled
+      summary: >-
+        Get whether SCA is licensed and set up for a resource's organization or
+        enterprise, prefer the /feature-enabled path in new code
+      operationId: getFeatureEnabled_1
+      parameters: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScaFeatureEnabledResource'
       x-sonar-internal: 'true'
   /v2/sca/clis:
     get:
       tags:
-        - k
+        - SCA CLIs
       summary: Get available CLI downloads
       description: >
         Gets the available SCA CLI downloads. The response includes metadata
@@ -1850,7 +3455,7 @@ paths:
   '/v2/sca/clis/{id}':
     get:
       tags:
-        - k
+        - SCA CLIs
       summary: Get metadata for a specific CLI download
       description: >
         Gets the metadata for a specific SCA CLI download. The response includes
@@ -1874,21 +3479,180 @@ paths:
           content:
             application/octet-stream:
               schema:
-                oneOf:
-                  - $ref: '#/components/schemas/ScaCliInfoRestResponse'
-                  - type: string
-                    format: binary
+                type: string
+                format: binary
             application/json:
               schema:
-                oneOf:
-                  - $ref: '#/components/schemas/ScaCliInfoRestResponse'
-                  - type: string
-                    format: binary
+                $ref: '#/components/schemas/ScaCliInfoRestResponse'
+      x-sonar-internal: 'true'
+  /v2/sca/analyses:
+    get:
+      tags:
+        - Analyses
+      summary: Fetch analysis status for one branch
+      description: |
+        Fetch analysis status information for a branch. If the branch has
+        never been analyzed, will return a status of 404.
+
+        This is an internal API and is subject to change without notice.
+      operationId: fetchAnalysis
+      parameters:
+        - name: projectKey
+          in: query
+          description: Key of the project to fetch analysis status from
+          required: true
+          schema:
+            type: string
+            description: Key of the project to fetch analysis status from
+        - name: branchKey
+          in: query
+          description: >-
+            Key of the branch to fetch analysis status from. If not provided,
+            the default branch will be used unless a pull request key is
+            provided.
+          required: false
+          schema:
+            type: string
+            description: >-
+              Key of the branch to fetch analysis status from. If not provided,
+              the default branch will be used unless a pull request key is
+              provided.
+        - name: pullRequestKey
+          in: query
+          description: Key of the pull request to fetch analysis status from.
+          required: false
+          schema:
+            type: string
+            description: Key of the pull request to fetch analysis status from.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnalysisResource'
+      x-sonar-internal: 'true'
+  /v2/jira/user-actions:
+    get:
+      tags:
+        - Jira
+      summary: Returns a list of available user actions for a project
+      description: >
+        Returns a list of available user actions for the authenticated user in
+        the context of a specific project.
+
+        If the user is not authenticated, returns an empty list.
+      operationId: य़_12
+      parameters:
+        - name: sonarProjectId
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+      x-sonar-internal: 'true'
+  /v2/jira/projects:
+    get:
+      tags:
+        - Jira
+      summary: Returns a list of all the available Jira projects
+      description: Returns a list of all the available Jira projects
+      operationId: य़_13
+      parameters:
+        - name: sonarOrganizationUuid
+          in: query
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/JiraProjectResultResource'
+      x-sonar-internal: 'true'
+  '/v2/jira/linked-issues-count/{sonarProjectId}':
+    get:
+      tags:
+        - Jira
+      summary: Count linked Jira issues
+      description: |
+        Count the number of Jira issues linked to a specific Sonar project.
+        Accepts only authenticated requests.
+      operationId: य़_14
+      parameters:
+        - name: sonarProjectId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LinkedIssuesCountResource'
+      x-sonar-internal: 'true'
+  '/v2/integrations/user-bindings/{id}':
+    get:
+      tags:
+        - Slack User Bindings
+      summary: Get Slack user binding
+      description: >
+        Retrieves a Slack user binding by its ID. Users can only access their
+        own bindings
+
+        unless they have administrative privileges.
+      operationId: getUserBinding
+      parameters: []
+      responses:
+        '200':
+          description: User binding retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserBindingResponse'
+        '401':
+          description: Authentication required
+        '403':
+          description: Insufficient permissions
+        '404':
+          description: User binding not found
+        '500':
+          description: Internal server error
+      x-sonar-internal: 'true'
+  /v2/fix-suggestions/supported-rules:
+    get:
+      tags:
+        - Fix Suggestions
+      summary: Get the supported rules
+      description: Returns the list of rules for which a fix suggestion can be generated
+      operationId: supportedRules
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupportedRulesDto'
       x-sonar-internal: 'true'
   /v2/fix-suggestions/supported-llm-providers:
     get:
       tags:
-        - supported-llm-provider-controller
+        - Fix Suggestions
       summary: Get the supported LLM providers
       description: >-
         Returns the LLM providers that could be used for requesting an AI fix
@@ -1903,12 +3667,13 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/LlmProviderResponseDto'
+      x-sonar-internal: 'true'
   /v2/fix-suggestions/service-info:
     get:
       tags:
-        - service-info-controller
-      summary: Request status and subscription information of AI CodeFix service
-      operationId: get
+        - Fix Suggestions
+      summary: Request status of AI CodeFix service
+      operationId: get_2
       responses:
         '200':
           description: OK
@@ -1916,26 +3681,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ServiceInfo'
-  /v2/fix-suggestions/service-info/subscription-type:
-    get:
-      tags:
-        - service-info-controller
-      summary: Request subscription information of AI CodeFix service
-      operationId: getSubscriptionType
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/SubscriptionTypeResponse'
+      x-sonar-internal: 'true'
   '/v2/fix-suggestions/issues/{issueId}':
     get:
       tags:
-        - fix-suggestion-issue-controller
+        - Fix Suggestions
       summary: Fetch AI suggestion availability for the given issueId
       description: Requires Code Viewer permission.
-      operationId: get_1
+      operationId: get_3
       parameters:
         - name: issueId
           in: path
@@ -1949,10 +3702,28 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FixSuggestionIssueResponse'
+  /v2/entitlements/purchasable-features:
+    get:
+      tags:
+        - Entitlements
+      summary: Returns a list of all available purchasable features for this edition
+      description: |2
+          Returns a list of all available purchasable features for this edition including the ones who are already purchased
+      operationId: getPurchasableFeatures
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PurchasableFeatureRestResponse'
+      x-sonar-internal: 'true'
   /v2/dop-translation/project-bindings:
     get:
       tags:
-        - project-bindings-controller
+        - Dop Translation
       summary: Search across project bindings
       operationId: getProjectBindingByProjectId
       parameters:
@@ -1974,6 +3745,21 @@ paths:
           schema:
             type: string
             description: Filter on the DevOps Platform setting id.
+        - name: repositoryUrl
+          in: query
+          description: >
+            Filter on the repository URL.
+
+            This parameter can be in different formats, the traditional URL or
+            the git remote URL (https or ssh).
+          required: false
+          schema:
+            type: string
+            description: >
+              Filter on the repository URL.
+
+              This parameter can be in different formats, the traditional URL or
+              the git remote URL (https or ssh).
         - name: pageSize
           in: query
           description: >-
@@ -1998,6 +3784,7 @@ paths:
             format: int32
             default: 1
             description: 1-based page index
+            exclusiveMinimum: 0
             minimum: 1
       responses:
         '200':
@@ -2010,7 +3797,7 @@ paths:
   '/v2/dop-translation/project-bindings/{id}':
     get:
       tags:
-        - project-bindings-controller
+        - Dop Translation
       summary: Fetch a single Project Binding
       operationId: getProjectBinding
       parameters:
@@ -2031,7 +3818,7 @@ paths:
   /v2/dop-translation/dop-settings:
     get:
       tags:
-        - dop-settings-controller
+        - Dop Translation
       summary: List all DevOps Platform Integration settings
       description: 'Requires the ''Create Projects'' permission '
       operationId: fetchAllDopSettings
@@ -2042,12 +3829,92 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/DopSettingsRestResponse'
+  /v2/atlassian/auth-url:
+    get:
+      tags:
+        - Atlassian
+      summary: Generate Jira authentication URL
+      description: |
+        Generate the authentication URL for Jira OAuth flow.
+        Requires authenticated user.
+      operationId: य़_15
+      parameters:
+        - name: sonarOrganizationKey
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: sonarOrganizationUuid
+          in: query
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+      x-sonar-internal: 'true'
+  /v2/architecture/graphs:
+    get:
+      tags:
+        - Architecture
+      summary: >-
+        Search all current graphs available for a branch. This endpoint do not
+        includes graph Data itself
+      operationId: य़_16
+      parameters:
+        - name: projectKey
+          in: query
+          description: The key of the project.
+          required: true
+          schema:
+            type: string
+        - name: branchKey
+          in: query
+          description: The key of the branch.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_p'
+      x-sonar-internal: 'true'
+  '/v2/architecture/graphs/{id}':
+    get:
+      tags:
+        - Architecture
+      summary: Get graph data by id.
+      description: Fetch the graph data produced by analysis.
+      operationId: य़_17
+      parameters:
+        - name: id
+          in: path
+          description: id of the graph data.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/graph+json:
+              schema:
+                type: string
+      x-sonar-internal: 'true'
   /v2/architecture/file-graph:
     get:
       tags:
-        - k
+        - Architecture
       summary: Find the file graph for this project branch and source.
-      operationId: 踼
+      operationId: य़_18
       parameters:
         - name: projectKey
           in: query
@@ -2078,7 +3945,7 @@ paths:
   /v2/analysis/version:
     get:
       tags:
-        - version-controller
+        - Analysis
       summary: Server version
       description: Get the version of the Scanner Engine
       operationId: getVersion
@@ -2092,7 +3959,7 @@ paths:
   /v2/analysis/jres:
     get:
       tags:
-        - jres-controller
+        - Analysis
       summary: All JREs metadata
       description: Get metadata of all available JREs
       operationId: getJresMetadata
@@ -2125,7 +3992,7 @@ paths:
   '/v2/analysis/jres/{id}':
     get:
       tags:
-        - jres-controller
+        - Analysis
       summary: JRE download/metadata
       description: >-
         This endpoint return the JRE metadata by default. To download the JRE
@@ -2145,20 +4012,15 @@ paths:
           content:
             application/octet-stream:
               schema:
-                oneOf:
-                  - $ref: '#/components/schemas/JreInfoRestResponse'
-                  - type: string
-                    format: binary
+                type: string
+                format: binary
             application/json:
               schema:
-                oneOf:
-                  - $ref: '#/components/schemas/JreInfoRestResponse'
-                  - type: string
-                    format: binary
+                $ref: '#/components/schemas/JreInfoRestResponse'
   /v2/analysis/engine:
     get:
       tags:
-        - scanner-engine-controller
+        - Analysis
       summary: Scanner engine download/metadata
       description: >-
         This endpoint return the Scanner Engine metadata by default. To download
@@ -2171,20 +4033,15 @@ paths:
           content:
             application/octet-stream:
               schema:
-                oneOf:
-                  - $ref: '#/components/schemas/EngineInfoRestResponse'
-                  - type: string
-                    format: binary
+                type: string
+                format: binary
             application/json:
               schema:
-                oneOf:
-                  - $ref: '#/components/schemas/EngineInfoRestResponse'
-                  - type: string
-                    format: binary
+                $ref: '#/components/schemas/EngineInfoRestResponse'
   /v2/analysis/active_rules:
     get:
       tags:
-        - active-rules-controller
+        - Analysis
       summary: Get all active rules for a specific project
       description: Used by the scanner-engine to get all active rules for a given project.
       operationId: getActiveRules
@@ -2204,13 +4061,32 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/ActiveRule'
+  '/v2/sca/license-profiles/assigned-projects/{project-key}':
+    delete:
+      tags:
+        - License Profiles
+      summary: Remove the project's assignment to the license profile.
+      description: |2
+           Remove the project's assignment to the license profile. If there is a default license profile,
+           it will be used to analyze license issues for this project.
+      operationId: delete_2
+      parameters:
+        - name: project-key
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: No Content
+      x-sonar-internal: 'true'
   '/v2/authorizations/group-memberships/{id}':
     delete:
       tags:
-        - group-membership-controller
+        - Authorizations
       summary: Remove a group membership
       description: Remove a user from a group
-      operationId: delete
+      operationId: delete_3
       parameters:
         - name: id
           in: path
@@ -3189,12 +5065,13 @@ components:
       properties:
         email:
           type: string
+          format: email
           description: User email
           maxLength: 100
           minLength: 1
         local:
           type: boolean
-          default: 'true'
+          default: true
           description: >-
             Specify if the user should be authenticated from SonarQube server or
             from an external authentication system. Password should not be set
@@ -3268,9 +5145,11 @@ components:
         host:
           type: string
           description: URL of your SMTP server
+          minLength: 1
         port:
           type: string
           description: 'Port of your SMTP server (usually 25, 587 or 465)'
+          minLength: 1
         securityProtocol:
           type: string
           description: >-
@@ -3283,14 +5162,17 @@ components:
         fromAddress:
           type: string
           description: Address emails will come from
+          minLength: 1
         fromName:
           type: string
           description: Name emails will come from (usually "SonarQube")
+          minLength: 1
         subjectPrefix:
           type: string
           description: >-
             Prefix added to email so they can be easily recognized (usually
             "[SonarQube]")
+          minLength: 1
         authMethod:
           type: string
           description: >-
@@ -3304,6 +5186,7 @@ components:
           description: >-
             For Basic and OAuth authentication: username used to authenticate to
             the SMTP server
+          minLength: 1
         basicPassword:
           type: string
           description: >-
@@ -3401,6 +5284,624 @@ components:
         oauthTenant:
           type: string
           description: 'For OAuth authentication: Microsoft tenant'
+    LicenseProfilesCreateRestRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The name of the license policy
+        default:
+          type: boolean
+          description: Whether this license policy is the default or not
+      required:
+        - name
+    LicenseProfileResource:
+      type: object
+      properties:
+        id:
+          type: string
+        key:
+          type: string
+        name:
+          type: string
+        default:
+          type: boolean
+        actions:
+          $ref: '#/components/schemas/LicenseProfileSingleActions'
+        updatedAt:
+          type: string
+    LicenseProfileSingleActions:
+      type: object
+      properties:
+        edit:
+          type: boolean
+        setAsDefault:
+          type: boolean
+        associateProjects:
+          type: boolean
+        delete:
+          type: boolean
+    UpdateAssigneeRestRequest:
+      type: object
+      properties:
+        issueReleaseKey:
+          type: string
+          description: Issue release key
+        assigneeLogin:
+          type: string
+          description: Assignee login
+      required:
+        - issueReleaseKey
+    AffectedPackageResource:
+      type: object
+      properties:
+        purl:
+          type: string
+        recommendation:
+          type: string
+          description: 'The maintainer''s overall recommendation, if available'
+          enum:
+            - ignore
+            - upgrade
+            - upgrade_or_workaround
+        recommendationDetails:
+          $ref: '#/components/schemas/VulnerabilityRecommendationDetailsResource'
+        versionOptions:
+          type: array
+          items:
+            $ref: '#/components/schemas/VersionOptionResource'
+        affectedVersions:
+          type: array
+          items:
+            type: string
+        unaffectedVersions:
+          type: string
+    IssueReleaseBranchResource:
+      type: object
+      properties:
+        uuid:
+          type: string
+        key:
+          type: string
+        isPullRequest:
+          type: boolean
+        projectKey:
+          type: string
+        projectName:
+          type: string
+        legacyProjectUuid:
+          type: string
+        organizationUuid:
+          type: string
+          format: uuid
+    IssueReleaseDetailsResource:
+      type: object
+      properties:
+        key:
+          type: string
+        severity:
+          type: string
+        originalSeverity:
+          type: string
+        manualSeverity:
+          type: string
+        showIncreasedSeverityWarning:
+          type: boolean
+        release:
+          $ref: '#/components/schemas/ReleaseSearchResource'
+        type:
+          type: string
+          enum:
+            - VULNERABILITY
+            - PROHIBITED_LICENSE
+        quality:
+          type: string
+          enum:
+            - MAINTAINABILITY
+            - RELIABILITY
+            - SECURITY
+        status:
+          type: string
+        createdAt:
+          type: string
+        assignee:
+          $ref: '#/components/schemas/UserResource'
+        commentCount:
+          type: integer
+          format: int32
+        vulnerability:
+          $ref: '#/components/schemas/VulnerabilityResource'
+        spdxLicenseId:
+          type: string
+        transitions:
+          type: array
+          items:
+            type: string
+            enum:
+              - CONFIRM
+              - REOPEN
+              - SAFE
+              - FIXED
+              - ACCEPT
+        actions:
+          type: array
+          items:
+            type: string
+            enum:
+              - COMMENT
+              - ASSIGN
+              - SET_SEVERITY
+          uniqueItems: true
+        branch:
+          $ref: '#/components/schemas/IssueReleaseBranchResource'
+    ReleaseSearchResource:
+      type: object
+      properties:
+        key:
+          type: string
+        branchUuid:
+          type: string
+        packageUrl:
+          type: string
+        packageManager:
+          type: string
+        packageName:
+          type: string
+        version:
+          type: string
+        licenseExpression:
+          type: string
+        known:
+          type: boolean
+        knownPackage:
+          type: boolean
+        newlyIntroduced:
+          type: boolean
+        directSummary:
+          type: boolean
+        scopeSummary:
+          type: string
+        productionScopeSummary:
+          type: boolean
+        dependencyFilePaths:
+          type: array
+          items:
+            type: string
+    UserResource:
+      type: object
+      properties:
+        login:
+          type: string
+        name:
+          type: string
+        avatar:
+          type: string
+        active:
+          type: boolean
+    VersionOptionResource:
+      type: object
+      properties:
+        version:
+          type: string
+          description: The version being presented as an option
+        vulnerabilityIds:
+          type: array
+          description: Vulnerability IDs affecting this version
+          items:
+            type: string
+        prerelease:
+          type: boolean
+          description: Is this version a pre-release version
+        fixLevel:
+          type: string
+          description: Describes which vulnerabilities are fixed
+          enum:
+            - COMPLETE
+            - PARTIAL
+            - NONE
+            - UNKNOWN
+        descriptionCode:
+          type: string
+          description: How the frontend should label this version
+          enum:
+            - VERSION_IN_USE
+            - NEAREST_PARTIAL
+            - NEAREST_COMPLETE
+            - LATEST_PARTIAL
+            - LATEST_COMPLETE
+            - LATEST_STABLE
+            - LATEST_PRERELEASE
+            - UNKNOWN
+    VulnerabilityRecommendationDetailsResource:
+      type: object
+      properties:
+        impactScore:
+          type: integer
+          format: int32
+        impactDescription:
+          type: string
+        realIssue:
+          type: boolean
+        falsePositiveReason:
+          type: string
+        includesDev:
+          type: boolean
+        specificMethodsAffected:
+          type: boolean
+        specificMethodsDescription:
+          type: string
+        otherConditions:
+          type: boolean
+        otherConditionsDescription:
+          type: string
+        workaroundAvailable:
+          type: boolean
+        workaroundDescription:
+          type: string
+        visibility:
+          type: string
+    VulnerabilityReportResource:
+      type: object
+      properties:
+        id:
+          type: string
+        url:
+          type: string
+        type:
+          type: string
+        cvssScore:
+          type: string
+        cvssSeverity:
+          type: string
+        withdrawnAt:
+          type: string
+    VulnerabilityResource:
+      type: object
+      properties:
+        vulnerabilityId:
+          type: string
+        reports:
+          type: array
+          items:
+            $ref: '#/components/schemas/VulnerabilityReportResource'
+        description:
+          type: string
+        epssPercentile:
+          type: string
+        epssProbability:
+          type: string
+        knownExploited:
+          type: boolean
+        cweIds:
+          type: array
+          items:
+            type: string
+        publishedOn:
+          type: string
+        affectedPackages:
+          type: array
+          items:
+            $ref: '#/components/schemas/AffectedPackageResource'
+        withdrawn:
+          type: boolean
+    IssueReleaseSetSeverityRestRequest:
+      type: object
+      properties:
+        issueReleaseKey:
+          type: string
+          description: Issue release key
+        quality:
+          type: string
+          description: Software Quality
+          enum:
+            - MAINTAINABILITY
+            - RELIABILITY
+            - SECURITY
+        severity:
+          type: string
+          description: Severity
+          enum:
+            - INFO
+            - LOW
+            - MEDIUM
+            - HIGH
+            - BLOCKER
+      required:
+        - issueReleaseKey
+        - quality
+        - severity
+    IssueReleaseClearSeverityWarningRestRequest:
+      type: object
+      properties:
+        issueReleaseKey:
+          type: string
+          description: Issue release key
+      required:
+        - issueReleaseKey
+    IssueReleaseStatusTransitionRequest:
+      type: object
+      properties:
+        issueReleaseKey:
+          type: string
+          description: Issue release key
+        transitionKey:
+          type: string
+          description: Transition key
+          enum:
+            - CONFIRM
+            - REOPEN
+            - SAFE
+            - FIXED
+            - ACCEPT
+        comment:
+          type: string
+          description: Transition comment
+      required:
+        - issueReleaseKey
+        - transitionKey
+    IssueReleaseAddCommentRestRequest:
+      type: object
+      properties:
+        issueReleaseKey:
+          type: string
+          description: Issue release key
+        comment:
+          type: string
+          description: comment
+      required:
+        - issueReleaseKey
+    AzureBillingRestResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+    PostJiraWorkItemRequestResource:
+      type: object
+      properties:
+        resourceId:
+          type: string
+          description: Resource identifier
+          minLength: 1
+          writeOnly: true
+        resourceType:
+          type: string
+          description: Resource type
+          enum:
+            - SONAR_ISSUE
+            - DEPENDENCY_RISK
+          writeOnly: true
+        sonarProjectId:
+          type: string
+          description: Sonar project identifier
+          minLength: 1
+          writeOnly: true
+        workTypeId:
+          type: string
+          description: Work type identifier
+          minLength: 1
+          writeOnly: true
+        summary:
+          type: string
+          description: Work item summary
+          minLength: 1
+          writeOnly: true
+        description:
+          type: string
+          description: Work item description
+          minLength: 1
+          writeOnly: true
+      required:
+        - description
+        - resourceId
+        - resourceType
+        - sonarProjectId
+        - summary
+        - workTypeId
+    JiraWorkItemResource:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Work item identifier
+          readOnly: true
+        jiraIssueId:
+          type: string
+          description: Jira issue identifier
+          readOnly: true
+        jiraIssueKey:
+          type: string
+          description: Jira issue key
+          readOnly: true
+        jiraIssueUrl:
+          type: string
+          description: Jira issue URL
+          readOnly: true
+        jiraIssueStatus:
+          type: string
+          description: Jira issue status
+          readOnly: true
+    PostJiraProjectBindingRequestResource:
+      type: object
+      properties:
+        sonarProjectId:
+          type: string
+          description: Sonar project identifier
+          minLength: 1
+          writeOnly: true
+        jiraOrganizationId:
+          type: string
+          description: Jira instance binding identifier
+          writeOnly: true
+        jiraProjectKey:
+          type: string
+          description: Jira project key
+          minLength: 1
+          writeOnly: true
+      required:
+        - jiraOrganizationId
+        - jiraProjectKey
+        - sonarProjectId
+    JiraProjectBindingResource:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Jira project binding identifier
+          readOnly: true
+        sonarProjectId:
+          type: string
+          description: Sonar project identifier
+          readOnly: true
+        jiraOrganizationId:
+          type: string
+          description: Jira instance binding identifier
+          readOnly: true
+        jiraProjectKey:
+          type: string
+          description: Jira project key
+          readOnly: true
+    PostJiraOrganizationBindingRequestResource:
+      type: object
+      properties:
+        state:
+          type: string
+          description: Base64-encoded OAuth state parameter
+          minLength: 1
+          writeOnly: true
+        authorizationCode:
+          type: string
+          description: OAuth authorization code (no whitespace)
+          minLength: 1
+          writeOnly: true
+      required:
+        - authorizationCode
+        - state
+    JiraOrganizationBindingResource:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Jira instance binding identifier
+          readOnly: true
+        sonarOrganizationUuid:
+          type: string
+          format: uuid
+          description: Sonar organization UUID
+          readOnly: true
+        jiraInstanceUrl:
+          type: string
+          description: Jira instance URL
+          readOnly: true
+        createdBy:
+          type: string
+          description: User who created or reauthorized the jira connection
+          readOnly: true
+        createdAt:
+          type: integer
+          format: int64
+          description: Creation timestamp
+          readOnly: true
+    OAuthResource:
+      type: object
+      properties:
+        cloudId:
+          type: string
+          description: The resource's cloud ID
+          readOnly: true
+        url:
+          type: string
+          description: The resource's URL
+          readOnly: true
+    PostJiraOrganizationBindingResponseResource:
+      type: object
+      properties:
+        binding:
+          $ref: '#/components/schemas/JiraOrganizationBindingResource'
+          description: The successfully created binding (present if binding was created)
+          readOnly: true
+        resources:
+          type: array
+          description: Array of available resources to bind the instance to
+          items:
+            $ref: '#/components/schemas/OAuthResource'
+          readOnly: true
+      required:
+        - resources
+    UserBindingCreationRequest:
+      type: object
+      description: User binding creation request
+      properties:
+        bindingData:
+          $ref: '#/components/schemas/UserBindingCreationRequestBindingData'
+        userId:
+          type: string
+          minLength: 1
+      required:
+        - bindingData
+        - userId
+    UserBindingCreationRequestBindingData:
+      type: object
+      properties:
+        code:
+          type: string
+          minLength: 1
+      required:
+        - code
+    UserBindingResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        user_id:
+          type: string
+        slack_user_id:
+          type: string
+        slack_workspace_id:
+          type: string
+        slack_workspace_name:
+          type: string
+        created_at:
+          type: integer
+          format: int64
+    IntegrationConfigurationPostRequest:
+      type: object
+      properties:
+        integrationType:
+          type: string
+          enum:
+            - SLACK
+        clientId:
+          type: string
+          minLength: 1
+        clientSecret:
+          type: string
+          minLength: 1
+        signingSecret:
+          type: string
+          minLength: 1
+      required:
+        - clientId
+        - clientSecret
+        - integrationType
+        - signingSecret
+    IntegrationConfigurationResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        integrationType:
+          type: string
+          enum:
+            - SLACK
+        clientId:
+          type: string
+        appId:
+          type: string
     AwarenessBannerClickedRequest:
       type: object
       properties:
@@ -3418,11 +5919,35 @@ components:
     FixSuggestionPostRequest:
       type: object
       properties:
+        projectKey:
+          type: string
         issueId:
           type: string
           description: Issue key
+        issue:
+          $ref: '#/components/schemas/Issue'
+          description: Issue
+    Issue:
+      type: object
+      properties:
+        message:
+          type: string
+        startLine:
+          type: integer
+          format: int32
+        endLine:
+          type: integer
+          format: int32
+        ruleKey:
+          type: string
+        sourceCode:
+          type: string
       required:
-        - issueId
+        - endLine
+        - message
+        - ruleKey
+        - sourceCode
+        - startLine
     ChangeDto:
       type: object
       properties:
@@ -3448,6 +5973,27 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ChangeDto'
+    LicenseRestRequest:
+      type: object
+      properties:
+        licenseKey:
+          type: string
+          description: New license key
+    LicenseUploadActivationRequest:
+      type: object
+      properties:
+        license:
+          type: string
+          description: Contents of a valid .lic file
+        licenseKey:
+          type: string
+          description: License key for the license
+    LegacyLicenseRestRequest:
+      type: object
+      properties:
+        licenseKey:
+          type: string
+          description: New license key
     GitlabSynchronizationRunResource:
       type: object
       properties:
@@ -3514,14 +6060,17 @@ components:
         applicationId:
           type: string
           description: Gitlab Application id
+          minLength: 1
         url:
           type: string
           description: >-
             Url of Gitlab instance for authentication (for instance
             https://gitlab.com)
+          minLength: 1
         secret:
           type: string
           description: Secret of the application
+          minLength: 1
           writeOnly: true
         synchronizeGroups:
           type: boolean
@@ -3598,16 +6147,19 @@ components:
         clientId:
           type: string
           description: Client ID provided by GitHub when registering the application.
+          minLength: 1
           writeOnly: true
         clientSecret:
           type: string
           description: Client password provided by GitHub when registering the application.
+          minLength: 1
           writeOnly: true
         applicationId:
           type: string
           description: >-
             The App ID is found on your GitHub App's page on GitHub at Settings
             > Developer Settings > GitHub Apps.
+          minLength: 1
         privateKey:
           type: string
           description: >
@@ -3615,6 +6167,7 @@ components:
             your GitHub App's page under Private keys.
 
             Copy and paste the whole contents of the file here.
+          minLength: 1
           writeOnly: true
         synchronizeGroups:
           type: boolean
@@ -3630,12 +6183,14 @@ components:
             The API url for a GitHub instance. https://api.github.com/ for
             Github.com, https://github.company.com/api/v3/ when using Github
             Enterprise
+          minLength: 1
         webUrl:
           type: string
           description: >
             The WEB url for a GitHub instance. https://github.com/ for
             Github.com, https://github.company.com/ when using GitHub
             Enterprise.
+          minLength: 1
         allowedOrganizations:
           type: array
           items:
@@ -3722,14 +6277,17 @@ components:
         projectKey:
           type: string
           description: Key of the project to create
+          minLength: 1
         projectName:
           type: string
           description: Name of the project to create
+          minLength: 1
         devOpsPlatformSettingId:
           type: string
           description: >-
             Identifier of DevOps platform configuration to use. Use
             /dop-translation/dop-settings to retrieve the settings and their ID
+          minLength: 1
         repositoryIdentifier:
           type: string
           description: |
@@ -3737,6 +6295,7 @@ components:
             - repository slug for GitHub and Bitbucket (Cloud and Server)
             - repository id for GitLab
             - repository name for Azure DevOps
+          minLength: 1
         projectIdentifier:
           type: string
           description: >
@@ -4066,6 +6625,24 @@ components:
         userId:
           type: string
           readOnly: true
+    AtlassianAuthenticationDetailsResource:
+      type: object
+      properties:
+        clientId:
+          type: string
+          description: Atlassian 3LO App Client ID
+          writeOnly: true
+        secret:
+          type: string
+          description: Atlassian 3LO App Secret
+          writeOnly: true
+    AtlassianAuthenticationDetailsResultResource:
+      type: object
+      properties:
+        clientId:
+          type: string
+          description: Atlassian 3LO App Client ID
+          readOnly: true
     UpdateFieldListString:
       type: object
       properties:
@@ -4075,19 +6652,14 @@ components:
             type: string
         defined:
           type: boolean
-    UpdateFieldString:
-      type: object
-      properties:
-        value:
-          type: string
-        defined:
-          type: boolean
     UserUpdateRestRequest:
       type: object
       properties:
         login:
-          $ref: '#/components/schemas/UpdateFieldString'
+          type: string
           description: User login
+          maxLength: 100
+          minLength: 2
         name:
           type: string
           description: User first name and last name
@@ -4095,11 +6667,14 @@ components:
           minLength: 0
         email:
           type: string
+          format: email
           description: Email
           maxLength: 100
           minLength: 1
         scmAccounts:
           $ref: '#/components/schemas/UpdateFieldListString'
+          items:
+            type: string
         externalProvider:
           type: string
           description: >
@@ -4189,6 +6764,111 @@ components:
         oauthTenant:
           type: string
           description: 'For OAuth authentication: Microsoft tenant'
+    LicenseProfilesUpdateRestRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The name of the license policy
+        default:
+          type: boolean
+          description: Whether this license policy is the default or not
+    LicensePolicyLicenseUpdateRestRequest:
+      type: object
+      properties:
+        policy:
+          type: string
+          description: The new status of this license.
+          enum:
+            - ALLOW
+            - DENY
+      required:
+        - policy
+    LicensePolicyLicenseResource:
+      type: object
+      properties:
+        id:
+          type: string
+        spdxLicenseId:
+          type: string
+        name:
+          type: string
+        category:
+          type: string
+          enum:
+            - UNKNOWN
+            - COPYLEFT_WEAK
+            - COPYLEFT_STRONG
+            - COPYLEFT_NETWORK
+            - COPYLEFT_MAXIMAL
+            - PERMISSIVE_STANDARD
+            - PERMISSIVE_AMATEUR
+        policy:
+          type: string
+          description: The policy status of this license.
+          enum:
+            - ALLOW
+            - DENY
+    LicenseProfileCategoryUpdateRestRequest:
+      type: object
+      properties:
+        policy:
+          type: string
+          description: The new status of this category.
+          enum:
+            - ALLOW
+            - DENY
+      required:
+        - policy
+    LicenseProfileCategoryResource:
+      type: object
+      properties:
+        id:
+          type: string
+        key:
+          type: string
+          enum:
+            - UNKNOWN
+            - COPYLEFT_WEAK
+            - COPYLEFT_STRONG
+            - COPYLEFT_NETWORK
+            - COPYLEFT_MAXIMAL
+            - PERMISSIVE_STANDARD
+            - PERMISSIVE_AMATEUR
+        policy:
+          type: string
+          description: The policy status of this category.
+          enum:
+            - ALLOW
+            - DENY
+    AssignedProjectsUpdateRestRequest:
+      type: object
+      properties:
+        licenseProfileUuid:
+          type: string
+          description: >-
+            The id of the license profile that should be used when analyzing the
+            project for license issues.
+        projectKey:
+          type: string
+          description: >-
+            The key of the project that should be assigned to the license
+            profile.
+      required:
+        - licenseProfileUuid
+        - projectKey
+    IssueReleaseUpdateCommentRestRequest:
+      type: object
+      properties:
+        issueReleaseChangeKey:
+          type: string
+          description: Issue release change key
+        comment:
+          type: string
+          description: Comment text
+      required:
+        - comment
+        - issueReleaseChangeKey
     FeatureEnablementRequest:
       type: object
       properties:
@@ -4200,6 +6880,156 @@ components:
       properties:
         enablement:
           type: boolean
+    JiraWorkTypesSelectionResource:
+      type: object
+      properties:
+        sonarProjectId:
+          type: string
+          description: The Sonar project ID
+          writeOnly: true
+        selectedWorkTypes:
+          type: array
+          description: An array with the selected work type ids
+          items:
+            type: string
+          writeOnly: true
+    PatchJiraProjectBindingRequestResource:
+      type: object
+      properties:
+        sonarProjectId:
+          type: string
+          description: Sonar project identifier
+          minLength: 1
+          writeOnly: true
+        jiraProjectKey:
+          type: string
+          description: Jira project key
+          minLength: 1
+          writeOnly: true
+      required:
+        - jiraProjectKey
+        - sonarProjectId
+    PatchJiraOrganizationBindingRequestResource:
+      type: object
+      properties:
+        sonarOrganizationUuid:
+          type: string
+          format: uuid
+          description: Sonar organization UUID
+          writeOnly: true
+        jiraCloudId:
+          type: string
+          description: Jira cloud ID to bind with the organization
+          minLength: 1
+          writeOnly: true
+        jiraInstanceUrl:
+          type: string
+          description: Jira instance URL
+          minLength: 1
+          writeOnly: true
+      required:
+        - jiraCloudId
+        - jiraInstanceUrl
+        - sonarOrganizationUuid
+    RuleTypeMapping:
+      type: object
+      properties:
+        type:
+          type: string
+          description: Rule type
+          enum:
+            - CODE_SMELL
+            - BUG
+            - VULNERABILITY
+            - SECURITY_HOTSPOT
+        severities:
+          type: array
+          description: List of severities
+          items:
+            type: string
+            enum:
+              - BLOCKER
+              - CRITICAL
+              - MAJOR
+              - MINOR
+              - INFO
+      required:
+        - severities
+        - type
+    SandboxSettingsResource:
+      type: object
+      properties:
+        enabled:
+          type: boolean
+          description: Whether sandbox is enabled globally
+        defaultValue:
+          type: boolean
+          description: Default value for projects
+        allowOverride:
+          type: boolean
+          description: Allow projects to override settings
+        softwareQualities:
+          type: array
+          description: Software quality mappings (MQR mode)
+          items:
+            $ref: '#/components/schemas/SoftwareQualityMapping'
+        types:
+          type: array
+          description: Rule type mappings (Standard Experience mode)
+          items:
+            $ref: '#/components/schemas/RuleTypeMapping'
+    SoftwareQualityMapping:
+      type: object
+      properties:
+        softwareQuality:
+          type: string
+          description: Software quality
+          enum:
+            - MAINTAINABILITY
+            - RELIABILITY
+            - SECURITY
+        impactSeverities:
+          type: array
+          description: List of impact severities
+          items:
+            type: string
+            enum:
+              - INFO
+              - LOW
+              - MEDIUM
+              - HIGH
+              - BLOCKER
+      required:
+        - impactSeverities
+        - softwareQuality
+    SandboxSettingsProjectResource:
+      type: object
+      properties:
+        enabled:
+          type: boolean
+          description: Whether sandbox is enabled for this project
+        softwareQualities:
+          type: array
+          description: Software quality mappings (MQR mode)
+          items:
+            $ref: '#/components/schemas/SoftwareQualityMapping'
+        types:
+          type: array
+          description: Rule type mappings (Standard Experience mode)
+          items:
+            $ref: '#/components/schemas/RuleTypeMapping'
+        overridden:
+          type: boolean
+          description: Whether project settings override instance settings
+    IntegrationConfigurationPatchRequest:
+      type: object
+      properties:
+        clientId:
+          type: string
+        clientSecret:
+          type: string
+        signingSecret:
+          type: string
     DevOpsPermissionMappingUpdateRequest:
       type: object
       properties:
@@ -4243,6 +7073,8 @@ components:
           description: Set whether to synchronize groups
         allowedGroups:
           $ref: '#/components/schemas/UpdateFieldListString'
+          items:
+            type: string
         provisioningType:
           type: string
           description: Type of synchronization
@@ -4290,6 +7122,8 @@ components:
             https://github.com)
         allowedOrganizations:
           $ref: '#/components/schemas/UpdateFieldListString'
+          items:
+            type: string
         provisioningType:
           type: string
           description: Type of synchronization
@@ -4392,33 +7226,126 @@ components:
             $ref: '#/components/schemas/EmailConfigurationResource'
         page:
           $ref: '#/components/schemas/PageRestResponse'
-    ReleaseSearchResource:
+    SelfTestHttpCallResource:
       type: object
       properties:
-        key:
+        attemptedUrl:
           type: string
-        packageUrl:
+        attemptedMethod:
           type: string
-        packageManager:
+        responseCode:
+          type: integer
+          format: int32
+        responseBody:
           type: string
-        packageName:
-          type: string
-        version:
-          type: string
-        licenseExpression:
-          type: string
-        known:
+        responseBodyAppearsValid:
           type: boolean
-        newInPullRequest:
+        responseHeaders:
+          type: array
+          items:
+            type: array
+            items:
+              type: string
+    SelfTestResponse:
+      type: object
+      properties:
+        featureEnabled:
           type: boolean
-        directSummary:
+        selfTestPassed:
           type: boolean
-        scopeSummary:
+        cliVersionCheck:
+          $ref: '#/components/schemas/SelfTestHttpCallResource'
+        vulnerabilityDetailsCheck:
+          $ref: '#/components/schemas/SelfTestHttpCallResource'
+    SelfTestSpringConfigurationResponse:
+      type: object
+      properties:
+        springVersion:
           type: string
-        dependencyFilePaths:
+    RiskReportItem:
+      type: object
+      properties:
+        projectKey:
+          type: string
+        projectName:
+          type: string
+        branchKey:
+          type: string
+        riskTitle:
+          type: string
+        riskType:
+          type: string
+          enum:
+            - VULNERABILITY
+            - PROHIBITED_LICENSE
+        riskSeverity:
+          type: string
+          enum:
+            - INFO
+            - LOW
+            - MEDIUM
+            - HIGH
+            - BLOCKER
+        riskStatus:
+          type: string
+          enum:
+            - OPEN
+            - ACCEPT
+            - CONFIRM
+            - SAFE
+            - FIXED
+        statusChanges:
+          type: array
+          items:
+            $ref: '#/components/schemas/StatusChange'
+        vulnerabilityId:
+          type: string
+        cvssScore:
+          type: number
+        cweIds:
           type: array
           items:
             type: string
+        publishedOn:
+          type: string
+        createdAt:
+          type: string
+        packageUrl:
+          type: string
+        riskUrl:
+          type: string
+        dependencyChains:
+          type: array
+          items:
+            type: array
+            items:
+              type: string
+        scope:
+          type: string
+        productionScope:
+          type: boolean
+    StatusChange:
+      type: object
+      properties:
+        comment:
+          type: string
+        newStatus:
+          type: string
+        createdAt:
+          type: string
+    BranchResource:
+      type: object
+      properties:
+        uuid:
+          type: string
+        key:
+          type: string
+        isPullRequest:
+          type: boolean
+        projectKey:
+          type: string
+        projectName:
+          type: string
     ReleasesSearchRestResponse:
       type: object
       properties:
@@ -4430,6 +7357,13 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ScaReleaseByPackageManagerCountDto'
+        branches:
+          type: array
+          items:
+            $ref: '#/components/schemas/BranchResource'
+        countWithoutFilters:
+          type: integer
+          format: int32
         page:
           $ref: '#/components/schemas/PageRestResponse'
     ScaReleaseByPackageManagerCountDto:
@@ -4461,7 +7395,7 @@ components:
             type: array
             items:
               type: string
-        newInPullRequest:
+        newlyIntroduced:
           type: boolean
     IssueResource:
       type: object
@@ -4470,10 +7404,23 @@ components:
           type: string
         severity:
           type: string
+        showIncreasedSeverityWarning:
+          type: boolean
         type:
           type: string
+          enum:
+            - VULNERABILITY
+            - PROHIBITED_LICENSE
+        quality:
+          type: string
+          enum:
+            - MAINTAINABILITY
+            - RELIABILITY
+            - SECURITY
         createdAt:
           type: string
+        assignee:
+          $ref: '#/components/schemas/UserResource'
         vulnerabilityId:
           type: string
         cweIds:
@@ -4489,6 +7436,8 @@ components:
       properties:
         key:
           type: string
+        branchUuid:
+          type: string
         packageUrl:
           type: string
         packageManager:
@@ -4501,7 +7450,9 @@ components:
           type: string
         known:
           type: boolean
-        newInPullRequest:
+        knownPackage:
+          type: boolean
+        newlyIntroduced:
           type: boolean
         directSummary:
           type: boolean
@@ -4517,19 +7468,88 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/IssueResource'
-    DependencyRiskResource:
+        branch:
+          $ref: '#/components/schemas/BranchResource'
+    LicenseProfileCollectionActions:
+      type: object
+      properties:
+        create:
+          type: boolean
+    LicenseProfileIndexRestResponse:
+      type: object
+      properties:
+        licenseProfiles:
+          type: array
+          items:
+            $ref: '#/components/schemas/LicenseProfileResource'
+        actions:
+          $ref: '#/components/schemas/LicenseProfileCollectionActions'
+    LicenseProfileDetailsResource:
+      type: object
+      properties:
+        profile:
+          $ref: '#/components/schemas/LicenseProfileResource'
+        categories:
+          type: array
+          items:
+            $ref: '#/components/schemas/LicenseProfileCategoryResource'
+        licenses:
+          type: array
+          items:
+            $ref: '#/components/schemas/LicensePolicyLicenseResource'
+    AssignableProjectResource:
+      type: object
+      properties:
+        projectKey:
+          type: string
+        projectName:
+          type: string
+        assignedToLicenseProfile:
+          type: boolean
+    AssignableProjectsIndexRestResponse:
+      type: object
+      properties:
+        assignableProjects:
+          type: array
+          items:
+            $ref: '#/components/schemas/AssignableProjectResource'
+        page:
+          $ref: '#/components/schemas/PageRestResponse'
+    IssueReleaseResource:
       type: object
       properties:
         key:
           type: string
         severity:
           type: string
+        originalSeverity:
+          type: string
+        manualSeverity:
+          type: string
+        showIncreasedSeverityWarning:
+          type: boolean
         release:
           $ref: '#/components/schemas/ReleaseSearchResource'
         type:
           type: string
+          enum:
+            - VULNERABILITY
+            - PROHIBITED_LICENSE
+        quality:
+          type: string
+          enum:
+            - MAINTAINABILITY
+            - RELIABILITY
+            - SECURITY
+        status:
+          type: string
         createdAt:
           type: string
+        assignee:
+          $ref: '#/components/schemas/UserResource'
+        commentCount:
+          type: integer
+          format: int32
         vulnerabilityId:
           type: string
         cweIds:
@@ -4538,153 +7558,91 @@ components:
             type: string
         cvssScore:
           type: string
+        withdrawn:
+          type: boolean
         spdxLicenseId:
           type: string
-    DependencyRisksSearchRestResponse:
+        transitions:
+          type: array
+          items:
+            type: string
+            enum:
+              - CONFIRM
+              - REOPEN
+              - SAFE
+              - FIXED
+              - ACCEPT
+        actions:
+          type: array
+          items:
+            type: string
+            enum:
+              - COMMENT
+              - ASSIGN
+              - SET_SEVERITY
+          uniqueItems: true
+    IssuesReleasesSearchRestResponse:
       type: object
       properties:
         issuesReleases:
           type: array
           items:
-            $ref: '#/components/schemas/DependencyRiskResource'
+            $ref: '#/components/schemas/IssueReleaseResource'
+        branches:
+          type: array
+          items:
+            $ref: '#/components/schemas/IssueReleaseBranchResource'
+        countWithoutFilters:
+          type: integer
+          format: int32
         page:
           $ref: '#/components/schemas/PageRestResponse'
-    AffectedPackageResource:
+    IssueReleaseChangeDiffResource:
       type: object
       properties:
-        purl:
+        fieldName:
           type: string
-        recommendation:
+        oldValue:
           type: string
-        recommendationDetails:
-          $ref: '#/components/schemas/VulnerabilityRecommendationDetailsResource'
-        versionOptions:
-          type: array
-          items:
-            $ref: '#/components/schemas/VersionOptionResource'
-        affectedVersions:
-          type: array
-          items:
-            type: string
-        unaffectedVersions:
+        newValue:
           type: string
-    DependencyRiskDetailsResource:
+    IssueReleaseChangeResource:
       type: object
       properties:
         key:
           type: string
-        severity:
-          type: string
-        release:
-          $ref: '#/components/schemas/ReleaseSearchResource'
-        type:
-          type: string
         createdAt:
           type: string
-        vulnerability:
-          $ref: '#/components/schemas/VulnerabilityResource'
-        spdxLicenseId:
+        user:
+          $ref: '#/components/schemas/UserResource'
+        markdownComment:
           type: string
-    VersionOptionResource:
-      type: object
-      properties:
-        version:
+        htmlComment:
           type: string
-          description: The version being presented as an option
-        vulnerabilityIds:
-          type: array
-          description: Vulnerability IDs affecting this version
-          items:
-            type: string
-        prerelease:
-          type: boolean
-          description: Is this version a pre-release version
-        fixLevel:
-          type: string
-          description: Describes which vulnerabilities are fixed
-          enum:
-            - COMPLETE
-            - PARTIAL
-            - NONE
-            - UNKNOWN
-        descriptionCode:
-          type: string
-          description: How the frontend should label this version
-          enum:
-            - VERSION_IN_USE
-            - NEAREST_PARTIAL
-            - NEAREST_COMPLETE
-            - LATEST_PARTIAL
-            - LATEST_COMPLETE
-            - LATEST_STABLE
-            - LATEST_PRERELEASE
-            - UNKNOWN
-    VulnerabilityRecommendationDetailsResource:
-      type: object
-      properties:
-        impactScore:
-          type: integer
-          format: int32
-        impactDescription:
-          type: string
-        realIssue:
-          type: boolean
-        falsePositiveReason:
-          type: string
-        includesDev:
-          type: boolean
-        specificMethodsAffected:
-          type: boolean
-        specificMethodsDescription:
-          type: string
-        otherConditions:
-          type: boolean
-        otherConditionsDescription:
-          type: string
-        workaroundAvailable:
-          type: boolean
-        workaroundDescription:
-          type: string
-        visibility:
-          type: string
-    VulnerabilityReportResource:
-      type: object
-      properties:
-        id:
-          type: string
-        url:
-          type: string
-        type:
-          type: string
-        cvssScore:
-          type: string
-        cvssSeverity:
-          type: string
-    VulnerabilityResource:
-      type: object
-      properties:
-        vulnerabilityId:
-          type: string
-        reports:
+        changeData:
           type: array
           items:
-            $ref: '#/components/schemas/VulnerabilityReportResource'
-        description:
-          type: string
-        epssPercentile:
-          type: string
-        epssProbability:
-          type: string
-        knownExploited:
-          type: boolean
-        cweIds:
+            $ref: '#/components/schemas/IssueReleaseChangeDiffResource'
+        actions:
           type: array
           items:
             type: string
-        affectedPackages:
+            enum:
+              - EDIT_COMMENT
+              - DELETE_COMMENT
+          uniqueItems: true
+    IssuesReleasesChangesRestResponse:
+      type: object
+      properties:
+        changelog:
           type: array
           items:
-            $ref: '#/components/schemas/AffectedPackageResource'
+            $ref: '#/components/schemas/IssueReleaseChangeResource'
+    ScaFeatureEnabledResource:
+      type: object
+      properties:
+        enabled:
+          type: boolean
     ScaCliInfoRestResponse:
       type: object
       properties:
@@ -4698,6 +7656,128 @@ components:
           type: string
         arch:
           type: string
+    AnalysisErrorResource:
+      type: object
+      properties:
+        code:
+          type: string
+          enum:
+            - UNKNOWN
+            - NO_DEPENDENCIES_FOUND
+            - DEPENDENCY_FILES_PARSE_ERROR
+            - UNSUPPORTED_PLATFORM
+            - INEXACT_VERSIONS
+            - MISSING_LOCKFILE
+        path:
+          type: string
+        message:
+          type: string
+    AnalysisResource:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+            - FAILED
+            - OUTDATED
+            - COMPLETED
+        failedReason:
+          type: string
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/AnalysisErrorResource'
+        parsedFiles:
+          type: array
+          items:
+            type: string
+    JiraWorkTypeFieldResultResource:
+      type: object
+      properties:
+        key:
+          type: string
+          description: The field key
+          readOnly: true
+        name:
+          type: string
+          description: The field name
+          readOnly: true
+        required:
+          type: boolean
+          description: Whether the field is required
+          readOnly: true
+        hasDefaultValue:
+          type: boolean
+          description: Whether the field has a default value
+          readOnly: true
+    JiraWorkTypeResultResource:
+      type: object
+      properties:
+        id:
+          type: string
+          description: the Jira work type id
+          readOnly: true
+        name:
+          type: string
+          description: the Jira work type name
+          readOnly: true
+        description:
+          type: string
+          description: the Jira work type description
+          readOnly: true
+        subtask:
+          type: boolean
+          description: 'true, if the Jira work type is a subtask'
+          readOnly: true
+        hierarchyLevel:
+          type: integer
+          format: int32
+          description: the Jira work type hierarchy
+          readOnly: true
+        selected:
+          type: boolean
+          description: 'true, if the Jira work type is selected'
+          readOnly: true
+        fields:
+          type: array
+          description: Array of field metadata for the specified work type. (Optional)
+          items:
+            $ref: '#/components/schemas/JiraWorkTypeFieldResultResource'
+          readOnly: true
+    JiraProjectResultResource:
+      type: object
+      properties:
+        name:
+          type: string
+          description: the name of the project
+          readOnly: true
+        key:
+          type: string
+          description: the key of the project
+          readOnly: true
+    LinkedIssuesCountResource:
+      type: object
+      properties:
+        count:
+          type: integer
+          format: int32
+          description: Count of linked Jira issues
+          readOnly: true
+    IntegrationConfigurationSearchResponse:
+      type: object
+      properties:
+        integrationConfigurations:
+          type: array
+          items:
+            $ref: '#/components/schemas/IntegrationConfigurationResponse'
+    SupportedRulesDto:
+      type: object
+      properties:
+        rules:
+          type: array
+          items:
+            type: string
+          uniqueItems: true
     LlmModelDto:
       type: object
       properties:
@@ -4731,23 +7811,6 @@ components:
             - SUCCESS
             - TIMEOUT
             - UNAUTHORIZED
-        isEnabled:
-          type: boolean
-        subscriptionType:
-          type: string
-          enum:
-            - EARLY_ACCESS
-            - PAID
-            - NOT_PAID
-    SubscriptionTypeResponse:
-      type: object
-      properties:
-        subscriptionType:
-          type: string
-          enum:
-            - EARLY_ACCESS
-            - PAID
-            - NOT_PAID
     FixSuggestionIssueResponse:
       type: object
       properties:
@@ -4785,6 +7848,87 @@ components:
           type: string
         endpoint:
           type: string
+    PurchasableFeatureRestResponse:
+      type: object
+      properties:
+        featureKey:
+          type: string
+        parent:
+          type: string
+        isEnabled:
+          type: boolean
+        isAvailable:
+          type: boolean
+        url:
+          type: string
+    LicenseFeatureRestResponse:
+      type: object
+      properties:
+        name:
+          type: string
+        parent:
+          type: string
+        startDate:
+          type: string
+        endDate:
+          type: string
+    LicenseRestResponse:
+      type: object
+      properties:
+        expirationDate:
+          type: string
+        lastRefreshDate:
+          type: string
+        edition:
+          type: string
+        features:
+          type: array
+          items:
+            $ref: '#/components/schemas/LicenseFeatureRestResponse'
+        maxLoc:
+          type: integer
+          format: int64
+        loc:
+          type: integer
+          format: int64
+        serverId:
+          type: string
+        type:
+          type: string
+        contactEmail:
+          type: string
+        remainingLocThreshold:
+          type: integer
+          format: int64
+        canActivateGracePeriod:
+          type: boolean
+        gracePeriodEndDate:
+          type: string
+        gracePeriodExpired:
+          type: boolean
+        extraDays:
+          type: integer
+          format: int32
+        startDate:
+          type: string
+        activatedOnline:
+          type: boolean
+        licenseKey:
+          type: string
+        expired:
+          type: boolean
+        validEdition:
+          type: boolean
+        validServerId:
+          type: boolean
+        officialDistribution:
+          type: boolean
+        supported:
+          type: boolean
+        legacy:
+          type: boolean
+        disabled:
+          type: boolean
     ProjectBinding:
       type: object
       properties:
@@ -4883,6 +8027,38 @@ components:
             $ref: '#/components/schemas/GroupMembershipRestResponse'
         page:
           $ref: '#/components/schemas/PageRestResponse'
+    _e:
+      type: object
+      properties:
+        id:
+          type: string
+        branchId:
+          type: string
+        type:
+          type: string
+          enum:
+            - file_graph
+            - namespace_graph
+        ecosystem:
+          type: string
+          enum:
+            - java
+            - js
+            - ts
+            - py
+            - cs
+            - xoo
+        perspectiveKey:
+          type: string
+        graphVersion:
+          type: string
+    _p:
+      type: object
+      properties:
+        graphs:
+          type: array
+          items:
+            $ref: '#/components/schemas/_e'
     JreInfoRestResponse:
       type: object
       properties:

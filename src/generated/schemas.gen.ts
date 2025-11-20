@@ -5,13 +5,14 @@ export const UserCreateRestRequestSchema = {
   properties: {
     email: {
       type: 'string',
+      format: 'email',
       description: 'User email',
       maxLength: 100,
       minLength: 1,
     },
     local: {
       type: 'boolean',
-      default: 'true',
+      default: true,
       description:
         'Specify if the user should be authenticated from SonarQube server or from an external authentication system. Password should not be set when local is set to false.',
     },
@@ -101,10 +102,12 @@ export const EmailConfigurationCreateRestRequestSchema = {
     host: {
       type: 'string',
       description: 'URL of your SMTP server',
+      minLength: 1,
     },
     port: {
       type: 'string',
       description: 'Port of your SMTP server (usually 25, 587 or 465)',
+      minLength: 1,
     },
     securityProtocol: {
       type: 'string',
@@ -115,15 +118,18 @@ export const EmailConfigurationCreateRestRequestSchema = {
     fromAddress: {
       type: 'string',
       description: 'Address emails will come from',
+      minLength: 1,
     },
     fromName: {
       type: 'string',
       description: 'Name emails will come from (usually "SonarQube")',
+      minLength: 1,
     },
     subjectPrefix: {
       type: 'string',
       description:
         'Prefix added to email so they can be easily recognized (usually "[SonarQube]")',
+      minLength: 1,
     },
     authMethod: {
       type: 'string',
@@ -135,6 +141,7 @@ export const EmailConfigurationCreateRestRequestSchema = {
       type: 'string',
       description:
         'For Basic and OAuth authentication: username used to authenticate to the SMTP server',
+      minLength: 1,
     },
     oauthAuthenticationHost: {
       type: 'string',
@@ -229,6 +236,823 @@ export const EmailConfigurationResourceSchema = {
   },
 } as const;
 
+export const LicenseProfilesCreateRestRequestSchema = {
+  type: 'object',
+  properties: {
+    name: {
+      type: 'string',
+      description: 'The name of the license policy',
+    },
+    default: {
+      type: 'boolean',
+      description: 'Whether this license policy is the default or not',
+    },
+  },
+  required: ['name'],
+} as const;
+
+export const LicenseProfileResourceSchema = {
+  type: 'object',
+  properties: {
+    id: {
+      type: 'string',
+    },
+    key: {
+      type: 'string',
+    },
+    name: {
+      type: 'string',
+    },
+    default: {
+      type: 'boolean',
+    },
+    actions: {
+      $ref: '#/components/schemas/LicenseProfileSingleActions',
+    },
+    updatedAt: {
+      type: 'string',
+    },
+  },
+} as const;
+
+export const LicenseProfileSingleActionsSchema = {
+  type: 'object',
+  properties: {
+    edit: {
+      type: 'boolean',
+    },
+    setAsDefault: {
+      type: 'boolean',
+    },
+    associateProjects: {
+      type: 'boolean',
+    },
+    delete: {
+      type: 'boolean',
+    },
+  },
+} as const;
+
+export const UpdateAssigneeRestRequestSchema = {
+  type: 'object',
+  properties: {
+    issueReleaseKey: {
+      type: 'string',
+      description: 'Issue release key',
+    },
+    assigneeLogin: {
+      type: 'string',
+      description: 'Assignee login',
+    },
+  },
+  required: ['issueReleaseKey'],
+} as const;
+
+export const AffectedPackageResourceSchema = {
+  type: 'object',
+  properties: {
+    purl: {
+      type: 'string',
+    },
+    recommendation: {
+      type: 'string',
+      description: "The maintainer's overall recommendation, if available",
+      enum: ['ignore', 'upgrade', 'upgrade_or_workaround'],
+    },
+    recommendationDetails: {
+      $ref: '#/components/schemas/VulnerabilityRecommendationDetailsResource',
+    },
+    versionOptions: {
+      type: 'array',
+      items: {
+        $ref: '#/components/schemas/VersionOptionResource',
+      },
+    },
+    affectedVersions: {
+      type: 'array',
+      items: {
+        type: 'string',
+      },
+    },
+    unaffectedVersions: {
+      type: 'string',
+    },
+  },
+} as const;
+
+export const IssueReleaseBranchResourceSchema = {
+  type: 'object',
+  properties: {
+    uuid: {
+      type: 'string',
+    },
+    key: {
+      type: 'string',
+    },
+    isPullRequest: {
+      type: 'boolean',
+    },
+    projectKey: {
+      type: 'string',
+    },
+    projectName: {
+      type: 'string',
+    },
+    legacyProjectUuid: {
+      type: 'string',
+    },
+    organizationUuid: {
+      type: 'string',
+      format: 'uuid',
+    },
+  },
+} as const;
+
+export const IssueReleaseDetailsResourceSchema = {
+  type: 'object',
+  properties: {
+    key: {
+      type: 'string',
+    },
+    severity: {
+      type: 'string',
+    },
+    originalSeverity: {
+      type: 'string',
+    },
+    manualSeverity: {
+      type: 'string',
+    },
+    showIncreasedSeverityWarning: {
+      type: 'boolean',
+    },
+    release: {
+      $ref: '#/components/schemas/ReleaseSearchResource',
+    },
+    type: {
+      type: 'string',
+      enum: ['VULNERABILITY', 'PROHIBITED_LICENSE'],
+    },
+    quality: {
+      type: 'string',
+      enum: ['MAINTAINABILITY', 'RELIABILITY', 'SECURITY'],
+    },
+    status: {
+      type: 'string',
+    },
+    createdAt: {
+      type: 'string',
+    },
+    assignee: {
+      $ref: '#/components/schemas/UserResource',
+    },
+    commentCount: {
+      type: 'integer',
+      format: 'int32',
+    },
+    vulnerability: {
+      $ref: '#/components/schemas/VulnerabilityResource',
+    },
+    spdxLicenseId: {
+      type: 'string',
+    },
+    transitions: {
+      type: 'array',
+      items: {
+        type: 'string',
+        enum: ['CONFIRM', 'REOPEN', 'SAFE', 'FIXED', 'ACCEPT'],
+      },
+    },
+    actions: {
+      type: 'array',
+      items: {
+        type: 'string',
+        enum: ['COMMENT', 'ASSIGN', 'SET_SEVERITY'],
+      },
+      uniqueItems: true,
+    },
+    branch: {
+      $ref: '#/components/schemas/IssueReleaseBranchResource',
+    },
+  },
+} as const;
+
+export const ReleaseSearchResourceSchema = {
+  type: 'object',
+  properties: {
+    key: {
+      type: 'string',
+    },
+    branchUuid: {
+      type: 'string',
+    },
+    packageUrl: {
+      type: 'string',
+    },
+    packageManager: {
+      type: 'string',
+    },
+    packageName: {
+      type: 'string',
+    },
+    version: {
+      type: 'string',
+    },
+    licenseExpression: {
+      type: 'string',
+    },
+    known: {
+      type: 'boolean',
+    },
+    knownPackage: {
+      type: 'boolean',
+    },
+    newlyIntroduced: {
+      type: 'boolean',
+    },
+    directSummary: {
+      type: 'boolean',
+    },
+    scopeSummary: {
+      type: 'string',
+    },
+    productionScopeSummary: {
+      type: 'boolean',
+    },
+    dependencyFilePaths: {
+      type: 'array',
+      items: {
+        type: 'string',
+      },
+    },
+  },
+} as const;
+
+export const UserResourceSchema = {
+  type: 'object',
+  properties: {
+    login: {
+      type: 'string',
+    },
+    name: {
+      type: 'string',
+    },
+    avatar: {
+      type: 'string',
+    },
+    active: {
+      type: 'boolean',
+    },
+  },
+} as const;
+
+export const VersionOptionResourceSchema = {
+  type: 'object',
+  properties: {
+    version: {
+      type: 'string',
+      description: 'The version being presented as an option',
+    },
+    vulnerabilityIds: {
+      type: 'array',
+      description: 'Vulnerability IDs affecting this version',
+      items: {
+        type: 'string',
+      },
+    },
+    prerelease: {
+      type: 'boolean',
+      description: 'Is this version a pre-release version',
+    },
+    fixLevel: {
+      type: 'string',
+      description: 'Describes which vulnerabilities are fixed',
+      enum: ['COMPLETE', 'PARTIAL', 'NONE', 'UNKNOWN'],
+    },
+    descriptionCode: {
+      type: 'string',
+      description: 'How the frontend should label this version',
+      enum: [
+        'VERSION_IN_USE',
+        'NEAREST_PARTIAL',
+        'NEAREST_COMPLETE',
+        'LATEST_PARTIAL',
+        'LATEST_COMPLETE',
+        'LATEST_STABLE',
+        'LATEST_PRERELEASE',
+        'UNKNOWN',
+      ],
+    },
+  },
+} as const;
+
+export const VulnerabilityRecommendationDetailsResourceSchema = {
+  type: 'object',
+  properties: {
+    impactScore: {
+      type: 'integer',
+      format: 'int32',
+    },
+    impactDescription: {
+      type: 'string',
+    },
+    realIssue: {
+      type: 'boolean',
+    },
+    falsePositiveReason: {
+      type: 'string',
+    },
+    includesDev: {
+      type: 'boolean',
+    },
+    specificMethodsAffected: {
+      type: 'boolean',
+    },
+    specificMethodsDescription: {
+      type: 'string',
+    },
+    otherConditions: {
+      type: 'boolean',
+    },
+    otherConditionsDescription: {
+      type: 'string',
+    },
+    workaroundAvailable: {
+      type: 'boolean',
+    },
+    workaroundDescription: {
+      type: 'string',
+    },
+    visibility: {
+      type: 'string',
+    },
+  },
+} as const;
+
+export const VulnerabilityReportResourceSchema = {
+  type: 'object',
+  properties: {
+    id: {
+      type: 'string',
+    },
+    url: {
+      type: 'string',
+    },
+    type: {
+      type: 'string',
+    },
+    cvssScore: {
+      type: 'string',
+    },
+    cvssSeverity: {
+      type: 'string',
+    },
+    withdrawnAt: {
+      type: 'string',
+    },
+  },
+} as const;
+
+export const VulnerabilityResourceSchema = {
+  type: 'object',
+  properties: {
+    vulnerabilityId: {
+      type: 'string',
+    },
+    reports: {
+      type: 'array',
+      items: {
+        $ref: '#/components/schemas/VulnerabilityReportResource',
+      },
+    },
+    description: {
+      type: 'string',
+    },
+    epssPercentile: {
+      type: 'string',
+    },
+    epssProbability: {
+      type: 'string',
+    },
+    knownExploited: {
+      type: 'boolean',
+    },
+    cweIds: {
+      type: 'array',
+      items: {
+        type: 'string',
+      },
+    },
+    publishedOn: {
+      type: 'string',
+    },
+    affectedPackages: {
+      type: 'array',
+      items: {
+        $ref: '#/components/schemas/AffectedPackageResource',
+      },
+    },
+    withdrawn: {
+      type: 'boolean',
+    },
+  },
+} as const;
+
+export const IssueReleaseSetSeverityRestRequestSchema = {
+  type: 'object',
+  properties: {
+    issueReleaseKey: {
+      type: 'string',
+      description: 'Issue release key',
+    },
+    quality: {
+      type: 'string',
+      description: 'Software Quality',
+      enum: ['MAINTAINABILITY', 'RELIABILITY', 'SECURITY'],
+    },
+    severity: {
+      type: 'string',
+      description: 'Severity',
+      enum: ['INFO', 'LOW', 'MEDIUM', 'HIGH', 'BLOCKER'],
+    },
+  },
+  required: ['issueReleaseKey', 'quality', 'severity'],
+} as const;
+
+export const IssueReleaseClearSeverityWarningRestRequestSchema = {
+  type: 'object',
+  properties: {
+    issueReleaseKey: {
+      type: 'string',
+      description: 'Issue release key',
+    },
+  },
+  required: ['issueReleaseKey'],
+} as const;
+
+export const IssueReleaseStatusTransitionRequestSchema = {
+  type: 'object',
+  properties: {
+    issueReleaseKey: {
+      type: 'string',
+      description: 'Issue release key',
+    },
+    transitionKey: {
+      type: 'string',
+      description: 'Transition key',
+      enum: ['CONFIRM', 'REOPEN', 'SAFE', 'FIXED', 'ACCEPT'],
+    },
+    comment: {
+      type: 'string',
+      description: 'Transition comment',
+    },
+  },
+  required: ['issueReleaseKey', 'transitionKey'],
+} as const;
+
+export const IssueReleaseAddCommentRestRequestSchema = {
+  type: 'object',
+  properties: {
+    issueReleaseKey: {
+      type: 'string',
+      description: 'Issue release key',
+    },
+    comment: {
+      type: 'string',
+      description: 'comment',
+    },
+  },
+  required: ['issueReleaseKey'],
+} as const;
+
+export const AzureBillingRestResponseSchema = {
+  type: 'object',
+  properties: {
+    success: {
+      type: 'boolean',
+    },
+    message: {
+      type: 'string',
+    },
+  },
+} as const;
+
+export const PostJiraWorkItemRequestResourceSchema = {
+  type: 'object',
+  properties: {
+    resourceId: {
+      type: 'string',
+      description: 'Resource identifier',
+      minLength: 1,
+      writeOnly: true,
+    },
+    resourceType: {
+      type: 'string',
+      description: 'Resource type',
+      enum: ['SONAR_ISSUE', 'DEPENDENCY_RISK'],
+      writeOnly: true,
+    },
+    sonarProjectId: {
+      type: 'string',
+      description: 'Sonar project identifier',
+      minLength: 1,
+      writeOnly: true,
+    },
+    workTypeId: {
+      type: 'string',
+      description: 'Work type identifier',
+      minLength: 1,
+      writeOnly: true,
+    },
+    summary: {
+      type: 'string',
+      description: 'Work item summary',
+      minLength: 1,
+      writeOnly: true,
+    },
+    description: {
+      type: 'string',
+      description: 'Work item description',
+      minLength: 1,
+      writeOnly: true,
+    },
+  },
+  required: [
+    'description',
+    'resourceId',
+    'resourceType',
+    'sonarProjectId',
+    'summary',
+    'workTypeId',
+  ],
+} as const;
+
+export const JiraWorkItemResourceSchema = {
+  type: 'object',
+  properties: {
+    id: {
+      type: 'string',
+      description: 'Work item identifier',
+      readOnly: true,
+    },
+    jiraIssueId: {
+      type: 'string',
+      description: 'Jira issue identifier',
+      readOnly: true,
+    },
+    jiraIssueKey: {
+      type: 'string',
+      description: 'Jira issue key',
+      readOnly: true,
+    },
+    jiraIssueUrl: {
+      type: 'string',
+      description: 'Jira issue URL',
+      readOnly: true,
+    },
+    jiraIssueStatus: {
+      type: 'string',
+      description: 'Jira issue status',
+      readOnly: true,
+    },
+  },
+} as const;
+
+export const PostJiraProjectBindingRequestResourceSchema = {
+  type: 'object',
+  properties: {
+    sonarProjectId: {
+      type: 'string',
+      description: 'Sonar project identifier',
+      minLength: 1,
+      writeOnly: true,
+    },
+    jiraOrganizationId: {
+      type: 'string',
+      description: 'Jira instance binding identifier',
+      writeOnly: true,
+    },
+    jiraProjectKey: {
+      type: 'string',
+      description: 'Jira project key',
+      minLength: 1,
+      writeOnly: true,
+    },
+  },
+  required: ['jiraOrganizationId', 'jiraProjectKey', 'sonarProjectId'],
+} as const;
+
+export const JiraProjectBindingResourceSchema = {
+  type: 'object',
+  properties: {
+    id: {
+      type: 'string',
+      format: 'uuid',
+      description: 'Jira project binding identifier',
+      readOnly: true,
+    },
+    sonarProjectId: {
+      type: 'string',
+      description: 'Sonar project identifier',
+      readOnly: true,
+    },
+    jiraOrganizationId: {
+      type: 'string',
+      description: 'Jira instance binding identifier',
+      readOnly: true,
+    },
+    jiraProjectKey: {
+      type: 'string',
+      description: 'Jira project key',
+      readOnly: true,
+    },
+  },
+} as const;
+
+export const PostJiraOrganizationBindingRequestResourceSchema = {
+  type: 'object',
+  properties: {
+    state: {
+      type: 'string',
+      description: 'Base64-encoded OAuth state parameter',
+      minLength: 1,
+      writeOnly: true,
+    },
+    authorizationCode: {
+      type: 'string',
+      description: 'OAuth authorization code (no whitespace)',
+      minLength: 1,
+      writeOnly: true,
+    },
+  },
+  required: ['authorizationCode', 'state'],
+} as const;
+
+export const JiraOrganizationBindingResourceSchema = {
+  type: 'object',
+  properties: {
+    id: {
+      type: 'string',
+      description: 'Jira instance binding identifier',
+      readOnly: true,
+    },
+    sonarOrganizationUuid: {
+      type: 'string',
+      format: 'uuid',
+      description: 'Sonar organization UUID',
+      readOnly: true,
+    },
+    jiraInstanceUrl: {
+      type: 'string',
+      description: 'Jira instance URL',
+      readOnly: true,
+    },
+    createdBy: {
+      type: 'string',
+      description: 'User who created or reauthorized the jira connection',
+      readOnly: true,
+    },
+    createdAt: {
+      type: 'integer',
+      format: 'int64',
+      description: 'Creation timestamp',
+      readOnly: true,
+    },
+  },
+} as const;
+
+export const OAuthResourceSchema = {
+  type: 'object',
+  properties: {
+    cloudId: {
+      type: 'string',
+      description: "The resource's cloud ID",
+      readOnly: true,
+    },
+    url: {
+      type: 'string',
+      description: "The resource's URL",
+      readOnly: true,
+    },
+  },
+} as const;
+
+export const PostJiraOrganizationBindingResponseResourceSchema = {
+  type: 'object',
+  properties: {
+    binding: {
+      $ref: '#/components/schemas/JiraOrganizationBindingResource',
+      description:
+        'The successfully created binding (present if binding was created)',
+      readOnly: true,
+    },
+    resources: {
+      type: 'array',
+      description: 'Array of available resources to bind the instance to',
+      items: {
+        $ref: '#/components/schemas/OAuthResource',
+      },
+      readOnly: true,
+    },
+  },
+  required: ['resources'],
+} as const;
+
+export const UserBindingCreationRequestSchema = {
+  type: 'object',
+  description: 'User binding creation request',
+  properties: {
+    bindingData: {
+      $ref: '#/components/schemas/UserBindingCreationRequestBindingData',
+    },
+    userId: {
+      type: 'string',
+      minLength: 1,
+    },
+  },
+  required: ['bindingData', 'userId'],
+} as const;
+
+export const UserBindingCreationRequestBindingDataSchema = {
+  type: 'object',
+  properties: {
+    code: {
+      type: 'string',
+      minLength: 1,
+    },
+  },
+  required: ['code'],
+} as const;
+
+export const UserBindingResponseSchema = {
+  type: 'object',
+  properties: {
+    id: {
+      type: 'string',
+      format: 'uuid',
+    },
+    user_id: {
+      type: 'string',
+    },
+    slack_user_id: {
+      type: 'string',
+    },
+    slack_workspace_id: {
+      type: 'string',
+    },
+    slack_workspace_name: {
+      type: 'string',
+    },
+    created_at: {
+      type: 'integer',
+      format: 'int64',
+    },
+  },
+} as const;
+
+export const IntegrationConfigurationPostRequestSchema = {
+  type: 'object',
+  properties: {
+    integrationType: {
+      type: 'string',
+      enum: ['SLACK'],
+    },
+    clientId: {
+      type: 'string',
+      minLength: 1,
+    },
+    clientSecret: {
+      type: 'string',
+      minLength: 1,
+    },
+    signingSecret: {
+      type: 'string',
+      minLength: 1,
+    },
+  },
+  required: ['clientId', 'clientSecret', 'integrationType', 'signingSecret'],
+} as const;
+
+export const IntegrationConfigurationResponseSchema = {
+  type: 'object',
+  properties: {
+    id: {
+      type: 'string',
+      format: 'uuid',
+    },
+    integrationType: {
+      type: 'string',
+      enum: ['SLACK'],
+    },
+    clientId: {
+      type: 'string',
+    },
+    appId: {
+      type: 'string',
+    },
+  },
+} as const;
+
 export const AwarenessBannerClickedRequestSchema = {
   type: 'object',
   properties: {
@@ -252,12 +1076,42 @@ export const AwarenessBannerClickedResponseSchema = {
 export const FixSuggestionPostRequestSchema = {
   type: 'object',
   properties: {
+    projectKey: {
+      type: 'string',
+    },
     issueId: {
       type: 'string',
       description: 'Issue key',
     },
+    issue: {
+      $ref: '#/components/schemas/Issue',
+      description: 'Issue',
+    },
   },
-  required: ['issueId'],
+} as const;
+
+export const IssueSchema = {
+  type: 'object',
+  properties: {
+    message: {
+      type: 'string',
+    },
+    startLine: {
+      type: 'integer',
+      format: 'int32',
+    },
+    endLine: {
+      type: 'integer',
+      format: 'int32',
+    },
+    ruleKey: {
+      type: 'string',
+    },
+    sourceCode: {
+      type: 'string',
+    },
+  },
+  required: ['endLine', 'message', 'ruleKey', 'sourceCode', 'startLine'],
 } as const;
 
 export const ChangeDtoSchema = {
@@ -295,6 +1149,40 @@ export const FixSuggestionResponseSchema = {
       items: {
         $ref: '#/components/schemas/ChangeDto',
       },
+    },
+  },
+} as const;
+
+export const LicenseRestRequestSchema = {
+  type: 'object',
+  properties: {
+    licenseKey: {
+      type: 'string',
+      description: 'New license key',
+    },
+  },
+} as const;
+
+export const LicenseUploadActivationRequestSchema = {
+  type: 'object',
+  properties: {
+    license: {
+      type: 'string',
+      description: 'Contents of a valid .lic file',
+    },
+    licenseKey: {
+      type: 'string',
+      description: 'License key for the license',
+    },
+  },
+} as const;
+
+export const LegacyLicenseRestRequestSchema = {
+  type: 'object',
+  properties: {
+    licenseKey: {
+      type: 'string',
+      description: 'New license key',
     },
   },
 } as const;
@@ -390,11 +1278,13 @@ export const GitlabConfigurationCreateRestRequestSchema = {
     applicationId: {
       type: 'string',
       description: 'Gitlab Application id',
+      minLength: 1,
     },
     url: {
       type: 'string',
       description:
         'Url of Gitlab instance for authentication (for instance https://gitlab.com)',
+      minLength: 1,
     },
     synchronizeGroups: {
       type: 'boolean',
@@ -487,6 +1377,7 @@ export const GithubConfigurationCreateRestRequestSchema = {
       type: 'string',
       description:
         "The App ID is found on your GitHub App's page on GitHub at Settings > Developer Settings > GitHub Apps.",
+      minLength: 1,
     },
     synchronizeGroups: {
       type: 'boolean',
@@ -498,11 +1389,13 @@ For each GitHub team they belong to, users will be associated to a group of the 
       type: 'string',
       description:
         'The API url for a GitHub instance. https://api.github.com/ for Github.com, https://github.company.com/api/v3/ when using Github Enterprise',
+      minLength: 1,
     },
     webUrl: {
       type: 'string',
       description: `The WEB url for a GitHub instance. https://github.com/ for Github.com, https://github.company.com/ when using GitHub Enterprise.
 `,
+      minLength: 1,
     },
     allowedOrganizations: {
       type: 'array',
@@ -605,15 +1498,18 @@ export const BoundProjectCreateRestRequestSchema = {
     projectKey: {
       type: 'string',
       description: 'Key of the project to create',
+      minLength: 1,
     },
     projectName: {
       type: 'string',
       description: 'Name of the project to create',
+      minLength: 1,
     },
     devOpsPlatformSettingId: {
       type: 'string',
       description:
         'Identifier of DevOps platform configuration to use. Use /dop-translation/dop-settings to retrieve the settings and their ID',
+      minLength: 1,
     },
     repositoryIdentifier: {
       type: 'string',
@@ -622,6 +1518,7 @@ export const BoundProjectCreateRestRequestSchema = {
 - repository id for GitLab
 - repository name for Azure DevOps
 `,
+      minLength: 1,
     },
     projectIdentifier: {
       type: 'string',
@@ -1025,6 +1922,33 @@ export const GroupMembershipRestResponseSchema = {
   },
 } as const;
 
+export const AtlassianAuthenticationDetailsResourceSchema = {
+  type: 'object',
+  properties: {
+    clientId: {
+      type: 'string',
+      description: 'Atlassian 3LO App Client ID',
+      writeOnly: true,
+    },
+    secret: {
+      type: 'string',
+      description: 'Atlassian 3LO App Secret',
+      writeOnly: true,
+    },
+  },
+} as const;
+
+export const AtlassianAuthenticationDetailsResultResourceSchema = {
+  type: 'object',
+  properties: {
+    clientId: {
+      type: 'string',
+      description: 'Atlassian 3LO App Client ID',
+      readOnly: true,
+    },
+  },
+} as const;
+
 export const UpdateFieldListStringSchema = {
   type: 'object',
   properties: {
@@ -1040,24 +1964,14 @@ export const UpdateFieldListStringSchema = {
   },
 } as const;
 
-export const UpdateFieldStringSchema = {
-  type: 'object',
-  properties: {
-    value: {
-      type: 'string',
-    },
-    defined: {
-      type: 'boolean',
-    },
-  },
-} as const;
-
 export const UserUpdateRestRequestSchema = {
   type: 'object',
   properties: {
     login: {
-      $ref: '#/components/schemas/UpdateFieldString',
+      type: 'string',
       description: 'User login',
+      maxLength: 100,
+      minLength: 2,
     },
     name: {
       type: 'string',
@@ -1067,12 +1981,16 @@ export const UserUpdateRestRequestSchema = {
     },
     email: {
       type: 'string',
+      format: 'email',
       description: 'Email',
       maxLength: 100,
       minLength: 1,
     },
     scmAccounts: {
       $ref: '#/components/schemas/UpdateFieldListString',
+      items: {
+        type: 'string',
+      },
     },
     externalProvider: {
       type: 'string',
@@ -1165,6 +2083,134 @@ export const EmailConfigurationUpdateRestRequestSchema = {
   },
 } as const;
 
+export const LicenseProfilesUpdateRestRequestSchema = {
+  type: 'object',
+  properties: {
+    name: {
+      type: 'string',
+      description: 'The name of the license policy',
+    },
+    default: {
+      type: 'boolean',
+      description: 'Whether this license policy is the default or not',
+    },
+  },
+} as const;
+
+export const LicensePolicyLicenseUpdateRestRequestSchema = {
+  type: 'object',
+  properties: {
+    policy: {
+      type: 'string',
+      description: 'The new status of this license.',
+      enum: ['ALLOW', 'DENY'],
+    },
+  },
+  required: ['policy'],
+} as const;
+
+export const LicensePolicyLicenseResourceSchema = {
+  type: 'object',
+  properties: {
+    id: {
+      type: 'string',
+    },
+    spdxLicenseId: {
+      type: 'string',
+    },
+    name: {
+      type: 'string',
+    },
+    category: {
+      type: 'string',
+      enum: [
+        'UNKNOWN',
+        'COPYLEFT_WEAK',
+        'COPYLEFT_STRONG',
+        'COPYLEFT_NETWORK',
+        'COPYLEFT_MAXIMAL',
+        'PERMISSIVE_STANDARD',
+        'PERMISSIVE_AMATEUR',
+      ],
+    },
+    policy: {
+      type: 'string',
+      description: 'The policy status of this license.',
+      enum: ['ALLOW', 'DENY'],
+    },
+  },
+} as const;
+
+export const LicenseProfileCategoryUpdateRestRequestSchema = {
+  type: 'object',
+  properties: {
+    policy: {
+      type: 'string',
+      description: 'The new status of this category.',
+      enum: ['ALLOW', 'DENY'],
+    },
+  },
+  required: ['policy'],
+} as const;
+
+export const LicenseProfileCategoryResourceSchema = {
+  type: 'object',
+  properties: {
+    id: {
+      type: 'string',
+    },
+    key: {
+      type: 'string',
+      enum: [
+        'UNKNOWN',
+        'COPYLEFT_WEAK',
+        'COPYLEFT_STRONG',
+        'COPYLEFT_NETWORK',
+        'COPYLEFT_MAXIMAL',
+        'PERMISSIVE_STANDARD',
+        'PERMISSIVE_AMATEUR',
+      ],
+    },
+    policy: {
+      type: 'string',
+      description: 'The policy status of this category.',
+      enum: ['ALLOW', 'DENY'],
+    },
+  },
+} as const;
+
+export const AssignedProjectsUpdateRestRequestSchema = {
+  type: 'object',
+  properties: {
+    licenseProfileUuid: {
+      type: 'string',
+      description:
+        'The id of the license profile that should be used when analyzing the project for license issues.',
+    },
+    projectKey: {
+      type: 'string',
+      description:
+        'The key of the project that should be assigned to the license profile.',
+    },
+  },
+  required: ['licenseProfileUuid', 'projectKey'],
+} as const;
+
+export const IssueReleaseUpdateCommentRestRequestSchema = {
+  type: 'object',
+  properties: {
+    issueReleaseChangeKey: {
+      type: 'string',
+      description: 'Issue release change key',
+    },
+    comment: {
+      type: 'string',
+      description: 'Comment text',
+    },
+  },
+  required: ['comment', 'issueReleaseChangeKey'],
+} as const;
+
 export const FeatureEnablementRequestSchema = {
   type: 'object',
   properties: {
@@ -1180,6 +2226,184 @@ export const FeatureEnablementResourceSchema = {
   properties: {
     enablement: {
       type: 'boolean',
+    },
+  },
+} as const;
+
+export const JiraWorkTypesSelectionResourceSchema = {
+  type: 'object',
+  properties: {
+    sonarProjectId: {
+      type: 'string',
+      description: 'The Sonar project ID',
+      writeOnly: true,
+    },
+    selectedWorkTypes: {
+      type: 'array',
+      description: 'An array with the selected work type ids',
+      items: {
+        type: 'string',
+      },
+      writeOnly: true,
+    },
+  },
+} as const;
+
+export const PatchJiraProjectBindingRequestResourceSchema = {
+  type: 'object',
+  properties: {
+    sonarProjectId: {
+      type: 'string',
+      description: 'Sonar project identifier',
+      minLength: 1,
+      writeOnly: true,
+    },
+    jiraProjectKey: {
+      type: 'string',
+      description: 'Jira project key',
+      minLength: 1,
+      writeOnly: true,
+    },
+  },
+  required: ['jiraProjectKey', 'sonarProjectId'],
+} as const;
+
+export const PatchJiraOrganizationBindingRequestResourceSchema = {
+  type: 'object',
+  properties: {
+    sonarOrganizationUuid: {
+      type: 'string',
+      format: 'uuid',
+      description: 'Sonar organization UUID',
+      writeOnly: true,
+    },
+    jiraCloudId: {
+      type: 'string',
+      description: 'Jira cloud ID to bind with the organization',
+      minLength: 1,
+      writeOnly: true,
+    },
+    jiraInstanceUrl: {
+      type: 'string',
+      description: 'Jira instance URL',
+      minLength: 1,
+      writeOnly: true,
+    },
+  },
+  required: ['jiraCloudId', 'jiraInstanceUrl', 'sonarOrganizationUuid'],
+} as const;
+
+export const RuleTypeMappingSchema = {
+  type: 'object',
+  properties: {
+    type: {
+      type: 'string',
+      description: 'Rule type',
+      enum: ['CODE_SMELL', 'BUG', 'VULNERABILITY', 'SECURITY_HOTSPOT'],
+    },
+    severities: {
+      type: 'array',
+      description: 'List of severities',
+      items: {
+        type: 'string',
+        enum: ['BLOCKER', 'CRITICAL', 'MAJOR', 'MINOR', 'INFO'],
+      },
+    },
+  },
+  required: ['severities', 'type'],
+} as const;
+
+export const SandboxSettingsResourceSchema = {
+  type: 'object',
+  properties: {
+    enabled: {
+      type: 'boolean',
+      description: 'Whether sandbox is enabled globally',
+    },
+    defaultValue: {
+      type: 'boolean',
+      description: 'Default value for projects',
+    },
+    allowOverride: {
+      type: 'boolean',
+      description: 'Allow projects to override settings',
+    },
+    softwareQualities: {
+      type: 'array',
+      description: 'Software quality mappings (MQR mode)',
+      items: {
+        $ref: '#/components/schemas/SoftwareQualityMapping',
+      },
+    },
+    types: {
+      type: 'array',
+      description: 'Rule type mappings (Standard Experience mode)',
+      items: {
+        $ref: '#/components/schemas/RuleTypeMapping',
+      },
+    },
+  },
+} as const;
+
+export const SoftwareQualityMappingSchema = {
+  type: 'object',
+  properties: {
+    softwareQuality: {
+      type: 'string',
+      description: 'Software quality',
+      enum: ['MAINTAINABILITY', 'RELIABILITY', 'SECURITY'],
+    },
+    impactSeverities: {
+      type: 'array',
+      description: 'List of impact severities',
+      items: {
+        type: 'string',
+        enum: ['INFO', 'LOW', 'MEDIUM', 'HIGH', 'BLOCKER'],
+      },
+    },
+  },
+  required: ['impactSeverities', 'softwareQuality'],
+} as const;
+
+export const SandboxSettingsProjectResourceSchema = {
+  type: 'object',
+  properties: {
+    enabled: {
+      type: 'boolean',
+      description: 'Whether sandbox is enabled for this project',
+    },
+    softwareQualities: {
+      type: 'array',
+      description: 'Software quality mappings (MQR mode)',
+      items: {
+        $ref: '#/components/schemas/SoftwareQualityMapping',
+      },
+    },
+    types: {
+      type: 'array',
+      description: 'Rule type mappings (Standard Experience mode)',
+      items: {
+        $ref: '#/components/schemas/RuleTypeMapping',
+      },
+    },
+    overridden: {
+      type: 'boolean',
+      description: 'Whether project settings override instance settings',
+    },
+  },
+} as const;
+
+export const IntegrationConfigurationPatchRequestSchema = {
+  type: 'object',
+  properties: {
+    clientId: {
+      type: 'string',
+    },
+    clientSecret: {
+      type: 'string',
+    },
+    signingSecret: {
+      type: 'string',
     },
   },
 } as const;
@@ -1244,6 +2468,9 @@ export const GitlabConfigurationUpdateRestRequestSchema = {
     },
     allowedGroups: {
       $ref: '#/components/schemas/UpdateFieldListString',
+      items: {
+        type: 'string',
+      },
     },
     provisioningType: {
       type: 'string',
@@ -1302,6 +2529,9 @@ export const GithubConfigurationUpdateRestRequestSchema = {
     },
     allowedOrganizations: {
       $ref: '#/components/schemas/UpdateFieldListString',
+      items: {
+        type: 'string',
+      },
     },
     provisioningType: {
       type: 'string',
@@ -1447,44 +2677,171 @@ export const EmailConfigurationSearchRestResponseSchema = {
   },
 } as const;
 
-export const ReleaseSearchResourceSchema = {
+export const SelfTestHttpCallResourceSchema = {
   type: 'object',
   properties: {
-    key: {
+    attemptedUrl: {
+      type: 'string',
+    },
+    attemptedMethod: {
+      type: 'string',
+    },
+    responseCode: {
+      type: 'integer',
+      format: 'int32',
+    },
+    responseBody: {
+      type: 'string',
+    },
+    responseBodyAppearsValid: {
+      type: 'boolean',
+    },
+    responseHeaders: {
+      type: 'array',
+      items: {
+        type: 'array',
+        items: {
+          type: 'string',
+        },
+      },
+    },
+  },
+} as const;
+
+export const SelfTestResponseSchema = {
+  type: 'object',
+  properties: {
+    featureEnabled: {
+      type: 'boolean',
+    },
+    selfTestPassed: {
+      type: 'boolean',
+    },
+    cliVersionCheck: {
+      $ref: '#/components/schemas/SelfTestHttpCallResource',
+    },
+    vulnerabilityDetailsCheck: {
+      $ref: '#/components/schemas/SelfTestHttpCallResource',
+    },
+  },
+} as const;
+
+export const SelfTestSpringConfigurationResponseSchema = {
+  type: 'object',
+  properties: {
+    springVersion: {
+      type: 'string',
+    },
+  },
+} as const;
+
+export const RiskReportItemSchema = {
+  type: 'object',
+  properties: {
+    projectKey: {
+      type: 'string',
+    },
+    projectName: {
+      type: 'string',
+    },
+    branchKey: {
+      type: 'string',
+    },
+    riskTitle: {
+      type: 'string',
+    },
+    riskType: {
+      type: 'string',
+      enum: ['VULNERABILITY', 'PROHIBITED_LICENSE'],
+    },
+    riskSeverity: {
+      type: 'string',
+      enum: ['INFO', 'LOW', 'MEDIUM', 'HIGH', 'BLOCKER'],
+    },
+    riskStatus: {
+      type: 'string',
+      enum: ['OPEN', 'ACCEPT', 'CONFIRM', 'SAFE', 'FIXED'],
+    },
+    statusChanges: {
+      type: 'array',
+      items: {
+        $ref: '#/components/schemas/StatusChange',
+      },
+    },
+    vulnerabilityId: {
+      type: 'string',
+    },
+    cvssScore: {
+      type: 'number',
+    },
+    cweIds: {
+      type: 'array',
+      items: {
+        type: 'string',
+      },
+    },
+    publishedOn: {
+      type: 'string',
+    },
+    createdAt: {
       type: 'string',
     },
     packageUrl: {
       type: 'string',
     },
-    packageManager: {
+    riskUrl: {
       type: 'string',
     },
-    packageName: {
-      type: 'string',
-    },
-    version: {
-      type: 'string',
-    },
-    licenseExpression: {
-      type: 'string',
-    },
-    known: {
-      type: 'boolean',
-    },
-    newInPullRequest: {
-      type: 'boolean',
-    },
-    directSummary: {
-      type: 'boolean',
-    },
-    scopeSummary: {
-      type: 'string',
-    },
-    dependencyFilePaths: {
+    dependencyChains: {
       type: 'array',
       items: {
-        type: 'string',
+        type: 'array',
+        items: {
+          type: 'string',
+        },
       },
+    },
+    scope: {
+      type: 'string',
+    },
+    productionScope: {
+      type: 'boolean',
+    },
+  },
+} as const;
+
+export const StatusChangeSchema = {
+  type: 'object',
+  properties: {
+    comment: {
+      type: 'string',
+    },
+    newStatus: {
+      type: 'string',
+    },
+    createdAt: {
+      type: 'string',
+    },
+  },
+} as const;
+
+export const BranchResourceSchema = {
+  type: 'object',
+  properties: {
+    uuid: {
+      type: 'string',
+    },
+    key: {
+      type: 'string',
+    },
+    isPullRequest: {
+      type: 'boolean',
+    },
+    projectKey: {
+      type: 'string',
+    },
+    projectName: {
+      type: 'string',
     },
   },
 } as const;
@@ -1503,6 +2860,16 @@ export const ReleasesSearchRestResponseSchema = {
       items: {
         $ref: '#/components/schemas/ScaReleaseByPackageManagerCountDto',
       },
+    },
+    branches: {
+      type: 'array',
+      items: {
+        $ref: '#/components/schemas/BranchResource',
+      },
+    },
+    countWithoutFilters: {
+      type: 'integer',
+      format: 'int32',
     },
     page: {
       $ref: '#/components/schemas/PageRestResponse',
@@ -1553,7 +2920,7 @@ export const DependencyResourceSchema = {
         },
       },
     },
-    newInPullRequest: {
+    newlyIntroduced: {
       type: 'boolean',
     },
   },
@@ -1568,11 +2935,22 @@ export const IssueResourceSchema = {
     severity: {
       type: 'string',
     },
+    showIncreasedSeverityWarning: {
+      type: 'boolean',
+    },
     type: {
       type: 'string',
+      enum: ['VULNERABILITY', 'PROHIBITED_LICENSE'],
+    },
+    quality: {
+      type: 'string',
+      enum: ['MAINTAINABILITY', 'RELIABILITY', 'SECURITY'],
     },
     createdAt: {
       type: 'string',
+    },
+    assignee: {
+      $ref: '#/components/schemas/UserResource',
     },
     vulnerabilityId: {
       type: 'string',
@@ -1598,6 +2976,9 @@ export const ReleaseDetailResourceSchema = {
     key: {
       type: 'string',
     },
+    branchUuid: {
+      type: 'string',
+    },
     packageUrl: {
       type: 'string',
     },
@@ -1616,7 +2997,10 @@ export const ReleaseDetailResourceSchema = {
     known: {
       type: 'boolean',
     },
-    newInPullRequest: {
+    knownPackage: {
+      type: 'boolean',
+    },
+    newlyIntroduced: {
       type: 'boolean',
     },
     directSummary: {
@@ -1640,52 +3024,79 @@ export const ReleaseDetailResourceSchema = {
         $ref: '#/components/schemas/IssueResource',
       },
     },
+    branch: {
+      $ref: '#/components/schemas/BranchResource',
+    },
   },
 } as const;
 
-export const DependencyRiskResourceSchema = {
+export const LicenseProfileCollectionActionsSchema = {
   type: 'object',
   properties: {
-    key: {
-      type: 'string',
+    create: {
+      type: 'boolean',
     },
-    severity: {
-      type: 'string',
-    },
-    release: {
-      $ref: '#/components/schemas/ReleaseSearchResource',
-    },
-    type: {
-      type: 'string',
-    },
-    createdAt: {
-      type: 'string',
-    },
-    vulnerabilityId: {
-      type: 'string',
-    },
-    cweIds: {
+  },
+} as const;
+
+export const LicenseProfileIndexRestResponseSchema = {
+  type: 'object',
+  properties: {
+    licenseProfiles: {
       type: 'array',
       items: {
-        type: 'string',
+        $ref: '#/components/schemas/LicenseProfileResource',
       },
     },
-    cvssScore: {
-      type: 'string',
-    },
-    spdxLicenseId: {
-      type: 'string',
+    actions: {
+      $ref: '#/components/schemas/LicenseProfileCollectionActions',
     },
   },
 } as const;
 
-export const DependencyRisksSearchRestResponseSchema = {
+export const LicenseProfileDetailsResourceSchema = {
   type: 'object',
   properties: {
-    issuesReleases: {
+    profile: {
+      $ref: '#/components/schemas/LicenseProfileResource',
+    },
+    categories: {
       type: 'array',
       items: {
-        $ref: '#/components/schemas/DependencyRiskResource',
+        $ref: '#/components/schemas/LicenseProfileCategoryResource',
+      },
+    },
+    licenses: {
+      type: 'array',
+      items: {
+        $ref: '#/components/schemas/LicensePolicyLicenseResource',
+      },
+    },
+  },
+} as const;
+
+export const AssignableProjectResourceSchema = {
+  type: 'object',
+  properties: {
+    projectKey: {
+      type: 'string',
+    },
+    projectName: {
+      type: 'string',
+    },
+    assignedToLicenseProfile: {
+      type: 'boolean',
+    },
+  },
+} as const;
+
+export const AssignableProjectsIndexRestResponseSchema = {
+  type: 'object',
+  properties: {
+    assignableProjects: {
+      type: 'array',
+      items: {
+        $ref: '#/components/schemas/AssignableProjectResource',
       },
     },
     page: {
@@ -1694,37 +3105,7 @@ export const DependencyRisksSearchRestResponseSchema = {
   },
 } as const;
 
-export const AffectedPackageResourceSchema = {
-  type: 'object',
-  properties: {
-    purl: {
-      type: 'string',
-    },
-    recommendation: {
-      type: 'string',
-    },
-    recommendationDetails: {
-      $ref: '#/components/schemas/VulnerabilityRecommendationDetailsResource',
-    },
-    versionOptions: {
-      type: 'array',
-      items: {
-        $ref: '#/components/schemas/VersionOptionResource',
-      },
-    },
-    affectedVersions: {
-      type: 'array',
-      items: {
-        type: 'string',
-      },
-    },
-    unaffectedVersions: {
-      type: 'string',
-    },
-  },
-} as const;
-
-export const DependencyRiskDetailsResourceSchema = {
+export const IssueReleaseResourceSchema = {
   type: 'object',
   properties: {
     key: {
@@ -1733,151 +3114,41 @@ export const DependencyRiskDetailsResourceSchema = {
     severity: {
       type: 'string',
     },
+    originalSeverity: {
+      type: 'string',
+    },
+    manualSeverity: {
+      type: 'string',
+    },
+    showIncreasedSeverityWarning: {
+      type: 'boolean',
+    },
     release: {
       $ref: '#/components/schemas/ReleaseSearchResource',
     },
     type: {
       type: 'string',
+      enum: ['VULNERABILITY', 'PROHIBITED_LICENSE'],
+    },
+    quality: {
+      type: 'string',
+      enum: ['MAINTAINABILITY', 'RELIABILITY', 'SECURITY'],
+    },
+    status: {
+      type: 'string',
     },
     createdAt: {
       type: 'string',
     },
-    vulnerability: {
-      $ref: '#/components/schemas/VulnerabilityResource',
+    assignee: {
+      $ref: '#/components/schemas/UserResource',
     },
-    spdxLicenseId: {
-      type: 'string',
-    },
-  },
-} as const;
-
-export const VersionOptionResourceSchema = {
-  type: 'object',
-  properties: {
-    version: {
-      type: 'string',
-      description: 'The version being presented as an option',
-    },
-    vulnerabilityIds: {
-      type: 'array',
-      description: 'Vulnerability IDs affecting this version',
-      items: {
-        type: 'string',
-      },
-    },
-    prerelease: {
-      type: 'boolean',
-      description: 'Is this version a pre-release version',
-    },
-    fixLevel: {
-      type: 'string',
-      description: 'Describes which vulnerabilities are fixed',
-      enum: ['COMPLETE', 'PARTIAL', 'NONE', 'UNKNOWN'],
-    },
-    descriptionCode: {
-      type: 'string',
-      description: 'How the frontend should label this version',
-      enum: [
-        'VERSION_IN_USE',
-        'NEAREST_PARTIAL',
-        'NEAREST_COMPLETE',
-        'LATEST_PARTIAL',
-        'LATEST_COMPLETE',
-        'LATEST_STABLE',
-        'LATEST_PRERELEASE',
-        'UNKNOWN',
-      ],
-    },
-  },
-} as const;
-
-export const VulnerabilityRecommendationDetailsResourceSchema = {
-  type: 'object',
-  properties: {
-    impactScore: {
+    commentCount: {
       type: 'integer',
       format: 'int32',
     },
-    impactDescription: {
-      type: 'string',
-    },
-    realIssue: {
-      type: 'boolean',
-    },
-    falsePositiveReason: {
-      type: 'string',
-    },
-    includesDev: {
-      type: 'boolean',
-    },
-    specificMethodsAffected: {
-      type: 'boolean',
-    },
-    specificMethodsDescription: {
-      type: 'string',
-    },
-    otherConditions: {
-      type: 'boolean',
-    },
-    otherConditionsDescription: {
-      type: 'string',
-    },
-    workaroundAvailable: {
-      type: 'boolean',
-    },
-    workaroundDescription: {
-      type: 'string',
-    },
-    visibility: {
-      type: 'string',
-    },
-  },
-} as const;
-
-export const VulnerabilityReportResourceSchema = {
-  type: 'object',
-  properties: {
-    id: {
-      type: 'string',
-    },
-    url: {
-      type: 'string',
-    },
-    type: {
-      type: 'string',
-    },
-    cvssScore: {
-      type: 'string',
-    },
-    cvssSeverity: {
-      type: 'string',
-    },
-  },
-} as const;
-
-export const VulnerabilityResourceSchema = {
-  type: 'object',
-  properties: {
     vulnerabilityId: {
       type: 'string',
-    },
-    reports: {
-      type: 'array',
-      items: {
-        $ref: '#/components/schemas/VulnerabilityReportResource',
-      },
-    },
-    description: {
-      type: 'string',
-    },
-    epssPercentile: {
-      type: 'string',
-    },
-    epssProbability: {
-      type: 'string',
-    },
-    knownExploited: {
-      type: 'boolean',
     },
     cweIds: {
       type: 'array',
@@ -1885,11 +3156,125 @@ export const VulnerabilityResourceSchema = {
         type: 'string',
       },
     },
-    affectedPackages: {
+    cvssScore: {
+      type: 'string',
+    },
+    withdrawn: {
+      type: 'boolean',
+    },
+    spdxLicenseId: {
+      type: 'string',
+    },
+    transitions: {
       type: 'array',
       items: {
-        $ref: '#/components/schemas/AffectedPackageResource',
+        type: 'string',
+        enum: ['CONFIRM', 'REOPEN', 'SAFE', 'FIXED', 'ACCEPT'],
       },
+    },
+    actions: {
+      type: 'array',
+      items: {
+        type: 'string',
+        enum: ['COMMENT', 'ASSIGN', 'SET_SEVERITY'],
+      },
+      uniqueItems: true,
+    },
+  },
+} as const;
+
+export const IssuesReleasesSearchRestResponseSchema = {
+  type: 'object',
+  properties: {
+    issuesReleases: {
+      type: 'array',
+      items: {
+        $ref: '#/components/schemas/IssueReleaseResource',
+      },
+    },
+    branches: {
+      type: 'array',
+      items: {
+        $ref: '#/components/schemas/IssueReleaseBranchResource',
+      },
+    },
+    countWithoutFilters: {
+      type: 'integer',
+      format: 'int32',
+    },
+    page: {
+      $ref: '#/components/schemas/PageRestResponse',
+    },
+  },
+} as const;
+
+export const IssueReleaseChangeDiffResourceSchema = {
+  type: 'object',
+  properties: {
+    fieldName: {
+      type: 'string',
+    },
+    oldValue: {
+      type: 'string',
+    },
+    newValue: {
+      type: 'string',
+    },
+  },
+} as const;
+
+export const IssueReleaseChangeResourceSchema = {
+  type: 'object',
+  properties: {
+    key: {
+      type: 'string',
+    },
+    createdAt: {
+      type: 'string',
+    },
+    user: {
+      $ref: '#/components/schemas/UserResource',
+    },
+    markdownComment: {
+      type: 'string',
+    },
+    htmlComment: {
+      type: 'string',
+    },
+    changeData: {
+      type: 'array',
+      items: {
+        $ref: '#/components/schemas/IssueReleaseChangeDiffResource',
+      },
+    },
+    actions: {
+      type: 'array',
+      items: {
+        type: 'string',
+        enum: ['EDIT_COMMENT', 'DELETE_COMMENT'],
+      },
+      uniqueItems: true,
+    },
+  },
+} as const;
+
+export const IssuesReleasesChangesRestResponseSchema = {
+  type: 'object',
+  properties: {
+    changelog: {
+      type: 'array',
+      items: {
+        $ref: '#/components/schemas/IssueReleaseChangeResource',
+      },
+    },
+  },
+} as const;
+
+export const ScaFeatureEnabledResourceSchema = {
+  type: 'object',
+  properties: {
+    enabled: {
+      type: 'boolean',
     },
   },
 } as const;
@@ -1911,6 +3296,179 @@ export const ScaCliInfoRestResponseSchema = {
     },
     arch: {
       type: 'string',
+    },
+  },
+} as const;
+
+export const AnalysisErrorResourceSchema = {
+  type: 'object',
+  properties: {
+    code: {
+      type: 'string',
+      enum: [
+        'UNKNOWN',
+        'NO_DEPENDENCIES_FOUND',
+        'DEPENDENCY_FILES_PARSE_ERROR',
+        'UNSUPPORTED_PLATFORM',
+        'INEXACT_VERSIONS',
+        'MISSING_LOCKFILE',
+      ],
+    },
+    path: {
+      type: 'string',
+    },
+    message: {
+      type: 'string',
+    },
+  },
+} as const;
+
+export const AnalysisResourceSchema = {
+  type: 'object',
+  properties: {
+    status: {
+      type: 'string',
+      enum: ['FAILED', 'OUTDATED', 'COMPLETED'],
+    },
+    failedReason: {
+      type: 'string',
+    },
+    errors: {
+      type: 'array',
+      items: {
+        $ref: '#/components/schemas/AnalysisErrorResource',
+      },
+    },
+    parsedFiles: {
+      type: 'array',
+      items: {
+        type: 'string',
+      },
+    },
+  },
+} as const;
+
+export const JiraWorkTypeFieldResultResourceSchema = {
+  type: 'object',
+  properties: {
+    key: {
+      type: 'string',
+      description: 'The field key',
+      readOnly: true,
+    },
+    name: {
+      type: 'string',
+      description: 'The field name',
+      readOnly: true,
+    },
+    required: {
+      type: 'boolean',
+      description: 'Whether the field is required',
+      readOnly: true,
+    },
+    hasDefaultValue: {
+      type: 'boolean',
+      description: 'Whether the field has a default value',
+      readOnly: true,
+    },
+  },
+} as const;
+
+export const JiraWorkTypeResultResourceSchema = {
+  type: 'object',
+  properties: {
+    id: {
+      type: 'string',
+      description: 'the Jira work type id',
+      readOnly: true,
+    },
+    name: {
+      type: 'string',
+      description: 'the Jira work type name',
+      readOnly: true,
+    },
+    description: {
+      type: 'string',
+      description: 'the Jira work type description',
+      readOnly: true,
+    },
+    subtask: {
+      type: 'boolean',
+      description: 'true, if the Jira work type is a subtask',
+      readOnly: true,
+    },
+    hierarchyLevel: {
+      type: 'integer',
+      format: 'int32',
+      description: 'the Jira work type hierarchy',
+      readOnly: true,
+    },
+    selected: {
+      type: 'boolean',
+      description: 'true, if the Jira work type is selected',
+      readOnly: true,
+    },
+    fields: {
+      type: 'array',
+      description:
+        'Array of field metadata for the specified work type. (Optional)',
+      items: {
+        $ref: '#/components/schemas/JiraWorkTypeFieldResultResource',
+      },
+      readOnly: true,
+    },
+  },
+} as const;
+
+export const JiraProjectResultResourceSchema = {
+  type: 'object',
+  properties: {
+    name: {
+      type: 'string',
+      description: 'the name of the project',
+      readOnly: true,
+    },
+    key: {
+      type: 'string',
+      description: 'the key of the project',
+      readOnly: true,
+    },
+  },
+} as const;
+
+export const LinkedIssuesCountResourceSchema = {
+  type: 'object',
+  properties: {
+    count: {
+      type: 'integer',
+      format: 'int32',
+      description: 'Count of linked Jira issues',
+      readOnly: true,
+    },
+  },
+} as const;
+
+export const IntegrationConfigurationSearchResponseSchema = {
+  type: 'object',
+  properties: {
+    integrationConfigurations: {
+      type: 'array',
+      items: {
+        $ref: '#/components/schemas/IntegrationConfigurationResponse',
+      },
+    },
+  },
+} as const;
+
+export const SupportedRulesDtoSchema = {
+  type: 'object',
+  properties: {
+    rules: {
+      type: 'array',
+      items: {
+        type: 'string',
+      },
+      uniqueItems: true,
     },
   },
 } as const;
@@ -1963,23 +3521,6 @@ export const ServiceInfoSchema = {
         'TIMEOUT',
         'UNAUTHORIZED',
       ],
-    },
-    isEnabled: {
-      type: 'boolean',
-    },
-    subscriptionType: {
-      type: 'string',
-      enum: ['EARLY_ACCESS', 'PAID', 'NOT_PAID'],
-    },
-  },
-} as const;
-
-export const SubscriptionTypeResponseSchema = {
-  type: 'object',
-  properties: {
-    subscriptionType: {
-      type: 'string',
-      enum: ['EARLY_ACCESS', 'PAID', 'NOT_PAID'],
     },
   },
 } as const;
@@ -2037,6 +3578,130 @@ export const ProviderResponseDtoSchema = {
     },
     endpoint: {
       type: 'string',
+    },
+  },
+} as const;
+
+export const PurchasableFeatureRestResponseSchema = {
+  type: 'object',
+  properties: {
+    featureKey: {
+      type: 'string',
+    },
+    parent: {
+      type: 'string',
+    },
+    isEnabled: {
+      type: 'boolean',
+    },
+    isAvailable: {
+      type: 'boolean',
+    },
+    url: {
+      type: 'string',
+    },
+  },
+} as const;
+
+export const LicenseFeatureRestResponseSchema = {
+  type: 'object',
+  properties: {
+    name: {
+      type: 'string',
+    },
+    parent: {
+      type: 'string',
+    },
+    startDate: {
+      type: 'string',
+    },
+    endDate: {
+      type: 'string',
+    },
+  },
+} as const;
+
+export const LicenseRestResponseSchema = {
+  type: 'object',
+  properties: {
+    expirationDate: {
+      type: 'string',
+    },
+    lastRefreshDate: {
+      type: 'string',
+    },
+    edition: {
+      type: 'string',
+    },
+    features: {
+      type: 'array',
+      items: {
+        $ref: '#/components/schemas/LicenseFeatureRestResponse',
+      },
+    },
+    maxLoc: {
+      type: 'integer',
+      format: 'int64',
+    },
+    loc: {
+      type: 'integer',
+      format: 'int64',
+    },
+    serverId: {
+      type: 'string',
+    },
+    type: {
+      type: 'string',
+    },
+    contactEmail: {
+      type: 'string',
+    },
+    remainingLocThreshold: {
+      type: 'integer',
+      format: 'int64',
+    },
+    canActivateGracePeriod: {
+      type: 'boolean',
+    },
+    gracePeriodEndDate: {
+      type: 'string',
+    },
+    gracePeriodExpired: {
+      type: 'boolean',
+    },
+    extraDays: {
+      type: 'integer',
+      format: 'int32',
+    },
+    startDate: {
+      type: 'string',
+    },
+    activatedOnline: {
+      type: 'boolean',
+    },
+    licenseKey: {
+      type: 'string',
+    },
+    expired: {
+      type: 'boolean',
+    },
+    validEdition: {
+      type: 'boolean',
+    },
+    validServerId: {
+      type: 'boolean',
+    },
+    officialDistribution: {
+      type: 'boolean',
+    },
+    supported: {
+      type: 'boolean',
+    },
+    legacy: {
+      type: 'boolean',
+    },
+    disabled: {
+      type: 'boolean',
     },
   },
 } as const;
@@ -2188,6 +3853,44 @@ export const GroupsMembershipSearchRestResponseSchema = {
     },
     page: {
       $ref: '#/components/schemas/PageRestResponse',
+    },
+  },
+} as const;
+
+export const _eSchema = {
+  type: 'object',
+  properties: {
+    id: {
+      type: 'string',
+    },
+    branchId: {
+      type: 'string',
+    },
+    type: {
+      type: 'string',
+      enum: ['file_graph', 'namespace_graph'],
+    },
+    ecosystem: {
+      type: 'string',
+      enum: ['java', 'js', 'ts', 'py', 'cs', 'xoo'],
+    },
+    perspectiveKey: {
+      type: 'string',
+    },
+    graphVersion: {
+      type: 'string',
+    },
+  },
+} as const;
+
+export const _pSchema = {
+  type: 'object',
+  properties: {
+    graphs: {
+      type: 'array',
+      items: {
+        $ref: '#/components/schemas/_e',
+      },
     },
   },
 } as const;
@@ -2901,13 +4604,14 @@ export const UserCreateRestRequestWritableSchema = {
   properties: {
     email: {
       type: 'string',
+      format: 'email',
       description: 'User email',
       maxLength: 100,
       minLength: 1,
     },
     local: {
       type: 'boolean',
-      default: 'true',
+      default: true,
       description:
         'Specify if the user should be authenticated from SonarQube server or from an external authentication system. Password should not be set when local is set to false.',
     },
@@ -2979,10 +4683,12 @@ export const EmailConfigurationCreateRestRequestWritableSchema = {
     host: {
       type: 'string',
       description: 'URL of your SMTP server',
+      minLength: 1,
     },
     port: {
       type: 'string',
       description: 'Port of your SMTP server (usually 25, 587 or 465)',
+      minLength: 1,
     },
     securityProtocol: {
       type: 'string',
@@ -2993,15 +4699,18 @@ export const EmailConfigurationCreateRestRequestWritableSchema = {
     fromAddress: {
       type: 'string',
       description: 'Address emails will come from',
+      minLength: 1,
     },
     fromName: {
       type: 'string',
       description: 'Name emails will come from (usually "SonarQube")',
+      minLength: 1,
     },
     subjectPrefix: {
       type: 'string',
       description:
         'Prefix added to email so they can be easily recognized (usually "[SonarQube]")',
+      minLength: 1,
     },
     authMethod: {
       type: 'string',
@@ -3013,6 +4722,7 @@ export const EmailConfigurationCreateRestRequestWritableSchema = {
       type: 'string',
       description:
         'For Basic and OAuth authentication: username used to authenticate to the SMTP server',
+      minLength: 1,
     },
     basicPassword: {
       type: 'string',
@@ -3131,15 +4841,18 @@ export const GitlabConfigurationCreateRestRequestWritableSchema = {
     applicationId: {
       type: 'string',
       description: 'Gitlab Application id',
+      minLength: 1,
     },
     url: {
       type: 'string',
       description:
         'Url of Gitlab instance for authentication (for instance https://gitlab.com)',
+      minLength: 1,
     },
     secret: {
       type: 'string',
       description: 'Secret of the application',
+      minLength: 1,
       writeOnly: true,
     },
     synchronizeGroups: {
@@ -3224,24 +4937,28 @@ export const GithubConfigurationCreateRestRequestWritableSchema = {
       type: 'string',
       description:
         'Client ID provided by GitHub when registering the application.',
+      minLength: 1,
       writeOnly: true,
     },
     clientSecret: {
       type: 'string',
       description:
         'Client password provided by GitHub when registering the application.',
+      minLength: 1,
       writeOnly: true,
     },
     applicationId: {
       type: 'string',
       description:
         "The App ID is found on your GitHub App's page on GitHub at Settings > Developer Settings > GitHub Apps.",
+      minLength: 1,
     },
     privateKey: {
       type: 'string',
       description: `Your GitHub App's private key. You can generate a .pem file from your GitHub App's page under Private keys.
 Copy and paste the whole contents of the file here.
 `,
+      minLength: 1,
       writeOnly: true,
     },
     synchronizeGroups: {
@@ -3254,11 +4971,13 @@ For each GitHub team they belong to, users will be associated to a group of the 
       type: 'string',
       description:
         'The API url for a GitHub instance. https://api.github.com/ for Github.com, https://github.company.com/api/v3/ when using Github Enterprise',
+      minLength: 1,
     },
     webUrl: {
       type: 'string',
       description: `The WEB url for a GitHub instance. https://github.com/ for Github.com, https://github.company.com/ when using GitHub Enterprise.
 `,
+      minLength: 1,
     },
     allowedOrganizations: {
       type: 'array',
