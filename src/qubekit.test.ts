@@ -113,4 +113,57 @@ describe('sonarqubeClient', () => {
 
     expect(header).toBe('Bearer token');
   });
+
+  it('should access ALM Settings endpoints', async () => {
+    let almSettingKey;
+
+    server.use(
+      http.get('https://my-instance.com/api/alm_settings/list', ({ request }) => {
+        const url = new URL(request.url);
+        almSettingKey = url.searchParams.get('project');
+        return HttpResponse.json({ data: {} });
+      }),
+    );
+
+    const client = createQubekit({
+      baseURL: 'https://my-instance.com/api',
+      token: 'token',
+    });
+
+    const result = await client.almSettings.listAlmSettings({
+      query: {
+        project: 'my-project',
+      },
+    });
+
+    expect(result.data).toEqual({ data: {} });
+    expect(almSettingKey).toBe('my-project');
+  });
+
+  it('should access Applications endpoints', async () => {
+    let applicationKey;
+
+    server.use(
+      http.post('https://my-instance.com/api/applications/create', async ({ request }) => {
+        const url = new URL(request.url);
+        applicationKey = url.searchParams.get('key');
+        return HttpResponse.json({ data: {} });
+      }),
+    );
+
+    const client = createQubekit({
+      baseURL: 'https://my-instance.com/api',
+      token: 'token',
+    });
+
+    const result = await client.applications.createApplication({
+      query: {
+        key: 'my-app',
+        name: 'My Application',
+      },
+    });
+
+    expect(result.data).toEqual({ data: {} });
+    expect(applicationKey).toBe('my-app');
+  });
 });
