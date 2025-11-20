@@ -3860,6 +3860,392 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+  /alm_settings/get_binding:
+    get:
+      tags:
+        - alm_settings
+      summary: Get project binding
+      operationId: getAlmBinding
+      description: >-
+        Gets the DevOps Platform binding for a project. Requires 'Browse'
+        permission on the project.
+      security:
+        - basicAuth: []
+        - tokenAuth: []
+      parameters:
+        - in: query
+          name: project
+          style: form
+          schema:
+            type: string
+          required: true
+          description: Project key
+          allowReserved: false
+      responses:
+        '200':
+          $ref: '#/components/responses/Ok'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          description: Not found - The requested project or binding does not exist
+  /alm_settings/delete_binding:
+    post:
+      tags:
+        - alm_settings
+      summary: Delete project binding
+      operationId: deleteAlmBinding
+      description: >-
+        Removes the DevOps Platform binding from a project. Requires
+        'Administer' permission on the project.
+      security:
+        - basicAuth: []
+        - tokenAuth: []
+      parameters:
+        - in: query
+          name: project
+          style: form
+          schema:
+            type: string
+          required: true
+          description: Project key
+          allowReserved: false
+      responses:
+        '200':
+          $ref: '#/components/responses/Ok'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /alm_settings/validate_binding:
+    get:
+      tags:
+        - alm_settings
+      summary: Validate project binding
+      operationId: validateAlmBinding
+      description: >-
+        Validates the DevOps Platform binding for a project. Requires 'Browse'
+        permission on the project.
+      security:
+        - basicAuth: []
+        - tokenAuth: []
+      parameters:
+        - in: query
+          name: project
+          style: form
+          schema:
+            type: string
+          required: true
+          description: Project key
+          allowReserved: false
+      responses:
+        '200':
+          $ref: '#/components/responses/Ok'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /alm_settings/update_github:
+    post:
+      tags:
+        - alm_settings
+      summary: Update GitHub ALM setting
+      operationId: updateGithubAlmSetting
+      description: >-
+        Updates an existing GitHub integration configuration. Requires
+        'Administer System' permission.
+      security:
+        - basicAuth: []
+        - tokenAuth: []
+      parameters:
+        - in: query
+          name: key
+          style: form
+          schema:
+            type: string
+          required: true
+          description: ALM setting key to update
+          allowReserved: false
+        - in: query
+          name: newKey
+          style: form
+          schema:
+            type: string
+          required: false
+          description: New key for the GitHub ALM setting
+          allowReserved: false
+        - in: query
+          name: appId
+          style: form
+          schema:
+            type: string
+          required: true
+          description: GitHub App ID
+          allowReserved: false
+        - in: query
+          name: clientId
+          style: form
+          schema:
+            type: string
+          required: true
+          description: GitHub OAuth client ID
+          allowReserved: false
+        - in: query
+          name: clientSecret
+          style: form
+          schema:
+            type: string
+          required: false
+          description: GitHub OAuth client secret
+          allowReserved: false
+        - in: query
+          name: privateKey
+          style: form
+          schema:
+            type: string
+          required: false
+          description: GitHub App private key
+          allowReserved: false
+        - in: query
+          name: url
+          style: form
+          schema:
+            type: string
+          required: true
+          description: GitHub API URL
+          allowReserved: false
+        - in: query
+          name: webhookSecret
+          style: form
+          schema:
+            type: string
+          required: false
+          description: GitHub webhook secret
+          allowReserved: false
+      responses:
+        '200':
+          $ref: '#/components/responses/Ok'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /alm_settings/update_gitlab:
+    post:
+      tags:
+        - alm_settings
+      summary: Update GitLab ALM setting
+      operationId: updateGitlabAlmSetting
+      description: >-
+        Updates an existing GitLab integration configuration. Requires
+        'Administer System' permission.
+      security:
+        - basicAuth: []
+        - tokenAuth: []
+      parameters:
+        - in: query
+          name: key
+          style: form
+          schema:
+            type: string
+          required: true
+          description: ALM setting key to update
+          allowReserved: false
+        - in: query
+          name: newKey
+          style: form
+          schema:
+            type: string
+          required: false
+          description: New key for the GitLab ALM setting
+          allowReserved: false
+        - in: query
+          name: personalAccessToken
+          style: form
+          schema:
+            type: string
+          required: false
+          description: GitLab personal access token
+          allowReserved: false
+        - in: query
+          name: url
+          style: form
+          schema:
+            type: string
+          required: true
+          description: GitLab API URL
+          allowReserved: false
+      responses:
+        '200':
+          $ref: '#/components/responses/Ok'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /alm_settings/update_azure:
+    post:
+      tags:
+        - alm_settings
+      summary: Update Azure DevOps ALM setting
+      operationId: updateAzureAlmSetting
+      description: >-
+        Updates an existing Azure DevOps integration configuration. Requires
+        'Administer System' permission.
+      security:
+        - basicAuth: []
+        - tokenAuth: []
+      parameters:
+        - in: query
+          name: key
+          style: form
+          schema:
+            type: string
+          required: true
+          description: ALM setting key to update
+          allowReserved: false
+        - in: query
+          name: newKey
+          style: form
+          schema:
+            type: string
+          required: false
+          description: New key for the Azure ALM setting
+          allowReserved: false
+        - in: query
+          name: personalAccessToken
+          style: form
+          schema:
+            type: string
+          required: false
+          description: Azure personal access token
+          allowReserved: false
+        - in: query
+          name: url
+          style: form
+          schema:
+            type: string
+          required: true
+          description: Azure DevOps URL
+          allowReserved: false
+      responses:
+        '200':
+          $ref: '#/components/responses/Ok'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /alm_settings/update_bitbucket:
+    post:
+      tags:
+        - alm_settings
+      summary: Update Bitbucket Server ALM setting
+      operationId: updateBitbucketAlmSetting
+      description: >-
+        Updates an existing Bitbucket Server integration configuration. Requires
+        'Administer System' permission.
+      security:
+        - basicAuth: []
+        - tokenAuth: []
+      parameters:
+        - in: query
+          name: key
+          style: form
+          schema:
+            type: string
+          required: true
+          description: ALM setting key to update
+          allowReserved: false
+        - in: query
+          name: newKey
+          style: form
+          schema:
+            type: string
+          required: false
+          description: New key for the Bitbucket ALM setting
+          allowReserved: false
+        - in: query
+          name: personalAccessToken
+          style: form
+          schema:
+            type: string
+          required: false
+          description: Bitbucket Server personal access token
+          allowReserved: false
+        - in: query
+          name: url
+          style: form
+          schema:
+            type: string
+          required: true
+          description: Bitbucket Server URL
+          allowReserved: false
+      responses:
+        '200':
+          $ref: '#/components/responses/Ok'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /alm_settings/update_bitbucketcloud:
+    post:
+      tags:
+        - alm_settings
+      summary: Update Bitbucket Cloud ALM setting
+      operationId: updateBitbucketcloudAlmSetting
+      description: >-
+        Updates an existing Bitbucket Cloud integration configuration. Requires
+        'Administer System' permission.
+      security:
+        - basicAuth: []
+        - tokenAuth: []
+      parameters:
+        - in: query
+          name: key
+          style: form
+          schema:
+            type: string
+          required: true
+          description: ALM setting key to update
+          allowReserved: false
+        - in: query
+          name: newKey
+          style: form
+          schema:
+            type: string
+          required: false
+          description: New key for the Bitbucket Cloud ALM setting
+          allowReserved: false
+        - in: query
+          name: clientId
+          style: form
+          schema:
+            type: string
+          required: true
+          description: Bitbucket Cloud OAuth client ID
+          allowReserved: false
+        - in: query
+          name: clientSecret
+          style: form
+          schema:
+            type: string
+          required: false
+          description: Bitbucket Cloud OAuth client secret
+          allowReserved: false
+        - in: query
+          name: workspace
+          style: form
+          schema:
+            type: string
+          required: true
+          description: Bitbucket Cloud workspace ID
+          allowReserved: false
+      responses:
+        '200':
+          $ref: '#/components/responses/Ok'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
   /applications/create:
     post:
       tags:
@@ -4155,6 +4541,36 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+  /applications/delete:
+    post:
+      tags:
+        - applications
+      summary: Delete application
+      operationId: deleteApplication
+      description: >-
+        Deletes an application from SonarQube. Requires 'Administer' permission
+        on the application.
+      security:
+        - basicAuth: []
+        - tokenAuth: []
+      parameters:
+        - in: query
+          name: application
+          style: form
+          schema:
+            type: string
+          required: true
+          description: Application key
+          allowReserved: false
+      responses:
+        '200':
+          $ref: '#/components/responses/Ok'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          description: Not found - The requested application does not exist
 components:
   schemas:
     UserCreateRestRequest:

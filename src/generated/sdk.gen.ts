@@ -208,6 +208,30 @@ import type {
   DeleteAlmSettingData,
   DeleteAlmSettingResponses,
   DeleteAlmSettingErrors,
+  GetAlmBindingData,
+  GetAlmBindingResponses,
+  GetAlmBindingErrors,
+  DeleteAlmBindingData,
+  DeleteAlmBindingResponses,
+  DeleteAlmBindingErrors,
+  ValidateAlmBindingData,
+  ValidateAlmBindingResponses,
+  ValidateAlmBindingErrors,
+  UpdateGithubAlmSettingData,
+  UpdateGithubAlmSettingResponses,
+  UpdateGithubAlmSettingErrors,
+  UpdateGitlabAlmSettingData,
+  UpdateGitlabAlmSettingResponses,
+  UpdateGitlabAlmSettingErrors,
+  UpdateAzureAlmSettingData,
+  UpdateAzureAlmSettingResponses,
+  UpdateAzureAlmSettingErrors,
+  UpdateBitbucketAlmSettingData,
+  UpdateBitbucketAlmSettingResponses,
+  UpdateBitbucketAlmSettingErrors,
+  UpdateBitbucketcloudAlmSettingData,
+  UpdateBitbucketcloudAlmSettingResponses,
+  UpdateBitbucketcloudAlmSettingErrors,
   CreateApplicationData,
   CreateApplicationResponses,
   CreateApplicationErrors,
@@ -232,6 +256,9 @@ import type {
   RefreshApplicationData,
   RefreshApplicationResponses,
   RefreshApplicationErrors,
+  DeleteApplicationData,
+  DeleteApplicationResponses,
+  DeleteApplicationErrors,
 } from './types.gen';
 import { client } from './client.gen';
 
@@ -2295,6 +2322,222 @@ export class AlmSettings {
       ...options,
     });
   }
+
+  /**
+   * Get project binding
+   * Gets the DevOps Platform binding for a project. Requires 'Browse' permission on the project.
+   */
+  public static getAlmBinding<ThrowOnError extends boolean = false>(
+    options: Options<GetAlmBindingData, ThrowOnError>,
+  ) {
+    return (options.client ?? client).get<
+      GetAlmBindingResponses,
+      GetAlmBindingErrors,
+      ThrowOnError
+    >({
+      security: [
+        {
+          scheme: 'basic',
+          type: 'http',
+        },
+        {
+          scheme: 'bearer',
+          type: 'http',
+        },
+      ],
+      url: '/alm_settings/get_binding',
+      ...options,
+    });
+  }
+
+  /**
+   * Delete project binding
+   * Removes the DevOps Platform binding from a project. Requires 'Administer' permission on the project.
+   */
+  public static deleteAlmBinding<ThrowOnError extends boolean = false>(
+    options: Options<DeleteAlmBindingData, ThrowOnError>,
+  ) {
+    return (options.client ?? client).post<
+      DeleteAlmBindingResponses,
+      DeleteAlmBindingErrors,
+      ThrowOnError
+    >({
+      security: [
+        {
+          scheme: 'basic',
+          type: 'http',
+        },
+        {
+          scheme: 'bearer',
+          type: 'http',
+        },
+      ],
+      url: '/alm_settings/delete_binding',
+      ...options,
+    });
+  }
+
+  /**
+   * Validate project binding
+   * Validates the DevOps Platform binding for a project. Requires 'Browse' permission on the project.
+   */
+  public static validateAlmBinding<ThrowOnError extends boolean = false>(
+    options: Options<ValidateAlmBindingData, ThrowOnError>,
+  ) {
+    return (options.client ?? client).get<
+      ValidateAlmBindingResponses,
+      ValidateAlmBindingErrors,
+      ThrowOnError
+    >({
+      security: [
+        {
+          scheme: 'basic',
+          type: 'http',
+        },
+        {
+          scheme: 'bearer',
+          type: 'http',
+        },
+      ],
+      url: '/alm_settings/validate_binding',
+      ...options,
+    });
+  }
+
+  /**
+   * Update GitHub ALM setting
+   * Updates an existing GitHub integration configuration. Requires 'Administer System' permission.
+   */
+  public static updateGithubAlmSetting<ThrowOnError extends boolean = false>(
+    options: Options<UpdateGithubAlmSettingData, ThrowOnError>,
+  ) {
+    return (options.client ?? client).post<
+      UpdateGithubAlmSettingResponses,
+      UpdateGithubAlmSettingErrors,
+      ThrowOnError
+    >({
+      security: [
+        {
+          scheme: 'basic',
+          type: 'http',
+        },
+        {
+          scheme: 'bearer',
+          type: 'http',
+        },
+      ],
+      url: '/alm_settings/update_github',
+      ...options,
+    });
+  }
+
+  /**
+   * Update GitLab ALM setting
+   * Updates an existing GitLab integration configuration. Requires 'Administer System' permission.
+   */
+  public static updateGitlabAlmSetting<ThrowOnError extends boolean = false>(
+    options: Options<UpdateGitlabAlmSettingData, ThrowOnError>,
+  ) {
+    return (options.client ?? client).post<
+      UpdateGitlabAlmSettingResponses,
+      UpdateGitlabAlmSettingErrors,
+      ThrowOnError
+    >({
+      security: [
+        {
+          scheme: 'basic',
+          type: 'http',
+        },
+        {
+          scheme: 'bearer',
+          type: 'http',
+        },
+      ],
+      url: '/alm_settings/update_gitlab',
+      ...options,
+    });
+  }
+
+  /**
+   * Update Azure DevOps ALM setting
+   * Updates an existing Azure DevOps integration configuration. Requires 'Administer System' permission.
+   */
+  public static updateAzureAlmSetting<ThrowOnError extends boolean = false>(
+    options: Options<UpdateAzureAlmSettingData, ThrowOnError>,
+  ) {
+    return (options.client ?? client).post<
+      UpdateAzureAlmSettingResponses,
+      UpdateAzureAlmSettingErrors,
+      ThrowOnError
+    >({
+      security: [
+        {
+          scheme: 'basic',
+          type: 'http',
+        },
+        {
+          scheme: 'bearer',
+          type: 'http',
+        },
+      ],
+      url: '/alm_settings/update_azure',
+      ...options,
+    });
+  }
+
+  /**
+   * Update Bitbucket Server ALM setting
+   * Updates an existing Bitbucket Server integration configuration. Requires 'Administer System' permission.
+   */
+  public static updateBitbucketAlmSetting<ThrowOnError extends boolean = false>(
+    options: Options<UpdateBitbucketAlmSettingData, ThrowOnError>,
+  ) {
+    return (options.client ?? client).post<
+      UpdateBitbucketAlmSettingResponses,
+      UpdateBitbucketAlmSettingErrors,
+      ThrowOnError
+    >({
+      security: [
+        {
+          scheme: 'basic',
+          type: 'http',
+        },
+        {
+          scheme: 'bearer',
+          type: 'http',
+        },
+      ],
+      url: '/alm_settings/update_bitbucket',
+      ...options,
+    });
+  }
+
+  /**
+   * Update Bitbucket Cloud ALM setting
+   * Updates an existing Bitbucket Cloud integration configuration. Requires 'Administer System' permission.
+   */
+  public static updateBitbucketcloudAlmSetting<
+    ThrowOnError extends boolean = false,
+  >(options: Options<UpdateBitbucketcloudAlmSettingData, ThrowOnError>) {
+    return (options.client ?? client).post<
+      UpdateBitbucketcloudAlmSettingResponses,
+      UpdateBitbucketcloudAlmSettingErrors,
+      ThrowOnError
+    >({
+      security: [
+        {
+          scheme: 'basic',
+          type: 'http',
+        },
+        {
+          scheme: 'bearer',
+          type: 'http',
+        },
+      ],
+      url: '/alm_settings/update_bitbucketcloud',
+      ...options,
+    });
+  }
 }
 
 export class Applications {
@@ -2510,6 +2753,33 @@ export class Applications {
         },
       ],
       url: '/applications/refresh',
+      ...options,
+    });
+  }
+
+  /**
+   * Delete application
+   * Deletes an application from SonarQube. Requires 'Administer' permission on the application.
+   */
+  public static deleteApplication<ThrowOnError extends boolean = false>(
+    options: Options<DeleteApplicationData, ThrowOnError>,
+  ) {
+    return (options.client ?? client).post<
+      DeleteApplicationResponses,
+      DeleteApplicationErrors,
+      ThrowOnError
+    >({
+      security: [
+        {
+          scheme: 'basic',
+          type: 'http',
+        },
+        {
+          scheme: 'bearer',
+          type: 'http',
+        },
+      ],
+      url: '/applications/delete',
       ...options,
     });
   }
