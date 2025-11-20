@@ -113,4 +113,138 @@ describe('sonarqubeClient', () => {
 
     expect(header).toBe('Bearer token');
   });
+
+  it('should access ALM Settings endpoints', async () => {
+    let almSettingKey;
+
+    server.use(
+      http.get('https://my-instance.com/api/alm_settings/list', ({ request }) => {
+        const url = new URL(request.url);
+        almSettingKey = url.searchParams.get('project');
+        return HttpResponse.json({ data: {} });
+      }),
+    );
+
+    const client = createQubekit({
+      baseURL: 'https://my-instance.com/api',
+      token: 'token',
+    });
+
+    const result = await client.almSettings.listAlmSettings({
+      query: {
+        project: 'my-project',
+      },
+    });
+
+    expect(result.data).toEqual({ data: {} });
+    expect(almSettingKey).toBe('my-project');
+  });
+
+  it('should access Applications endpoints', async () => {
+    let applicationKey;
+
+    server.use(
+      http.post('https://my-instance.com/api/applications/create', async ({ request }) => {
+        const url = new URL(request.url);
+        applicationKey = url.searchParams.get('key');
+        return HttpResponse.json({ data: {} });
+      }),
+    );
+
+    const client = createQubekit({
+      baseURL: 'https://my-instance.com/api',
+      token: 'token',
+    });
+
+    const result = await client.applications.createApplication({
+      query: {
+        key: 'my-app',
+        name: 'My Application',
+      },
+    });
+
+    expect(result.data).toEqual({ data: {} });
+    expect(applicationKey).toBe('my-app');
+  });
+
+  it('should access ALM Settings binding endpoints', async () => {
+    let projectKey;
+
+    server.use(
+      http.get('https://my-instance.com/api/alm_settings/get_binding', ({ request }) => {
+        const url = new URL(request.url);
+        projectKey = url.searchParams.get('project');
+        return HttpResponse.json({ data: { almSetting: 'github', repository: 'org/repo' } });
+      }),
+    );
+
+    const client = createQubekit({
+      baseURL: 'https://my-instance.com/api',
+      token: 'token',
+    });
+
+    const result = await client.almSettings.getAlmBinding({
+      query: {
+        project: 'my-project',
+      },
+    });
+
+    expect(result.data).toEqual({ data: { almSetting: 'github', repository: 'org/repo' } });
+    expect(projectKey).toBe('my-project');
+  });
+
+  it('should access ALM Settings update endpoints', async () => {
+    let almKey;
+
+    server.use(
+      http.post('https://my-instance.com/api/alm_settings/update_github', async ({ request }) => {
+        const url = new URL(request.url);
+        almKey = url.searchParams.get('key');
+        return HttpResponse.json({ data: {} });
+      }),
+    );
+
+    const client = createQubekit({
+      baseURL: 'https://my-instance.com/api',
+      token: 'token',
+    });
+
+    const result = await client.almSettings.updateGithubAlmSetting({
+      query: {
+        key: 'github-prod',
+        appId: '12345',
+        clientId: 'client_id',
+        url: 'https://api.github.com',
+      },
+    });
+
+    expect(result.data).toEqual({ data: {} });
+    expect(almKey).toBe('github-prod');
+  });
+
+  it('should access Applications delete endpoint', async () => {
+    let applicationKey;
+
+    server.use(
+      http.post('https://my-instance.com/api/applications/delete', async ({ request }) => {
+        const url = new URL(request.url);
+        applicationKey = url.searchParams.get('application');
+        return HttpResponse.json({ data: {} });
+      }),
+    );
+
+    const client = createQubekit({
+      baseURL: 'https://my-instance.com/api',
+      token: 'token',
+    });
+
+    const result = await client.applications.deleteApplication({
+      query: {
+        application: 'my-app',
+      },
+    });
+
+    expect(result.data).toEqual({ data: {} });
+    expect(applicationKey).toBe('my-app');
+  });
 });
