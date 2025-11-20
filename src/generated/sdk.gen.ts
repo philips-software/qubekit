@@ -22,6 +22,49 @@ import type {
   CountAlmBindingsResponses,
   Create1Data,
   Create1Responses,
+  UpdateAssigneeData,
+  UpdateAssigneeResponses,
+  SetSeverityData,
+  SetSeverityResponses,
+  ClearSeverityWarningData,
+  ClearSeverityWarningResponses,
+  TransitionIssueReleaseData,
+  TransitionIssueReleaseResponses,
+  AddCommentData,
+  AddCommentResponses,
+  BillAzureAccountData,
+  BillAzureAccountResponses,
+  곳Data,
+  곳Responses,
+  य़Data,
+  य़Responses,
+  य़1Data,
+  य़1Responses,
+  곳1Data,
+  곳1Responses,
+  य़2Data,
+  य़2Responses,
+  य़4Data,
+  य़4Responses,
+  य़3Data,
+  य़3Responses,
+  곳2Data,
+  곳2Responses,
+  य़5Data,
+  य़5Responses,
+  य़7Data,
+  य़7Responses,
+  य़6Data,
+  य़6Responses,
+  CreateUserBindingData,
+  CreateUserBindingResponses,
+  CreateUserBindingErrors,
+  HandleSlashCommandData,
+  HandleSlashCommandResponses,
+  HandleEventData,
+  HandleEventResponses,
+  GetData,
+  GetResponses,
   Create2Data,
   Create2Responses,
   Create3Data,
@@ -292,7 +335,7 @@ export type Options<
   meta?: Record<string, unknown>;
 };
 
-export class UserController {
+export class UsersManagement {
   /**
    * Users search
    *
@@ -408,7 +451,7 @@ export class UserController {
   }
 }
 
-export class EmailConfigurationController {
+export class System {
   /**
    * Search email configurations
    *
@@ -507,9 +550,1003 @@ export class EmailConfigurationController {
       },
     });
   }
+
+  /**
+   * Gets the status of ongoing database migrations, if any
+   * Return the detailed status of ongoing database migrations including starting date. If no migration is ongoing or needed it is still possible to call this endpoint and receive appropriate information.
+   */
+  public static getStatus<ThrowOnError extends boolean = false>(
+    options?: Options<GetStatusData, ThrowOnError>,
+  ) {
+    return (options?.client ?? client).get<
+      GetStatusResponses,
+      unknown,
+      ThrowOnError
+    >({
+      url: '/v2/system/migrations-status',
+      ...options,
+    });
+  }
+
+  /**
+   * Provide liveness of SonarQube, meant to be used as a liveness probe on Kubernetes
+   *   Require 'Administer System' permission or authentication with passcode.
+   *
+   * When SonarQube is fully started, liveness check for database connectivity, Compute Engine status, and, except for DataCenter Edition, if ElasticSearch is Green or Yellow.
+   *
+   * When SonarQube is on Safe Mode (for example when a database migration is running), liveness check only for database connectivity
+   *
+   */
+  public static livenessCheck<ThrowOnError extends boolean = false>(
+    options?: Options<LivenessCheckData, ThrowOnError>,
+  ) {
+    return (options?.client ?? client).get<
+      LivenessCheckResponses,
+      LivenessCheckErrors,
+      ThrowOnError
+    >({
+      url: '/v2/system/liveness',
+      ...options,
+    });
+  }
+
+  public static getHealth<ThrowOnError extends boolean = false>(
+    options?: Options<GetHealthData, ThrowOnError>,
+  ) {
+    return (options?.client ?? client).get<
+      GetHealthResponses,
+      unknown,
+      ThrowOnError
+    >({
+      url: '/v2/system/health',
+      ...options,
+    });
+  }
 }
 
-export class FeatureEnablementController {
+export class LicenseProfiles {
+  /**
+   * List license profiles
+   *   List the license profiles that have been configured for use when evaluating license issues.
+   *
+   */
+  public static index<ThrowOnError extends boolean = false>(
+    options?: Options<IndexData, ThrowOnError>,
+  ) {
+    return (options?.client ?? client).get<
+      IndexResponses,
+      unknown,
+      ThrowOnError
+    >({
+      url: '/v2/sca/license-profiles',
+      ...options,
+    });
+  }
+
+  /**
+   * Create new license profile
+   *   Create a new license profile for projects to use when evaluating license issues.
+   *
+   */
+  public static create1<ThrowOnError extends boolean = false>(
+    options: Options<Create1Data, ThrowOnError>,
+  ) {
+    return (options.client ?? client).post<
+      Create1Responses,
+      unknown,
+      ThrowOnError
+    >({
+      url: '/v2/sca/license-profiles',
+      ...options,
+      headers: {
+        'Content-Type': 'application/json',
+        ...options.headers,
+      },
+    });
+  }
+
+  /**
+   * Delete the license profile
+   * Delete the license profile.
+   */
+  public static delete<ThrowOnError extends boolean = false>(
+    options: Options<DeleteData, ThrowOnError>,
+  ) {
+    return (options.client ?? client).delete<
+      DeleteResponses,
+      unknown,
+      ThrowOnError
+    >({
+      url: '/v2/sca/license-profiles/{license-profile-key}',
+      ...options,
+    });
+  }
+
+  /**
+   * Get the license policy for a given profile
+   * Get the license policy for a given profile.
+   *
+   */
+  public static get1<ThrowOnError extends boolean = false>(
+    options: Options<Get1Data, ThrowOnError>,
+  ) {
+    return (options.client ?? client).get<Get1Responses, unknown, ThrowOnError>(
+      {
+        url: '/v2/sca/license-profiles/{license-profile-key}',
+        ...options,
+      },
+    );
+  }
+
+  /**
+   * Update the license profile
+   *   Update the license profile for projects to use when evaluating license issues.
+   *
+   */
+  public static update<ThrowOnError extends boolean = false>(
+    options: Options<UpdateData, ThrowOnError>,
+  ) {
+    return (options.client ?? client).patch<
+      UpdateResponses,
+      unknown,
+      ThrowOnError
+    >({
+      url: '/v2/sca/license-profiles/{license-profile-key}',
+      ...options,
+      headers: {
+        'Content-Type': 'application/json',
+        ...options.headers,
+      },
+    });
+  }
+
+  /**
+   * Update the policy for a single license
+   *   Update the policy for a single license in the license profile.
+   *
+   */
+  public static patchLicense<ThrowOnError extends boolean = false>(
+    options: Options<PatchLicenseData, ThrowOnError>,
+  ) {
+    return (options.client ?? client).patch<
+      PatchLicenseResponses,
+      unknown,
+      ThrowOnError
+    >({
+      url: '/v2/sca/license-profiles/{license-profile-key}/licenses/{license-policy-id}',
+      ...options,
+      headers: {
+        'Content-Type': 'application/json',
+        ...options.headers,
+      },
+    });
+  }
+
+  /**
+   * Update the policy for a license category
+   *   Update the policy for an entire category in the license profile.
+   *
+   */
+  public static patchCategory<ThrowOnError extends boolean = false>(
+    options: Options<PatchCategoryData, ThrowOnError>,
+  ) {
+    return (options.client ?? client).patch<
+      PatchCategoryResponses,
+      unknown,
+      ThrowOnError
+    >({
+      url: '/v2/sca/license-profiles/{license-profile-key}/categories/{category-key}',
+      ...options,
+      headers: {
+        'Content-Type': 'application/json',
+        ...options.headers,
+      },
+    });
+  }
+
+  /**
+   * Assign project to license profile
+   *   Configure which license profile should be used when analyzing a project for license issues.
+   *
+   */
+  public static update1<ThrowOnError extends boolean = false>(
+    options: Options<Update1Data, ThrowOnError>,
+  ) {
+    return (options.client ?? client).patch<
+      Update1Responses,
+      unknown,
+      ThrowOnError
+    >({
+      url: '/v2/sca/license-profiles/assigned-projects',
+      ...options,
+      headers: {
+        'Content-Type': 'application/json',
+        ...options.headers,
+      },
+    });
+  }
+
+  /**
+   * License profile assignable projects
+   *   List the projects that can be assigned to the license profile. Assigning the
+   * project to a license profile will cause that license profile to be used when
+   * analyzing the project for license issues.
+   *
+   */
+  public static index1<ThrowOnError extends boolean = false>(
+    options: Options<Index1Data, ThrowOnError>,
+  ) {
+    return (options.client ?? client).get<
+      Index1Responses,
+      unknown,
+      ThrowOnError
+    >({
+      url: '/v2/sca/license-profiles/assignable-projects',
+      ...options,
+    });
+  }
+
+  /**
+   * Remove the project's assignment to the license profile.
+   *    Remove the project's assignment to the license profile. If there is a default license profile,
+   * it will be used to analyze license issues for this project.
+   *
+   */
+  public static delete2<ThrowOnError extends boolean = false>(
+    options: Options<Delete2Data, ThrowOnError>,
+  ) {
+    return (options.client ?? client).delete<
+      Delete2Responses,
+      unknown,
+      ThrowOnError
+    >({
+      url: '/v2/sca/license-profiles/assigned-projects/{project-key}',
+      ...options,
+    });
+  }
+}
+
+export class IssuesReleases {
+  /**
+   * Update the assignee of an (issue,release) pair
+   * Update the assignee of an (issue,release) pair (dependency risk).
+   *
+   * This is an internal API and is subject to change without notice.
+   *
+   */
+  public static updateAssignee<ThrowOnError extends boolean = false>(
+    options: Options<UpdateAssigneeData, ThrowOnError>,
+  ) {
+    return (options.client ?? client).post<
+      UpdateAssigneeResponses,
+      unknown,
+      ThrowOnError
+    >({
+      url: '/v2/sca/issues-releases/update-assignee',
+      ...options,
+      headers: {
+        'Content-Type': 'application/json',
+        ...options.headers,
+      },
+    });
+  }
+
+  /**
+   * Manually change the severity of an issue-release pair
+   * Change the severity of a (issue,release) pair (dependency risk).
+   *
+   * This is an internal API and is subject to change without notice.
+   *
+   */
+  public static setSeverity<ThrowOnError extends boolean = false>(
+    options: Options<SetSeverityData, ThrowOnError>,
+  ) {
+    return (options.client ?? client).post<
+      SetSeverityResponses,
+      unknown,
+      ThrowOnError
+    >({
+      url: '/v2/sca/issues-releases/set-severity',
+      ...options,
+      headers: {
+        'Content-Type': 'application/json',
+        ...options.headers,
+      },
+    });
+  }
+
+  /**
+   * Dismiss the increased severity warning for an issue-release pair after reviewing the warning
+   * Dismiss the increased severity warning for an (issue,release) pair (dependency risk) after reviewing the warning.
+   *
+   * This is an internal API and is subject to change without notice.
+   *
+   */
+  public static clearSeverityWarning<ThrowOnError extends boolean = false>(
+    options: Options<ClearSeverityWarningData, ThrowOnError>,
+  ) {
+    return (options.client ?? client).post<
+      ClearSeverityWarningResponses,
+      unknown,
+      ThrowOnError
+    >({
+      url: '/v2/sca/issues-releases/clear-severity-warning',
+      ...options,
+      headers: {
+        'Content-Type': 'application/json',
+        ...options.headers,
+      },
+    });
+  }
+
+  /**
+   * Transition an issue-release pair to a new status
+   * Transition a single (issue,release) pair (dependency risk) to a new status with a comment about why the status is changing.
+   *
+   * This is an internal API and is subject to change without notice.
+   *
+   */
+  public static transitionIssueRelease<ThrowOnError extends boolean = false>(
+    options: Options<TransitionIssueReleaseData, ThrowOnError>,
+  ) {
+    return (options.client ?? client).post<
+      TransitionIssueReleaseResponses,
+      unknown,
+      ThrowOnError
+    >({
+      url: '/v2/sca/issues-releases/change-status',
+      ...options,
+      headers: {
+        'Content-Type': 'application/json',
+        ...options.headers,
+      },
+    });
+  }
+
+  /**
+   * Add a comment to an issue-release pair
+   * Add a comment to a (issue,release) pair (dependency risk).
+   *
+   * This is an internal API and is subject to change without notice.
+   *
+   */
+  public static addComment<ThrowOnError extends boolean = false>(
+    options: Options<AddCommentData, ThrowOnError>,
+  ) {
+    return (options.client ?? client).post<
+      AddCommentResponses,
+      unknown,
+      ThrowOnError
+    >({
+      url: '/v2/sca/issues-releases/add-comment',
+      ...options,
+      headers: {
+        'Content-Type': 'application/json',
+        ...options.headers,
+      },
+    });
+  }
+
+  /**
+   * Delete a comment from an issue-release pair
+   * Delete a comment from a (issue,release) pair (dependency risk).
+   *
+   * This is an internal API and is subject to change without notice.
+   *
+   */
+  public static deleteComment<ThrowOnError extends boolean = false>(
+    options: Options<DeleteCommentData, ThrowOnError>,
+  ) {
+    return (options.client ?? client).delete<
+      DeleteCommentResponses,
+      unknown,
+      ThrowOnError
+    >({
+      url: '/v2/sca/issues-releases/{key}/changelog',
+      ...options,
+    });
+  }
+
+  /**
+   * Get the changelog for a single issue-release pair
+   * Get the changelog for a single (issue,release) pair (dependency risk), using the key from the search endpoint.
+   *
+   * This is an internal API and is subject to change without notice.
+   *
+   */
+  public static getChangelog<ThrowOnError extends boolean = false>(
+    options: Options<GetChangelogData, ThrowOnError>,
+  ) {
+    return (options.client ?? client).get<
+      GetChangelogResponses,
+      unknown,
+      ThrowOnError
+    >({
+      url: '/v2/sca/issues-releases/{key}/changelog',
+      ...options,
+    });
+  }
+
+  /**
+   * Update a comment on an issue-release pair
+   * Update a comment on a (issue,release) pair (dependency risk).
+   *
+   * This is an internal API and is subject to change without notice.
+   *
+   */
+  public static updateComment<ThrowOnError extends boolean = false>(
+    options: Options<UpdateCommentData, ThrowOnError>,
+  ) {
+    return (options.client ?? client).patch<
+      UpdateCommentResponses,
+      unknown,
+      ThrowOnError
+    >({
+      url: '/v2/sca/issues-releases/{key}/changelog',
+      ...options,
+      headers: {
+        'Content-Type': 'application/json',
+        ...options.headers,
+      },
+    });
+  }
+
+  /**
+   * Search for issue-release pairs
+   * Search for software composition analysis issues (dependency risks)
+   * of a project, paired with releases that appear in the analyzed
+   * project, application, or portfolio.
+   *
+   * This endpoint returns one result for each (issue,release) pair,
+   * rather than one result for each distinct issue. So for example
+   * if a library uses two different versions of a package and
+   * both versions are affected by the same vulnerability, you will
+   * get two results not one.
+   *
+   * However each result may appear in multiple files or scopes that
+   * all use the same version of the affected package.
+   *
+   * In the terminology of this endpoint, a "release" is a version of
+   * a package like "lodash 1.2.3", an "issue" is a problem such as
+   * "CVE-1234", and a "dependency" is a specific file and scope that
+   * pulls in the release such as "subproject/pom.xml test".
+   *
+   * This is an internal API and is subject to change without notice.
+   *
+   */
+  public static search4<ThrowOnError extends boolean = false>(
+    options: Options<Search4Data, ThrowOnError>,
+  ) {
+    return (options.client ?? client).get<
+      Search4Responses,
+      unknown,
+      ThrowOnError
+    >({
+      url: '/v2/sca/issues-releases',
+      ...options,
+    });
+  }
+
+  /**
+   * Get a single issue-release pair
+   * Fetch a single (issue,release) pair (dependency risk), using the key from the search endpoint.
+   *
+   * This is an internal API and is subject to change without notice.
+   *
+   */
+  public static fetchIssueRelease<ThrowOnError extends boolean = false>(
+    options: Options<FetchIssueReleaseData, ThrowOnError>,
+  ) {
+    return (options.client ?? client).get<
+      FetchIssueReleaseResponses,
+      unknown,
+      ThrowOnError
+    >({
+      url: '/v2/sca/issues-releases/{key}',
+      ...options,
+    });
+  }
+
+  /**
+   * Get the list of users assigned to at least one issue in a given branch
+   * Get the list of users assigned to at least one issue in a given branch.
+   *
+   */
+  public static getAllAssignees<ThrowOnError extends boolean = false>(
+    options: Options<GetAllAssigneesData, ThrowOnError>,
+  ) {
+    return (options.client ?? client).get<
+      GetAllAssigneesResponses,
+      unknown,
+      ThrowOnError
+    >({
+      url: '/v2/sca/issues-releases/all-assignees',
+      ...options,
+    });
+  }
+}
+
+export class MarketplaceAzure {
+  /**
+   * Bills user's Azure account with the cost of SonarQube Server license
+   * Used by admin to bill user's Azure account with the cost of SonarQube Server license.
+   */
+  public static billAzureAccount<ThrowOnError extends boolean = false>(
+    options?: Options<BillAzureAccountData, ThrowOnError>,
+  ) {
+    return (options?.client ?? client).post<
+      BillAzureAccountResponses,
+      unknown,
+      ThrowOnError
+    >({
+      url: '/v2/marketplace/azure/billing',
+      ...options,
+    });
+  }
+}
+
+export class Jira {
+  /**
+   * Delete Jira work items
+   * Delete the Jira work items associated with a specific resource.
+   *
+   */
+  public static 곳<ThrowOnError extends boolean = false>(
+    options: Options<곳Data, ThrowOnError>,
+  ) {
+    return (options.client ?? client).delete<
+      곳Responses,
+      unknown,
+      ThrowOnError
+    >({
+      url: '/v2/jira/work-items',
+      ...options,
+    });
+  }
+
+  /**
+   * Fetch Jira work items
+   * Fetch the Jira work items for a specific Sonar project and resource.
+   * Accepts only authenticated requests.
+   *
+   */
+  public static य़<ThrowOnError extends boolean = false>(
+    options: Options<य़Data, ThrowOnError>,
+  ) {
+    return (options.client ?? client).get<य़Responses, unknown, ThrowOnError>({
+      url: '/v2/jira/work-items',
+      ...options,
+    });
+  }
+
+  /**
+   * Create Jira work item
+   * Create a Jira work item for a specific resource.
+   * Accepts only authenticated requests with issue administration permission.
+   *
+   */
+  public static य़1<ThrowOnError extends boolean = false>(
+    options: Options<य़1Data, ThrowOnError>,
+  ) {
+    return (options.client ?? client).post<य़1Responses, unknown, ThrowOnError>({
+      url: '/v2/jira/work-items',
+      ...options,
+      headers: {
+        'Content-Type': 'application/json',
+        ...options.headers,
+      },
+    });
+  }
+
+  /**
+   * Delete Jira project binding
+   * Delete the Jira project binding for a specific Sonar project.
+   * Accepts only authenticated requests.
+   *
+   */
+  public static 곳1<ThrowOnError extends boolean = false>(
+    options: Options<곳1Data, ThrowOnError>,
+  ) {
+    return (options.client ?? client).delete<
+      곳1Responses,
+      unknown,
+      ThrowOnError
+    >({
+      url: '/v2/jira/project-bindings',
+      ...options,
+    });
+  }
+
+  /**
+   * Fetch Jira project bindings
+   * Fetch the Jira project binding for a specific Sonar project.
+   * Accepts only authenticated requests.
+   *
+   */
+  public static य़2<ThrowOnError extends boolean = false>(
+    options: Options<य़2Data, ThrowOnError>,
+  ) {
+    return (options.client ?? client).get<य़2Responses, unknown, ThrowOnError>({
+      url: '/v2/jira/project-bindings',
+      ...options,
+    });
+  }
+
+  /**
+   * Update Jira project binding
+   * Update an existing Jira project binding for a specific Sonar project.
+   * Accepts only authenticated requests.
+   *
+   */
+  public static य़4<ThrowOnError extends boolean = false>(
+    options: Options<य़4Data, ThrowOnError>,
+  ) {
+    return (options.client ?? client).patch<य़4Responses, unknown, ThrowOnError>(
+      {
+        url: '/v2/jira/project-bindings',
+        ...options,
+        headers: {
+          'Content-Type': 'application/json',
+          ...options.headers,
+        },
+      },
+    );
+  }
+
+  /**
+   * Create or update Jira project binding
+   * Create or update a Jira project binding for a specific Sonar project.
+   * Accepts only authenticated requests.
+   *
+   */
+  public static य़3<ThrowOnError extends boolean = false>(
+    options: Options<य़3Data, ThrowOnError>,
+  ) {
+    return (options.client ?? client).post<य़3Responses, unknown, ThrowOnError>({
+      url: '/v2/jira/project-bindings',
+      ...options,
+      headers: {
+        'Content-Type': 'application/json',
+        ...options.headers,
+      },
+    });
+  }
+
+  /**
+   * Delete the Jira instance binding
+   * Deletes the Jira instance binding from the database.
+   * Requires global administrator permission.
+   *
+   */
+  public static 곳2<ThrowOnError extends boolean = false>(
+    options: Options<곳2Data, ThrowOnError>,
+  ) {
+    return (options.client ?? client).delete<
+      곳2Responses,
+      unknown,
+      ThrowOnError
+    >({
+      url: '/v2/jira/organization-bindings',
+      ...options,
+    });
+  }
+
+  /**
+   * Fetch the Jira instance binding
+   * Fetch the Jira instance binding.
+   * Requires global administrator permission.
+   *
+   */
+  public static य़5<ThrowOnError extends boolean = false>(
+    options: Options<य़5Data, ThrowOnError>,
+  ) {
+    return (options.client ?? client).get<य़5Responses, unknown, ThrowOnError>({
+      responseTransformer: य़5ResponseTransformer,
+      url: '/v2/jira/organization-bindings',
+      ...options,
+    });
+  }
+
+  /**
+   * Binds the specified pending instance binding with the specified jira cloud ID
+   * Binds the specified pending instance binding with the specified jira cloud ID
+   *
+   */
+  public static य़7<ThrowOnError extends boolean = false>(
+    options: Options<य़7Data, ThrowOnError>,
+  ) {
+    return (options.client ?? client).patch<य़7Responses, unknown, ThrowOnError>(
+      {
+        responseTransformer: य़7ResponseTransformer,
+        url: '/v2/jira/organization-bindings',
+        ...options,
+        headers: {
+          'Content-Type': 'application/json',
+          ...options.headers,
+        },
+      },
+    );
+  }
+
+  /**
+   * Create a new Jira instance binding
+   * Receives the 3LO state and authorization code parameters and attempts to create an instance binding.
+   * If successful, returns the binding. Otherwise, returns a list of available resources.
+   * Requires global administrator permission.
+   *
+   */
+  public static य़6<ThrowOnError extends boolean = false>(
+    options: Options<य़6Data, ThrowOnError>,
+  ) {
+    return (options.client ?? client).post<य़6Responses, unknown, ThrowOnError>({
+      responseTransformer: य़6ResponseTransformer,
+      url: '/v2/jira/organization-bindings',
+      ...options,
+      headers: {
+        'Content-Type': 'application/json',
+        ...options.headers,
+      },
+    });
+  }
+
+  /**
+   * Returns a list of all the available Jira work types for a specific Jira project
+   * Returns a list of all the available Jira work types for a specific Jira project.
+   * Also checks which work types are selected for a given sonar project. Conditionally, also includes field metadata.
+   *
+   */
+  public static य़10<ThrowOnError extends boolean = false>(
+    options: Options<य़10Data, ThrowOnError>,
+  ) {
+    return (options.client ?? client).get<य़10Responses, unknown, ThrowOnError>({
+      url: '/v2/jira/work-types',
+      ...options,
+    });
+  }
+
+  /**
+   * Saves the selected Jira work types for a project
+   * Receives a Jira project key and a list of work type and stores the work types.
+   *
+   */
+  public static य़11<ThrowOnError extends boolean = false>(
+    options: Options<य़11Data, ThrowOnError>,
+  ) {
+    return (options.client ?? client).patch<
+      य़11Responses,
+      unknown,
+      ThrowOnError
+    >({
+      url: '/v2/jira/work-types',
+      ...options,
+      headers: {
+        'Content-Type': 'application/json',
+        ...options.headers,
+      },
+    });
+  }
+
+  /**
+   * Returns a list of available user actions for a project
+   * Returns a list of available user actions for the authenticated user in the context of a specific project.
+   * If the user is not authenticated, returns an empty list.
+   *
+   */
+  public static य़12<ThrowOnError extends boolean = false>(
+    options: Options<य़12Data, ThrowOnError>,
+  ) {
+    return (options.client ?? client).get<य़12Responses, unknown, ThrowOnError>({
+      url: '/v2/jira/user-actions',
+      ...options,
+    });
+  }
+
+  /**
+   * Returns a list of all the available Jira projects
+   * Returns a list of all the available Jira projects
+   */
+  public static य़13<ThrowOnError extends boolean = false>(
+    options: Options<य़13Data, ThrowOnError>,
+  ) {
+    return (options.client ?? client).get<य़13Responses, unknown, ThrowOnError>({
+      url: '/v2/jira/projects',
+      ...options,
+    });
+  }
+
+  /**
+   * Count linked Jira issues
+   * Count the number of Jira issues linked to a specific Sonar project.
+   * Accepts only authenticated requests.
+   *
+   */
+  public static य़14<ThrowOnError extends boolean = false>(
+    options: Options<य़14Data, ThrowOnError>,
+  ) {
+    return (options.client ?? client).get<य़14Responses, unknown, ThrowOnError>({
+      url: '/v2/jira/linked-issues-count/{sonarProjectId}',
+      ...options,
+    });
+  }
+}
+
+export class SlackUserBindings {
+  /**
+   * Create Slack user binding
+   * Creates a new user binding between a SonarQube user and their Slack account.
+   * This endpoint is used during the Slack OAuth flow when users connect their accounts
+   * via the /sonarqube-server connect slash command.
+   *
+   */
+  public static createUserBinding<ThrowOnError extends boolean = false>(
+    options: Options<CreateUserBindingData, ThrowOnError>,
+  ) {
+    return (options.client ?? client).post<
+      CreateUserBindingResponses,
+      CreateUserBindingErrors,
+      ThrowOnError
+    >({
+      responseTransformer: createUserBindingResponseTransformer,
+      url: '/v2/integrations/user-bindings',
+      ...options,
+      headers: {
+        'Content-Type': 'application/json',
+        ...options.headers,
+      },
+    });
+  }
+
+  /**
+   * Get Slack user binding
+   * Retrieves a Slack user binding by its ID. Users can only access their own bindings
+   * unless they have administrative privileges.
+   *
+   */
+  public static getUserBinding<ThrowOnError extends boolean = false>(
+    options?: Options<GetUserBindingData, ThrowOnError>,
+  ) {
+    return (options?.client ?? client).get<
+      GetUserBindingResponses,
+      GetUserBindingErrors,
+      ThrowOnError
+    >({
+      responseTransformer: getUserBindingResponseTransformer,
+      url: '/v2/integrations/user-bindings/{id}',
+      ...options,
+    });
+  }
+}
+
+export class SlackSlashCommandController {
+  /**
+   * Handle Slack Slash Commands
+   * Handles incoming Slack slash command requests and command processing.
+   * The request body is form-encoded and contains command details. Signature validation is performed via
+   * SlackSlashCommandSignatureValidationAdvice before reaching this controller.
+   *
+   */
+  public static handleSlashCommand<ThrowOnError extends boolean = false>(
+    options: Options<HandleSlashCommandData, ThrowOnError>,
+  ) {
+    return (options.client ?? client).post<
+      HandleSlashCommandResponses,
+      unknown,
+      ThrowOnError
+    >({
+      ...urlSearchParamsBodySerializer,
+      url: '/v2/integrations/slack/slash-commands',
+      ...options,
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        ...options.headers,
+      },
+    });
+  }
+}
+
+export class SlackEventController {
+  /**
+   * Handle Slack Events API
+   * Handles incoming Slack Events API requests including URL verification and workspace lifecycle events.
+   * The request body is JSON and contains event details. Signature validation is performed via
+   * SlackEventsSignatureValidationAdvice before reaching this controller.
+   *
+   */
+  public static handleEvent<ThrowOnError extends boolean = false>(
+    options: Options<HandleEventData, ThrowOnError>,
+  ) {
+    return (options.client ?? client).post<
+      HandleEventResponses,
+      unknown,
+      ThrowOnError
+    >({
+      url: '/v2/integrations/slack/events',
+      ...options,
+      headers: {
+        'Content-Type': 'application/json',
+        ...options.headers,
+      },
+    });
+  }
+}
+
+export class IntegrationConfigurationsController {
+  /**
+   * Get integration configurations.
+   * Requires global administrator permission.
+   */
+  public static get<ThrowOnError extends boolean = false>(
+    options: Options<GetData, ThrowOnError>,
+  ) {
+    return (options.client ?? client).get<GetResponses, unknown, ThrowOnError>({
+      url: '/v2/integrations/integration-configurations',
+      ...options,
+    });
+  }
+
+  /**
+   * Create a configuration for an integration.
+   * Requires global administrator permission.
+   */
+  public static create2<ThrowOnError extends boolean = false>(
+    options: Options<Create2Data, ThrowOnError>,
+  ) {
+    return (options.client ?? client).post<
+      Create2Responses,
+      unknown,
+      ThrowOnError
+    >({
+      url: '/v2/integrations/integration-configurations',
+      ...options,
+      headers: {
+        'Content-Type': 'application/json',
+        ...options.headers,
+      },
+    });
+  }
+
+  /**
+   * Delete an integration configuration and all its related data.
+   * Requires global administrator permission.
+   * This will permanently delete the integration configuration, all associated workspaces, user bindings, and subscriptions.
+   *
+   */
+  public static delete1<ThrowOnError extends boolean = false>(
+    options: Options<Delete1Data, ThrowOnError>,
+  ) {
+    return (options.client ?? client).delete<
+      Delete1Responses,
+      unknown,
+      ThrowOnError
+    >({
+      url: '/v2/integrations/integration-configurations/{id}',
+      ...options,
+    });
+  }
+
+  /**
+   * Update an integration configuration.
+   * Requires global administrator permission.
+   */
+  public static update2<ThrowOnError extends boolean = false>(
+    options: Options<Update2Data, ThrowOnError>,
+  ) {
+    return (options.client ?? client).patch<
+      Update2Responses,
+      unknown,
+      ThrowOnError
+    >({
+      url: '/v2/integrations/integration-configurations/{id}',
+      ...options,
+      headers: {
+        'Content-Type': 'application/json',
+        ...options.headers,
+      },
+    });
+  }
+}
+
+export class FixSuggestions {
   /**
    * Starts a GitLab synchronization run.
    */
@@ -522,6 +1559,27 @@ export class FeatureEnablementController {
       ThrowOnError
     >({
       url: '/v2/fix-suggestions/feature-enablements/awareness-banner-interactions',
+      ...options,
+      headers: {
+        'Content-Type': 'application/json',
+        ...options.headers,
+      },
+    });
+  }
+
+  /**
+   * Suggest a fix for the given issueId
+   * Requires Code Viewer permission.
+   */
+  public static create3<ThrowOnError extends boolean = false>(
+    options: Options<Create3Data, ThrowOnError>,
+  ) {
+    return (options.client ?? client).post<
+      Create3Responses,
+      unknown,
+      ThrowOnError
+    >({
+      url: '/v2/fix-suggestions/ai-suggestions',
       ...options,
       headers: {
         'Content-Type': 'application/json',
@@ -562,23 +1620,40 @@ export class FeatureEnablementController {
       },
     });
   }
-}
 
-export class FixSuggestionController {
   /**
    * Suggest a fix for the given issueId
    *
    * Requires Code Viewer permission.
    */
-  public static create1<ThrowOnError extends boolean = false>(
-    options: Options<Create1Data, ThrowOnError>,
+  public static get3<ThrowOnError extends boolean = false>(
+    options: Options<Get3Data, ThrowOnError>,
+  ) {
+    return (options.client ?? client).get<Get3Responses, unknown, ThrowOnError>(
+      {
+        url: '/v2/fix-suggestions/issues/{issueId}',
+        ...options,
+      },
+    );
+  }
+}
+
+export class Entitlements {
+  /**
+   * Sets the license
+   *   Only third party license keys are accepted.
+   * Requires 'Administer System' permission.
+   *
+   */
+  public static setLicense<ThrowOnError extends boolean = false>(
+    options: Options<SetLicenseData, ThrowOnError>,
   ) {
     return (options.client ?? client).post<
-      Create1Responses,
+      SetLicenseResponses,
       unknown,
       ThrowOnError
     >({
-      url: '/v2/fix-suggestions/ai-suggestions',
+      url: '/v2/entitlements/online-activation',
       ...options,
       headers: {
         'Content-Type': 'application/json',
@@ -586,27 +1661,185 @@ export class FixSuggestionController {
       },
     });
   }
+
+  /**
+   * Deactivates offline license
+   *   This method is for users who activated the license using offline method. It should be used to
+   * fully deactivate the license (i.e. in cases of migrating the installation to a new server).
+   *
+   */
+  public static deactivateLicense<ThrowOnError extends boolean = false>(
+    options?: Options<DeactivateLicenseData, ThrowOnError>,
+  ) {
+    return (options?.client ?? client).post<
+      DeactivateLicenseResponses,
+      unknown,
+      ThrowOnError
+    >({
+      url: '/v2/entitlements/offline-deactivation',
+      ...options,
+    });
+  }
+
+  /**
+   * Retrieve a valid .req file for offline activation
+   *   Retrieves a .req file for offline activation of a license.
+   * Requires 'Administer System' permission.
+   *
+   */
+  public static retrieveRequestFile<ThrowOnError extends boolean = false>(
+    options: Options<RetrieveRequestFileData, ThrowOnError>,
+  ) {
+    return (options.client ?? client).get<
+      RetrieveRequestFileResponses,
+      unknown,
+      ThrowOnError
+    >({
+      url: '/v2/entitlements/offline-activation',
+      ...options,
+    });
+  }
+
+  /**
+   * Uploads a license
+   *   The content of the request body should be the text of the license file, along with a valid license key.
+   * Requires 'Administer System' permission.
+   *
+   */
+  public static uploadLicense<ThrowOnError extends boolean = false>(
+    options: Options<UploadLicenseData, ThrowOnError>,
+  ) {
+    return (options.client ?? client).post<
+      UploadLicenseResponses,
+      unknown,
+      ThrowOnError
+    >({
+      url: '/v2/entitlements/offline-activation',
+      ...options,
+      headers: {
+        'Content-Type': 'application/json',
+        ...options.headers,
+      },
+    });
+  }
+
+  /**
+   * Sets the license
+   *   Only license keys received from Sonar are accepted.
+   * Requires 'Administer System' permission.
+   *
+   */
+  public static setLegacyLicense<ThrowOnError extends boolean = false>(
+    options: Options<SetLegacyLicenseData, ThrowOnError>,
+  ) {
+    return (options.client ?? client).post<
+      SetLegacyLicenseResponses,
+      unknown,
+      ThrowOnError
+    >({
+      url: '/v2/entitlements/legacy-activation',
+      ...options,
+      headers: {
+        'Content-Type': 'application/json',
+        ...options.headers,
+      },
+    });
+  }
+
+  /**
+   * Deletes the existing license
+   *   Deletes the license. Both license keys received from Sonar and from 3rd party system can be removed.
+   * Requires 'Administer System' permission.
+   *
+   */
+  public static deleteLicense<ThrowOnError extends boolean = false>(
+    options?: Options<DeleteLicenseData, ThrowOnError>,
+  ) {
+    return (options?.client ?? client).delete<
+      DeleteLicenseResponses,
+      unknown,
+      ThrowOnError
+    >({
+      url: '/v2/entitlements/license',
+      ...options,
+    });
+  }
+
+  /**
+   * Returns information about the license
+   *   Returns information about the current license.
+   * Requires 'Administer System' permission.
+   *
+   */
+  public static getLicense<ThrowOnError extends boolean = false>(
+    options?: Options<GetLicenseData, ThrowOnError>,
+  ) {
+    return (options?.client ?? client).get<
+      GetLicenseResponses,
+      unknown,
+      ThrowOnError
+    >({
+      responseTransformer: getLicenseResponseTransformer,
+      url: '/v2/entitlements/license',
+      ...options,
+    });
+  }
+
+  /**
+   * Refreshes the existing license
+   *   Fetches the latest information about the license and updates it on the SonarQube Server instance.
+   * Requires 'Administer System' permission.
+   *
+   */
+  public static refreshLicense<ThrowOnError extends boolean = false>(
+    options?: Options<RefreshLicenseData, ThrowOnError>,
+  ) {
+    return (options?.client ?? client).patch<
+      RefreshLicenseResponses,
+      unknown,
+      ThrowOnError
+    >({
+      url: '/v2/entitlements/license',
+      ...options,
+    });
+  }
+
+  /**
+   * Returns a list of all available purchasable features for this edition
+   *   Returns a list of all available purchasable features for this edition including the ones who are already purchased
+   *
+   */
+  public static getPurchasableFeatures<ThrowOnError extends boolean = false>(
+    options?: Options<GetPurchasableFeaturesData, ThrowOnError>,
+  ) {
+    return (options?.client ?? client).get<
+      GetPurchasableFeaturesResponses,
+      unknown,
+      ThrowOnError
+    >({
+      url: '/v2/entitlements/purchasable-features',
+      ...options,
+    });
+  }
 }
 
-export class GitlabSynchronizationRunController {
+export class DopTranslation {
   /**
    * Starts a GitLab synchronization run.
    *
    *   Adds a new GitLab synchronization run in the background tasks. Requires sys-admins permissions.
    *
    */
-  public static create2<ThrowOnError extends boolean = false>(
-    options?: Options<Create2Data, ThrowOnError>,
+  public static create4<ThrowOnError extends boolean = false>(
+    options?: Options<Create4Data, ThrowOnError>,
   ) {
     return (options?.client ?? client).post<
-      Create2Responses,
+      Create4Responses,
       unknown,
       ThrowOnError
     >({ url: '/v2/dop-translation/gitlab-synchronization-runs', ...options });
   }
-}
 
-export class GitlabPermissionMappingsController {
   /**
    * Fetch permissions mapping
    *
@@ -648,50 +1881,6 @@ export class GitlabPermissionMappingsController {
    * Delete a single permission mappings
    *
    * Requires 'Administer System' permission.
-   */
-  public static deleteMapping<ThrowOnError extends boolean = false>(
-    options: Options<DeleteMappingData, ThrowOnError>,
-  ) {
-    return (options.client ?? client).delete<
-      DeleteMappingResponses,
-      unknown,
-      ThrowOnError
-    >({
-      url: '/v2/dop-translation/gitlab-permission-mappings/{role}',
-      ...options,
-    });
-  }
-
-  /**
-   * Update a single permission mapping
-   *
-   * Requires 'Administer System' permission.
-   */
-  public static updateMapping<ThrowOnError extends boolean = false>(
-    options: Options<UpdateMappingData, ThrowOnError>,
-  ) {
-    return (options.client ?? client).patch<
-      UpdateMappingResponses,
-      unknown,
-      ThrowOnError
-    >({
-      url: '/v2/dop-translation/gitlab-permission-mappings/{role}',
-      ...options,
-      headers: {
-        'Content-Type': 'application/merge-patch+json',
-        ...options.headers,
-      },
-    });
-  }
-}
-
-export class GitlabConfigurationController {
-  /**
-   * Search GitLab configs
-   *
-   *   Get the list of GitLab configurations.
-   * Note that a single configuration is supported at this time.
-   * Requires 'Administer System' permission.
    *
    */
   public static searchGitlabConfiguration<ThrowOnError extends boolean = false>(
@@ -701,22 +1890,23 @@ export class GitlabConfigurationController {
       SearchGitlabConfigurationResponses,
       unknown,
       ThrowOnError
-    >({ url: '/v2/dop-translation/gitlab-configurations', ...options });
+    >({
+      url: '/v2/dop-translation/gitlab-configurations',
+      ...options,
+    });
   }
 
   /**
-   * Create Gitlab configuration
+   * Update a single permission mapping
    *
-   *   Create a new Gitlab configuration.
-   * Note that only a single configuration can exist at a time.
    * Requires 'Administer System' permission.
    *
    */
-  public static create3<ThrowOnError extends boolean = false>(
-    options: Options<Create3Data, ThrowOnError>,
+  public static create5<ThrowOnError extends boolean = false>(
+    options: Options<Create5Data, ThrowOnError>,
   ) {
     return (options.client ?? client).post<
-      Create3Responses,
+      Create5Responses,
       unknown,
       ThrowOnError
     >({
@@ -730,67 +1920,12 @@ export class GitlabConfigurationController {
   }
 
   /**
-   * Delete a GitLab configuration
+   * Search GitLab configs
    *
-   * Delete a GitLab configuration.
+   *   Get the list of GitLab configurations.
+   * Note that a single configuration is supported at this time.
    * Requires 'Administer System' permission.
    *
-   */
-  public static deleteGitlabConfiguration<ThrowOnError extends boolean = false>(
-    options: Options<DeleteGitlabConfigurationData, ThrowOnError>,
-  ) {
-    return (options.client ?? client).delete<
-      DeleteGitlabConfigurationResponses,
-      unknown,
-      ThrowOnError
-    >({ url: '/v2/dop-translation/gitlab-configurations/{id}', ...options });
-  }
-
-  /**
-   * Fetch a GitLab configuration
-   *
-   * Fetch a GitLab configuration. Requires 'Administer System' permission.
-   *
-   */
-  public static getGitlabConfiguration<ThrowOnError extends boolean = false>(
-    options: Options<GetGitlabConfigurationData, ThrowOnError>,
-  ) {
-    return (options.client ?? client).get<
-      GetGitlabConfigurationResponses,
-      unknown,
-      ThrowOnError
-    >({ url: '/v2/dop-translation/gitlab-configurations/{id}', ...options });
-  }
-
-  /**
-   * Update a Gitlab configuration
-   *
-   * Update a Gitlab configuration. Requires 'Administer System' permission.
-   *
-   */
-  public static updateGitlabConfiguration<ThrowOnError extends boolean = false>(
-    options: Options<UpdateGitlabConfigurationData, ThrowOnError>,
-  ) {
-    return (options.client ?? client).patch<
-      UpdateGitlabConfigurationResponses,
-      unknown,
-      ThrowOnError
-    >({
-      url: '/v2/dop-translation/gitlab-configurations/{id}',
-      ...options,
-      headers: {
-        'Content-Type': 'application/merge-patch+json',
-        ...options.headers,
-      },
-    });
-  }
-}
-
-export class GithubPermissionMappingsController {
-  /**
-   * Fetch permissions mapping
-   *
-   * Get the list of all the existing roles with their permission mappings. Requires 'Administer System' permission.
    */
   public static fetchAll1<ThrowOnError extends boolean = false>(
     options?: Options<FetchAll1Data, ThrowOnError>,
@@ -799,12 +1934,14 @@ export class GithubPermissionMappingsController {
       FetchAll1Responses,
       unknown,
       ThrowOnError
-    >({ url: '/v2/dop-translation/github-permission-mappings', ...options });
+    >({ url: '/v2/dop-translation/gitlab-configurations', ...options });
   }
 
   /**
-   * Create a permission mapping for a custom role
+   * Create Gitlab configuration
    *
+   *   Create a new Gitlab configuration.
+   * Note that only a single configuration can exist at a time.
    * Requires 'Administer System' permission.
    */
   public static createMapping1<ThrowOnError extends boolean = false>(
@@ -825,8 +1962,162 @@ export class GithubPermissionMappingsController {
   }
 
   /**
+   * Delete a GitLab configuration
+   *
+   * Delete a GitLab configuration.
+   * Requires 'Administer System' permission.
+   *
+   */
+  public static searchGithubConfiguration<ThrowOnError extends boolean = false>(
+    options?: Options<SearchGithubConfigurationData, ThrowOnError>,
+  ) {
+    return (options?.client ?? client).get<
+      SearchGithubConfigurationResponses,
+      unknown,
+      ThrowOnError
+    >({ url: '/v2/dop-translation/gitlab-configurations/{id}', ...options });
+  }
+
+  /**
+   * Fetch a GitLab configuration
+   *
+   * Fetch a GitLab configuration. Requires 'Administer System' permission.
+   *
+   */
+  public static createGithubConfiguration<ThrowOnError extends boolean = false>(
+    options: Options<CreateGithubConfigurationData, ThrowOnError>,
+  ) {
+    return (options.client ?? client).post<
+      CreateGithubConfigurationResponses,
+      unknown,
+      ThrowOnError
+    >({ url: '/v2/dop-translation/gitlab-configurations/{id}', ...options });
+  }
+
+  /**
+   * Update a Gitlab configuration
+   *
+   * Update a Gitlab configuration. Requires 'Administer System' permission.
+   *
+   */
+  public static createBoundProject<ThrowOnError extends boolean = false>(
+    options: Options<CreateBoundProjectData, ThrowOnError>,
+  ) {
+    return (options.client ?? client).post<
+      CreateBoundProjectResponses,
+      unknown,
+      ThrowOnError
+    >({
+      url: '/v2/dop-translation/bound-projects',
+      ...options,
+      headers: {
+        'Content-Type': 'application/json',
+        ...options.headers,
+      },
+    });
+  }
+
+  /**
+   * Fetch permissions mapping
+   *
+   * Get the list of all the existing roles with their permission mappings. Requires 'Administer System' permission.
+   */
+  public static deleteMapping<ThrowOnError extends boolean = false>(
+    options: Options<DeleteMappingData, ThrowOnError>,
+  ) {
+    return (options.client ?? client).delete<
+      DeleteMappingResponses,
+      unknown,
+      ThrowOnError
+    >({ url: '/v2/dop-translation/github-permission-mappings', ...options });
+  }
+
+  /**
+   * Create a permission mapping for a custom role
+   *
+   * Requires 'Administer System' permission.
+   */
+  public static updateMapping<ThrowOnError extends boolean = false>(
+    options: Options<UpdateMappingData, ThrowOnError>,
+  ) {
+    return (options.client ?? client).patch<
+      UpdateMappingResponses,
+      unknown,
+      ThrowOnError
+    >({
+      url: '/v2/dop-translation/gitlab-permission-mappings/{role}',
+      ...options,
+      headers: {
+        'Content-Type': 'application/merge-patch+json',
+        ...options.headers,
+      },
+    });
+  }
+
+  /**
    * Delete a single permission mappings
    *
+   * Requires 'Administer System' permission.
+   *
+   */
+  public static deleteGitlabConfiguration<ThrowOnError extends boolean = false>(
+    options: Options<DeleteGitlabConfigurationData, ThrowOnError>,
+  ) {
+    return (options.client ?? client).delete<
+      DeleteGitlabConfigurationResponses,
+      unknown,
+      ThrowOnError
+    >({
+      url: '/v2/dop-translation/gitlab-configurations/{id}',
+      ...options,
+    });
+  }
+
+  /**
+   * Update a single permission mapping
+   *
+   * Requires 'Administer System' permission.
+   */
+  public static getGitlabConfiguration<ThrowOnError extends boolean = false>(
+    options: Options<GetGitlabConfigurationData, ThrowOnError>,
+  ) {
+    return (options.client ?? client).get<
+      GetGitlabConfigurationResponses,
+      unknown,
+      ThrowOnError
+    >({
+      url: '/v2/dop-translation/gitlab-configurations/{id}',
+      ...options,
+    });
+  }
+
+  /**
+   * Update a Gitlab configuration
+   * Update a Gitlab configuration. Requires 'Administer System' permission.
+   *
+   */
+  public static updateGitlabConfiguration<ThrowOnError extends boolean = false>(
+    options: Options<UpdateGitlabConfigurationData, ThrowOnError>,
+  ) {
+    return (options.client ?? client).patch<
+      UpdateGitlabConfigurationResponses,
+      unknown,
+      ThrowOnError
+    >({
+      url: '/v2/dop-translation/gitlab-configurations/{id}',
+      ...options,
+      headers: {
+        'Content-Type': 'application/merge-patch+json',
+        ...options.headers,
+      },
+    });
+  }
+
+  /**
+   * Search GitHub configs
+   *
+   *   Get the list of GitHub configurations.
+   * Note that a single configuration is supported at this time.
    * Requires 'Administer System' permission.
    */
   public static deleteMapping1<ThrowOnError extends boolean = false>(
@@ -836,15 +2127,14 @@ export class GithubPermissionMappingsController {
       DeleteMapping1Responses,
       unknown,
       ThrowOnError
-    >({
-      url: '/v2/dop-translation/github-permission-mappings/{role}',
-      ...options,
-    });
+    >({ url: '/v2/dop-translation/github-configurations', ...options });
   }
 
   /**
-   * Update a single permission mapping
+   * Create GitHub configuration
    *
+   *   Create a new GitHub configuration.
+   * Note that only a single configuration can exist at a time.
    * Requires 'Administer System' permission.
    */
   public static updateMapping1<ThrowOnError extends boolean = false>(
@@ -859,51 +2149,6 @@ export class GithubPermissionMappingsController {
       ...options,
       headers: {
         'Content-Type': 'application/merge-patch+json',
-        ...options.headers,
-      },
-    });
-  }
-}
-
-export class GithubConfigurationController {
-  /**
-   * Search GitHub configs
-   *
-   *   Get the list of GitHub configurations.
-   * Note that a single configuration is supported at this time.
-   * Requires 'Administer System' permission.
-   *
-   */
-  public static searchGithubConfiguration<ThrowOnError extends boolean = false>(
-    options?: Options<SearchGithubConfigurationData, ThrowOnError>,
-  ) {
-    return (options?.client ?? client).get<
-      SearchGithubConfigurationResponses,
-      unknown,
-      ThrowOnError
-    >({ url: '/v2/dop-translation/github-configurations', ...options });
-  }
-
-  /**
-   * Create GitHub configuration
-   *
-   *   Create a new GitHub configuration.
-   * Note that only a single configuration can exist at a time.
-   * Requires 'Administer System' permission.
-   *
-   */
-  public static createGithubConfiguration<ThrowOnError extends boolean = false>(
-    options: Options<CreateGithubConfigurationData, ThrowOnError>,
-  ) {
-    return (options.client ?? client).post<
-      CreateGithubConfigurationResponses,
-      unknown,
-      ThrowOnError
-    >({
-      url: '/v2/dop-translation/github-configurations',
-      ...options,
-      headers: {
-        'Content-Type': 'application/json',
         ...options.headers,
       },
     });
@@ -964,9 +2209,58 @@ export class GithubConfigurationController {
       },
     });
   }
+
+  /**
+   * Search across project bindings
+   */
+  public static getProjectBindingByProjectId<
+    ThrowOnError extends boolean = false,
+  >(options?: Options<GetProjectBindingByProjectIdData, ThrowOnError>) {
+    return (options?.client ?? client).get<
+      GetProjectBindingByProjectIdResponses,
+      unknown,
+      ThrowOnError
+    >({
+      url: '/v2/dop-translation/project-bindings',
+      ...options,
+    });
+  }
+
+  /**
+   * Fetch a single Project Binding
+   */
+  public static getProjectBinding<ThrowOnError extends boolean = false>(
+    options: Options<GetProjectBindingData, ThrowOnError>,
+  ) {
+    return (options.client ?? client).get<
+      GetProjectBindingResponses,
+      unknown,
+      ThrowOnError
+    >({
+      url: '/v2/dop-translation/project-bindings/{id}',
+      ...options,
+    });
+  }
+
+  /**
+   * List all DevOps Platform Integration settings
+   * Requires the 'Create Projects' permission
+   */
+  public static fetchAllDopSettings<ThrowOnError extends boolean = false>(
+    options?: Options<FetchAllDopSettingsData, ThrowOnError>,
+  ) {
+    return (options?.client ?? client).get<
+      FetchAllDopSettingsResponses,
+      unknown,
+      ThrowOnError
+    >({
+      url: '/v2/dop-translation/dop-settings',
+      ...options,
+    });
+  }
 }
 
-export class BoundProjectsController {
+export class CleanCodePolicy {
   /**
    * Create a SonarQube project with the information from the provided DevOps platform project.
    *
@@ -975,37 +2269,11 @@ export class BoundProjectsController {
    * Requires the 'Create Projects' permission and setting a Personal Access Token with api/alm_integrations/set_pat for a user who will be using this endpoint
    *
    */
-  public static createBoundProject<ThrowOnError extends boolean = false>(
-    options: Options<CreateBoundProjectData, ThrowOnError>,
+  public static create6<ThrowOnError extends boolean = false>(
+    options: Options<Create6Data, ThrowOnError>,
   ) {
     return (options.client ?? client).post<
-      CreateBoundProjectResponses,
-      unknown,
-      ThrowOnError
-    >({
-      url: '/v2/dop-translation/bound-projects',
-      ...options,
-      headers: {
-        'Content-Type': 'application/json',
-        ...options.headers,
-      },
-    });
-  }
-}
-
-export class RuleController {
-  /**
-   * Custom rule creation
-   *
-   *   Create a custom rule.
-   * Requires the 'Administer Quality Profiles' permission.
-   *
-   */
-  public static create4<ThrowOnError extends boolean = false>(
-    options: Options<Create4Data, ThrowOnError>,
-  ) {
-    return (options.client ?? client).post<
-      Create4Responses,
+      Create6Responses,
       unknown,
       ThrowOnError
     >({
@@ -1017,9 +2285,52 @@ export class RuleController {
       },
     });
   }
+
+  /**
+   * Custom rule creation
+   *
+   *   Create a custom rule.
+   * Requires the 'Administer Quality Profiles' permission.
+   *
+   */
+  public static getMode<ThrowOnError extends boolean = false>(
+    options?: Options<GetModeData, ThrowOnError>,
+  ) {
+    return (options?.client ?? client).get<
+      GetModeResponses,
+      unknown,
+      ThrowOnError
+    >({
+      url: '/v2/clean-code-policy/mode',
+      ...options,
+    });
+  }
+
+  /**
+   * Update current instance Mode
+   * Update the current instance mode. Can be Multi-Quality Rules (MQR) Mode or Standard Experience.
+   * Requires 'Administer System' permission.
+   *
+   */
+  public static patchMode<ThrowOnError extends boolean = false>(
+    options: Options<PatchModeData, ThrowOnError>,
+  ) {
+    return (options.client ?? client).patch<
+      PatchModeResponses,
+      unknown,
+      ThrowOnError
+    >({
+      url: '/v2/clean-code-policy/mode',
+      ...options,
+      headers: {
+        'Content-Type': 'application/json',
+        ...options.headers,
+      },
+    });
+  }
 }
 
-export class GroupController {
+export class Authorizations {
   /**
    * Group search
    *
@@ -1042,15 +2353,54 @@ export class GroupController {
    *
    * Create a new group.
    */
-  public static create5<ThrowOnError extends boolean = false>(
-    options: Options<Create5Data, ThrowOnError>,
+  public static create7<ThrowOnError extends boolean = false>(
+    options: Options<Create7Data, ThrowOnError>,
   ) {
     return (options.client ?? client).post<
-      Create5Responses,
+      Create7Responses,
       unknown,
       ThrowOnError
     >({
       url: '/v2/authorizations/groups',
+      ...options,
+      headers: {
+        'Content-Type': 'application/json',
+        ...options.headers,
+      },
+    });
+  }
+
+  /**
+   * Search across group memberships
+   *   Get the list of groups and members matching the query.
+   *
+   */
+  public static search2<ThrowOnError extends boolean = false>(
+    options?: Options<Search2Data, ThrowOnError>,
+  ) {
+    return (options?.client ?? client).get<
+      Search2Responses,
+      unknown,
+      ThrowOnError
+    >({
+      url: '/v2/authorizations/group-memberships',
+      ...options,
+    });
+  }
+
+  /**
+   * Add a group membership
+   * Add a user to a group.
+   */
+  public static create8<ThrowOnError extends boolean = false>(
+    options: Options<Create8Data, ThrowOnError>,
+  ) {
+    return (options.client ?? client).post<
+      Create8Responses,
+      unknown,
+      ThrowOnError
+    >({
+      url: '/v2/authorizations/group-memberships',
       ...options,
       headers: {
         'Content-Type': 'application/json',
@@ -1111,39 +2461,49 @@ export class GroupController {
       },
     });
   }
-}
 
-export class GroupMembershipController {
   /**
    * Search across group memberships
    *
    *   Get the list of groups and members matching the query.
    *
    */
-  public static search2<ThrowOnError extends boolean = false>(
-    options?: Options<Search2Data, ThrowOnError>,
+  public static delete3<ThrowOnError extends boolean = false>(
+    options: Options<Delete3Data, ThrowOnError>,
   ) {
-    return (options?.client ?? client).get<
-      Search2Responses,
+    return (options.client ?? client).delete<
+      Delete3Responses,
       unknown,
       ThrowOnError
     >({ url: '/v2/authorizations/group-memberships', ...options });
   }
+}
 
+export class Atlassian {
   /**
    * Add a group membership
    *
    * Add a user to a group.
    */
-  public static create6<ThrowOnError extends boolean = false>(
-    options: Options<Create6Data, ThrowOnError>,
+  public static य़8<ThrowOnError extends boolean = false>(
+    options?: Options<य़8Data, ThrowOnError>,
   ) {
-    return (options.client ?? client).post<
-      Create6Responses,
-      unknown,
-      ThrowOnError
-    >({
-      url: '/v2/authorizations/group-memberships',
+    return (options?.client ?? client).get<य़8Responses, unknown, ThrowOnError>({
+      url: '/v2/atlassian/application-configuration',
+      ...options,
+    });
+  }
+
+  /**
+   * Create/Update the Atlassian Authentication details
+   * Create/Update the Atlassian Authentication details.
+   *
+   */
+  public static य़9<ThrowOnError extends boolean = false>(
+    options: Options<य़9Data, ThrowOnError>,
+  ) {
+    return (options.client ?? client).post<य़9Responses, unknown, ThrowOnError>({
+      url: '/v2/atlassian/application-configuration',
       ...options,
       headers: {
         'Content-Type': 'application/json',
@@ -1157,8 +2517,8 @@ export class GroupMembershipController {
    *
    * Remove a user from a group
    */
-  public static delete<ThrowOnError extends boolean = false>(
-    options: Options<DeleteData, ThrowOnError>,
+  public static य़15<ThrowOnError extends boolean = false>(
+    options: Options<य़15Data, ThrowOnError>,
   ) {
     return (options.client ?? client).delete<
       DeleteResponses,
@@ -1168,9 +2528,9 @@ export class GroupMembershipController {
   }
 }
 
-export class K {
+export class FeatureEnablement {
   /**
-   * Get the status of SCA enablement
+   * Get the status of SCA feature opt-in (should only be used for the configuration UX in frontend)
    */
   public static getFeatureEnablement<ThrowOnError extends boolean = false>(
     options?: Options<GetFeatureEnablementData, ThrowOnError>,
@@ -1183,7 +2543,7 @@ export class K {
   }
 
   /**
-   * Update SCA enablement settings
+   * Update SCA feature opt-in (should only be used for the configuration UX in frontend)
    */
   public static updateFeatureEnablement<ThrowOnError extends boolean = false>(
     options: Options<UpdateFeatureEnablementData, ThrowOnError>,
@@ -1201,35 +2561,21 @@ export class K {
       },
     });
   }
+}
 
+export class Issues {
   /**
    * Get a software bill of materials (SBOM) report
    *
    * Return a report based on the dependencies in this project's branch, using
    * the type parameter and Accept header to select the report to generate.
    *
-   * Right now, the available reports have specialized MIME types that
-   * go along with those formats:
-   *
-   * * CycloneDX: https://cyclonedx.org/specification/overview/
-   * * JSON & XML
-   * * SPDX 2.3: https://spdx.github.io/spdx-spec/v2.3/
-   * * JSON & XML
-   *
-   * Theoretically you could send just the MIME type for the format you wanted
-   * as the Accept header and get that report. However, there may be other
-   * formats that don't have a specific MIME type attached -- think two
-   * different flavors of a CSV report, for example. In that case, we still
-   * need a specific report type parameter to help differentiate more.
-   *
-   * This is an internal API and is subject to change without notice.
-   *
    */
-  public static generateReport<ThrowOnError extends boolean = false>(
-    options: Options<GenerateReportData, ThrowOnError>,
+  public static getSandboxSettings<ThrowOnError extends boolean = false>(
+    options?: Options<GetSandboxSettingsData, ThrowOnError>,
   ) {
-    return (options.client ?? client).get<
-      GenerateReportResponses,
+    return (options?.client ?? client).get<
+      GetSandboxSettingsResponses,
       unknown,
       ThrowOnError
     >({ url: '/v2/sca/sbom-reports', ...options });
@@ -1240,6 +2586,146 @@ export class K {
    *
    * Search for package releases that appear in the analyzed project,
    * as determined by software composition analysis.
+   *
+   */
+  public static patchSandboxSettings<ThrowOnError extends boolean = false>(
+    options: Options<PatchSandboxSettingsData, ThrowOnError>,
+  ) {
+    return (options.client ?? client).patch<
+      PatchSandboxSettingsResponses,
+      unknown,
+      ThrowOnError
+    >({ url: '/v2/sca/releases', ...options });
+  }
+
+  /**
+   * Get a single release
+   *
+   * Fetch a single release by its key.
+   *
+   */
+  public static getProjectSandboxSettings<ThrowOnError extends boolean = false>(
+    options: Options<GetProjectSandboxSettingsData, ThrowOnError>,
+  ) {
+    return (options.client ?? client).get<
+      GetProjectSandboxSettingsResponses,
+      unknown,
+      ThrowOnError
+    >({ url: '/v2/sca/releases/{key}', ...options });
+  }
+
+  /**
+   * Search for issue-release pairs
+   *
+   * Search for software composition analysis issues (dependency risks)
+   * of a project, paired with releases that appear in the analyzed
+   * project.
+   *
+   */
+  public static patchProjectSandboxSettings<
+    ThrowOnError extends boolean = false,
+  >(options: Options<PatchProjectSandboxSettingsData, ThrowOnError>) {
+    return (options.client ?? client).patch<
+      PatchProjectSandboxSettingsResponses,
+      unknown,
+      ThrowOnError
+    >({ url: '/v2/sca/issues-releases', ...options });
+  }
+}
+
+export class SelfTest {
+  /**
+   * Get a single issue-release pair
+   *
+   * Fetch a single (issue,release) pair (dependency risk), using the key from the search endpoint.
+   *
+   * This is an internal API and is subject to change without notice.
+   *
+   */
+  public static performSelfTest<ThrowOnError extends boolean = false>(
+    options?: Options<PerformSelfTestData, ThrowOnError>,
+  ) {
+    return (options?.client ?? client).get<
+      PerformSelfTestResponses,
+      unknown,
+      ThrowOnError
+    >({ url: '/v2/sca/issues-releases/{key}', ...options });
+  }
+
+  /**
+   * Get available CLI downloads
+   *
+   * Gets the available SCA CLI downloads. The response includes metadata about each option
+   * such as the filename and operating system.
+   *
+   * This is an internal API and is subject to change without notice.
+   *
+   */
+  public static performSpringConfigurationSelfTest<
+    ThrowOnError extends boolean = false,
+  >(options: Options<PerformSpringConfigurationSelfTestData, ThrowOnError>) {
+    return (options.client ?? client).get<
+      PerformSpringConfigurationSelfTestResponses,
+      unknown,
+      ThrowOnError
+    >({ url: '/v2/sca/clis', ...options });
+  }
+}
+
+export class SbomReports {
+  /**
+   * Get metadata for a specific CLI download
+   *
+   * Gets the metadata for a specific SCA CLI download. The response includes the
+   * filename, SHA-256 checksum, operating system, and CPU architecture.
+   *
+   * Right now, the available reports have specialized MIME types that
+   * go along with those formats:
+   *
+   * * CycloneDX: https://cyclonedx.org/specification/overview/
+   * * JSON & XML
+   * * SPDX 2.3: https://spdx.github.io/spdx-spec/v2.3/
+   * * JSON & XML
+   * * SPDX 3.0: https://spdx.github.io/spdx-spec/v3.0.1/
+   * * JSON
+   *
+   */
+  public static generateReport<ThrowOnError extends boolean = false>(
+    options: Options<GenerateReportData, ThrowOnError>,
+  ) {
+    return (options.client ?? client).get<
+      GenerateReportResponses,
+      unknown,
+      ThrowOnError
+    >({ url: '/v2/sca/clis/{id}', ...options });
+  }
+}
+
+export class RiskReports {
+  /**
+   * Get a report for all the current SCA dependency risks for a given component and branch
+   * Returns list of all risks for a given component and branch. CSV format is available by setting `Accept: text/csv` in your request headers.
+   *
+   */
+  public static getReport<ThrowOnError extends boolean = false>(
+    options: Options<GetReportData, ThrowOnError>,
+  ) {
+    return (options.client ?? client).get<
+      GetReportResponses,
+      unknown,
+      ThrowOnError
+    >({
+      url: '/v2/sca/risk-reports',
+      ...options,
+    });
+  }
+}
+
+export class Releases {
+  /**
+   * Retrieve current instance Mode
+   *
+   * Fetch the current instance mode. Can be Multi-Quality Rules (MQR) Mode or Standard Experience.
    *
    * This endpoint returns one result for each release,
    * rather than one result for each time a release is pulled in.
@@ -1265,13 +2751,14 @@ export class K {
       Search3Responses,
       unknown,
       ThrowOnError
-    >({ url: '/v2/sca/releases', ...options });
+    >({ url: '/v2/clean-code-policy/mode', ...options });
   }
 
   /**
-   * Get a single release
+   * Update current instance Mode
    *
-   * Fetch a single release by its key.
+   * Update the current instance mode. Can be Multi-Quality Rules (MQR) Mode or Standard Experience.
+   * Requires 'Administer System' permission.
    *
    * This single-release endpoint lists full details for all dependencies
    * that mention the release.
@@ -1291,67 +2778,53 @@ export class K {
       FetchReleaseResponses,
       unknown,
       ThrowOnError
-    >({ url: '/v2/sca/releases/{key}', ...options });
+    >({
+      url: '/v2/sca/releases/{key}',
+      ...options,
+    });
+  }
+}
+
+export class ScaEnabled {
+  /**
+   * Gets the status of ongoing database migrations, if any
+   *
+   * Return the detailed status of ongoing database migrations including starting date. If no migration is ongoing or needed it is still possible to call this endpoint and receive appropriate information.
+   */
+  public static getFeatureEnabled<ThrowOnError extends boolean = false>(
+    options?: Options<GetFeatureEnabledData, ThrowOnError>,
+  ) {
+    return (options?.client ?? client).get<
+      GetFeatureEnabledResponses,
+      unknown,
+      ThrowOnError
+    >({ url: '/v2/system/migrations-status', ...options });
   }
 
   /**
-   * Search for issue-release pairs
+   * Provide liveness of SonarQube, meant to be used as a liveness probe on Kubernetes
    *
-   * Search for software composition analysis issues (dependency risks)
-   * of a project, paired with releases that appear in the analyzed
-   * project.
+   *   Require 'Administer System' permission or authentication with passcode.
    *
-   * This endpoint returns one result for each (issue,release) pair,
-   * rather than one result for each distinct issue. So for example
-   * if a library uses two different versions of a package and
-   * both versions are affected by the same vulnerability, you will
-   * get two results not one.
+   * When SonarQube is fully started, liveness check for database connectivity, Compute Engine status, and, except for DataCenter Edition, if ElasticSearch is Green or Yellow.
    *
-   * However each result may appear in multiple files or scopes that
-   * all use the same version of the affected package.
-   *
-   * In the terminology of this endpoint, a "release" is a version of
-   * a package like "lodash 1.2.3", an "issue" is a problem such as
-   * "CVE-1234", and a "dependency" is a specific file and scope that
-   * pulls in the release such as "subproject/pom.xml test".
-   *
-   * The dependencyRisks attribute in the result is deprecated; please
-   * use issuesReleases instead.
-   *
-   * This is an internal API and is subject to change without notice.
+   * When SonarQube is on Safe Mode (for example when a database migration is running), liveness check only for database connectivity
    *
    */
-  public static search4<ThrowOnError extends boolean = false>(
-    options: Options<Search4Data, ThrowOnError>,
+  public static getFeatureEnabled1<ThrowOnError extends boolean = false>(
+    options?: Options<GetFeatureEnabled1Data, ThrowOnError>,
   ) {
-    return (options.client ?? client).get<
-      Search4Responses,
+    return (options?.client ?? client).get<
+      GetFeatureEnabled1Responses,
       unknown,
       ThrowOnError
-    >({ url: '/v2/sca/issues-releases', ...options });
+    >({ url: '/v2/system/liveness', ...options });
   }
+}
 
-  /**
-   * Get a single issue-release pair
-   *
-   * Fetch a single (issue,release) pair (dependency risk), using the key from the search endpoint.
-   *
-   * This is an internal API and is subject to change without notice.
-   *
-   */
-  public static fetchDependencyRisk<ThrowOnError extends boolean = false>(
-    options: Options<FetchDependencyRiskData, ThrowOnError>,
-  ) {
-    return (options.client ?? client).get<
-      FetchDependencyRiskResponses,
-      unknown,
-      ThrowOnError
-    >({ url: '/v2/sca/issues-releases/{key}', ...options });
-  }
-
+export class ScaClis {
   /**
    * Get available CLI downloads
-   *
    * Gets the available SCA CLI downloads. The response includes metadata about each option
    * such as the filename and operating system.
    *
@@ -1365,17 +2838,13 @@ export class K {
       GetScaClisMetadataResponses,
       unknown,
       ThrowOnError
-    >({ url: '/v2/sca/clis', ...options });
+    >({ url: '/v2/system/health', ...options });
   }
 
   /**
-   * Get metadata for a specific CLI download
+   * Get the supported LLM providers
    *
-   * Gets the metadata for a specific SCA CLI download. The response includes the
-   * filename, SHA-256 checksum, operating system, and CPU architecture.
-   *
-   * This is an internal API and is subject to change without notice.
-   *
+   * Returns the LLM providers that could be used for requesting an AI fix suggestion
    */
   public static downloadScaCli<ThrowOnError extends boolean = false>(
     options: Options<DownloadScaCliData, ThrowOnError>,
@@ -1384,138 +2853,21 @@ export class K {
       DownloadScaCliResponses,
       unknown,
       ThrowOnError
-    >({ url: '/v2/sca/clis/{id}', ...options });
-  }
-
-  /**
-   * Find the file graph for this project branch and source.
-   */
-  public static 踼<ThrowOnError extends boolean = false>(
-    options: Options<踼Data, ThrowOnError>,
-  ) {
-    return (options.client ?? client).get<踼Responses, unknown, ThrowOnError>({
-      url: '/v2/architecture/file-graph',
-      ...options,
-    });
-  }
-}
-
-export class ModeController {
-  /**
-   * Retrieve current instance Mode
-   *
-   * Fetch the current instance mode. Can be Multi-Quality Rules (MQR) Mode or Standard Experience.
-   *
-   */
-  public static getMode<ThrowOnError extends boolean = false>(
-    options?: Options<GetModeData, ThrowOnError>,
-  ) {
-    return (options?.client ?? client).get<
-      GetModeResponses,
-      unknown,
-      ThrowOnError
-    >({ url: '/v2/clean-code-policy/mode', ...options });
-  }
-
-  /**
-   * Update current instance Mode
-   *
-   * Update the current instance mode. Can be Multi-Quality Rules (MQR) Mode or Standard Experience.
-   * Requires 'Administer System' permission.
-   *
-   */
-  public static patchMode<ThrowOnError extends boolean = false>(
-    options: Options<PatchModeData, ThrowOnError>,
-  ) {
-    return (options.client ?? client).patch<
-      PatchModeResponses,
-      unknown,
-      ThrowOnError
-    >({
-      url: '/v2/clean-code-policy/mode',
-      ...options,
-      headers: {
-        'Content-Type': 'application/json',
-        ...options.headers,
-      },
-    });
-  }
-}
-
-export class DatabaseMigrationsController {
-  /**
-   * Gets the status of ongoing database migrations, if any
-   *
-   * Return the detailed status of ongoing database migrations including starting date. If no migration is ongoing or needed it is still possible to call this endpoint and receive appropriate information.
-   */
-  public static getStatus<ThrowOnError extends boolean = false>(
-    options?: Options<GetStatusData, ThrowOnError>,
-  ) {
-    return (options?.client ?? client).get<
-      GetStatusResponses,
-      unknown,
-      ThrowOnError
-    >({ url: '/v2/system/migrations-status', ...options });
-  }
-}
-
-export class LivenessController {
-  /**
-   * Provide liveness of SonarQube, meant to be used as a liveness probe on Kubernetes
-   *
-   *   Require 'Administer System' permission or authentication with passcode.
-   *
-   * When SonarQube is fully started, liveness check for database connectivity, Compute Engine status, and, except for DataCenter Edition, if ElasticSearch is Green or Yellow.
-   *
-   * When SonarQube is on Safe Mode (for example when a database migration is running), liveness check only for database connectivity
-   *
-   */
-  public static livenessCheck<ThrowOnError extends boolean = false>(
-    options?: Options<LivenessCheckData, ThrowOnError>,
-  ) {
-    return (options?.client ?? client).get<
-      LivenessCheckResponses,
-      LivenessCheckErrors,
-      ThrowOnError
-    >({ url: '/v2/system/liveness', ...options });
-  }
-}
-
-export class HealthController {
-  public static getHealth<ThrowOnError extends boolean = false>(
-    options?: Options<GetHealthData, ThrowOnError>,
-  ) {
-    return (options?.client ?? client).get<
-      GetHealthResponses,
-      unknown,
-      ThrowOnError
-    >({ url: '/v2/system/health', ...options });
-  }
-}
-
-export class SupportedLlmProviderController {
-  /**
-   * Get the supported LLM providers
-   *
-   * Returns the LLM providers that could be used for requesting an AI fix suggestion
-   */
-  public static getLlmProviders<ThrowOnError extends boolean = false>(
-    options?: Options<GetLlmProvidersData, ThrowOnError>,
-  ) {
-    return (options?.client ?? client).get<
-      GetLlmProvidersResponses,
-      unknown,
-      ThrowOnError
     >({ url: '/v2/fix-suggestions/supported-llm-providers', ...options });
   }
 }
 
-export class ServiceInfoController {
+export class Analyses {
   /**
-   * Request status and subscription information of AI CodeFix service
+   * Fetch analysis status for one branch
+   * Fetch analysis status information for a branch. If the branch has
+   * never been analyzed, will return a status of 404.
+   *
+   * This is an internal API and is subject to change without notice.
+   *
    */
-  public static get<ThrowOnError extends boolean = false>(
-    options?: Options<GetData, ThrowOnError>,
+  public static fetchAnalysis<ThrowOnError extends boolean = false>(
+    options: Options<FetchAnalysisData, ThrowOnError>,
   ) {
     return (options?.client ?? client).get<GetResponses, unknown, ThrowOnError>(
       { url: '/v2/fix-suggestions/service-info', ...options },
@@ -1533,20 +2885,20 @@ export class ServiceInfoController {
       unknown,
       ThrowOnError
     >({
-      url: '/v2/fix-suggestions/service-info/subscription-type',
+      url: '/v2/sca/analyses',
       ...options,
     });
   }
 }
 
-export class FixSuggestionIssueController {
+export class Architecture {
   /**
    * Fetch AI suggestion availability for the given issueId
    *
    * Requires Code Viewer permission.
    */
-  public static get1<ThrowOnError extends boolean = false>(
-    options: Options<Get1Data, ThrowOnError>,
+  public static य़16<ThrowOnError extends boolean = false>(
+    options: Options<य़16Data, ThrowOnError>,
   ) {
     return (options.client ?? client).get<Get1Responses, unknown, ThrowOnError>(
       { url: '/v2/fix-suggestions/issues/{issueId}', ...options },
@@ -1569,10 +2921,11 @@ export class ProjectBindingsController {
   }
 
   /**
-   * Fetch a single Project Binding
+   * Get graph data by id.
+   * Fetch the graph data produced by analysis.
    */
-  public static getProjectBinding<ThrowOnError extends boolean = false>(
-    options: Options<GetProjectBindingData, ThrowOnError>,
+  public static य़17<ThrowOnError extends boolean = false>(
+    options: Options<य़17Data, ThrowOnError>,
   ) {
     return (options.client ?? client).get<
       GetProjectBindingResponses,
@@ -1580,16 +2933,14 @@ export class ProjectBindingsController {
       ThrowOnError
     >({ url: '/v2/dop-translation/project-bindings/{id}', ...options });
   }
-}
 
-export class DopSettingsController {
   /**
    * List all DevOps Platform Integration settings
    *
    * Requires the 'Create Projects' permission
    */
-  public static fetchAllDopSettings<ThrowOnError extends boolean = false>(
-    options?: Options<FetchAllDopSettingsData, ThrowOnError>,
+  public static य़18<ThrowOnError extends boolean = false>(
+    options: Options<य़18Data, ThrowOnError>,
   ) {
     return (options?.client ?? client).get<
       FetchAllDopSettingsResponses,
@@ -1599,7 +2950,7 @@ export class DopSettingsController {
   }
 }
 
-export class VersionController {
+export class Analysis {
   /**
    * Server version
    *
@@ -1614,9 +2965,7 @@ export class VersionController {
       ThrowOnError
     >({ url: '/v2/analysis/version', ...options });
   }
-}
 
-export class JresController {
   /**
    * All JREs metadata
    *
@@ -1646,9 +2995,7 @@ export class JresController {
       ThrowOnError
     >({ url: '/v2/analysis/jres/{id}', ...options });
   }
-}
 
-export class ScannerEngineController {
   /**
    * Scanner engine download/metadata
    *
@@ -1663,9 +3010,7 @@ export class ScannerEngineController {
       ThrowOnError
     >({ url: '/v2/analysis/engine', ...options });
   }
-}
 
-export class ActiveRulesController {
   /**
    * Get all active rules for a specific project
    *

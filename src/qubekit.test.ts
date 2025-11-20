@@ -83,7 +83,7 @@ describe('sonarqubeClient', () => {
       token: 'token',
     });
 
-    const result = await client.user.search();
+    const result = await client.usersManagement.search();
 
     expect(result.data).toEqual(
       expect.objectContaining({
@@ -109,7 +109,7 @@ describe('sonarqubeClient', () => {
       token: 'token',
     });
 
-    await client.user.search();
+    await client.usersManagement.search();
 
     expect(header).toBe('Bearer token');
   });
