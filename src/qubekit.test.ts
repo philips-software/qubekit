@@ -113,4 +113,106 @@ describe('sonarqubeClient', () => {
 
     expect(header).toBe('Bearer token');
   });
+
+  it('should search for user tokens', async () => {
+    let loginParam;
+    server.use(
+      http.get(
+        'https://my-instance.com/api/user_tokens/search',
+        ({ request }) => {
+          const url = new URL(request.url);
+          loginParam = url.searchParams.get('login');
+          return HttpResponse.json({
+            login: 'testuser',
+            userTokens: [
+              {
+                name: 'test-token',
+                createdAt: '2025-01-01T00:00:00+0000',
+              },
+            ],
+          });
+        },
+      ),
+    );
+    const client = createQubekit({
+      baseURL: 'https://my-instance.com/api',
+      token: 'token',
+    });
+
+    const result = await client.userToken.searchUserTokens({
+      query: {
+        login: 'testuser',
+      },
+    });
+
+    expect(result.data).toEqual(
+      expect.objectContaining({
+        login: 'testuser',
+        userTokens: expect.any(Array),
+      }),
+    );
+    expect(loginParam).toBe('testuser');
+  });
+
+  it('should generate a user token', async () => {
+    let tokenName;
+    server.use(
+      http.post(
+        'https://my-instance.com/api/user_tokens/generate',
+        async ({ request }) => {
+          const url = new URL(request.url);
+          tokenName = url.searchParams.get('name');
+          return HttpResponse.json({
+            name: 'new-token',
+            token: 'generated-token-value',
+            createdAt: '2025-01-01T00:00:00+0000',
+          });
+        },
+      ),
+    );
+    const client = createQubekit({
+      baseURL: 'https://my-instance.com/api',
+      token: 'token',
+    });
+
+    const result = await client.userToken.generateUserToken({
+      query: {
+        name: 'new-token',
+      },
+    });
+
+    expect(result.data).toEqual(
+      expect.objectContaining({
+        name: 'new-token',
+        token: 'generated-token-value',
+      }),
+    );
+    expect(tokenName).toBe('new-token');
+  });
+
+  it('should revoke a user token', async () => {
+    let revokedTokenName;
+    server.use(
+      http.post(
+        'https://my-instance.com/api/user_tokens/revoke',
+        async ({ request }) => {
+          const url = new URL(request.url);
+          revokedTokenName = url.searchParams.get('name');
+          return new HttpResponse(null, { status: 204 });
+        },
+      ),
+    );
+    const client = createQubekit({
+      baseURL: 'https://my-instance.com/api',
+      token: 'token',
+    });
+
+    await client.userToken.revokeUserToken({
+      query: {
+        name: 'token-to-revoke',
+      },
+    });
+
+    expect(revokedTokenName).toBe('token-to-revoke');
+  });
 });

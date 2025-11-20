@@ -163,8 +163,21 @@ import type {
   GetAListOfProjectsAndLicenseUsageData,
   GetAListOfProjectsAndLicenseUsageResponses,
   GetAListOfProjectsAndLicenseUsageErrors,
+  SearchUserTokensData,
+  SearchUserTokensResponses,
+  SearchUserTokensErrors,
+  GenerateUserTokenData,
+  GenerateUserTokenResponses,
+  GenerateUserTokenErrors,
+  RevokeUserTokenData,
+  RevokeUserTokenResponses,
+  RevokeUserTokenErrors,
 } from './types.gen';
 import { client } from './client.gen';
+import {
+  searchUserTokensResponseTransformer,
+  generateUserTokenResponseTransformer,
+} from './transformers.gen';
 
 export type Options<
   TData extends TDataShape = TDataShape,
@@ -1816,6 +1829,91 @@ export class Permission {
       ThrowOnError
     >({
       url: '/permissions/remove_group',
+      ...options,
+    });
+  }
+}
+
+export class UserToken {
+  /**
+   * Search user tokens
+   * List the tokens for the current user or the specified user. Requires 'Administer System' permission to list tokens of another user.
+   */
+  public static searchUserTokens<ThrowOnError extends boolean = false>(
+    options?: Options<SearchUserTokensData, ThrowOnError>,
+  ) {
+    return (options?.client ?? client).get<
+      SearchUserTokensResponses,
+      SearchUserTokensErrors,
+      ThrowOnError
+    >({
+      responseTransformer: searchUserTokensResponseTransformer,
+      security: [
+        {
+          scheme: 'basic',
+          type: 'http',
+        },
+        {
+          scheme: 'bearer',
+          type: 'http',
+        },
+      ],
+      url: '/user_tokens/search',
+      ...options,
+    });
+  }
+
+  /**
+   * Generate a user token
+   * Generate a user token. Requires 'Administer System' permission to generate a token for another user.
+   */
+  public static generateUserToken<ThrowOnError extends boolean = false>(
+    options: Options<GenerateUserTokenData, ThrowOnError>,
+  ) {
+    return (options.client ?? client).post<
+      GenerateUserTokenResponses,
+      GenerateUserTokenErrors,
+      ThrowOnError
+    >({
+      responseTransformer: generateUserTokenResponseTransformer,
+      security: [
+        {
+          scheme: 'basic',
+          type: 'http',
+        },
+        {
+          scheme: 'bearer',
+          type: 'http',
+        },
+      ],
+      url: '/user_tokens/generate',
+      ...options,
+    });
+  }
+
+  /**
+   * Revoke a user token
+   * Revoke a user token. Requires 'Administer System' permission to revoke a token for another user.
+   */
+  public static revokeUserToken<ThrowOnError extends boolean = false>(
+    options: Options<RevokeUserTokenData, ThrowOnError>,
+  ) {
+    return (options.client ?? client).post<
+      RevokeUserTokenResponses,
+      RevokeUserTokenErrors,
+      ThrowOnError
+    >({
+      security: [
+        {
+          scheme: 'basic',
+          type: 'http',
+        },
+        {
+          scheme: 'bearer',
+          type: 'http',
+        },
+      ],
+      url: '/user_tokens/revoke',
       ...options,
     });
   }
