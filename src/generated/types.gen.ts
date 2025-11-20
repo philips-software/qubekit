@@ -3813,6 +3813,1183 @@ export type GetAListOfProjectsAndLicenseUsageResponses = {
 export type GetAListOfProjectsAndLicenseUsageResponse =
   GetAListOfProjectsAndLicenseUsageResponses[keyof GetAListOfProjectsAndLicenseUsageResponses];
 
+export type ListAlmSettingsData = {
+  body?: never;
+  path?: never;
+  query?: {
+    /**
+     * Project key
+     */
+    project?: string;
+  };
+  url: '/alm_settings/list';
+};
+
+export type ListAlmSettingsErrors = {
+  /**
+   * Authentication is required to access the requested resource. The client must include the appropriate credentials.
+   */
+  401: {
+    message: string;
+  };
+  /**
+   * The server understood the request, but refuses to authorize it. Ensure the client has appropriate permissions.
+   */
+  403: {
+    message: string;
+  };
+};
+
+export type ListAlmSettingsError =
+  ListAlmSettingsErrors[keyof ListAlmSettingsErrors];
+
+export type ListAlmSettingsResponses = {
+  /**
+   * The request was successful, and the server has returned the requested resource in the response body.
+   */
+  200: {
+    data: {
+      [key: string]: unknown;
+    };
+  };
+};
+
+export type ListAlmSettingsResponse =
+  ListAlmSettingsResponses[keyof ListAlmSettingsResponses];
+
+export type ListAlmDefinitionsData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: '/alm_settings/list_definitions';
+};
+
+export type ListAlmDefinitionsErrors = {
+  /**
+   * Authentication is required to access the requested resource. The client must include the appropriate credentials.
+   */
+  401: {
+    message: string;
+  };
+  /**
+   * The server understood the request, but refuses to authorize it. Ensure the client has appropriate permissions.
+   */
+  403: {
+    message: string;
+  };
+};
+
+export type ListAlmDefinitionsError =
+  ListAlmDefinitionsErrors[keyof ListAlmDefinitionsErrors];
+
+export type ListAlmDefinitionsResponses = {
+  /**
+   * The request was successful, and the server has returned the requested resource in the response body.
+   */
+  200: {
+    data: {
+      [key: string]: unknown;
+    };
+  };
+};
+
+export type ListAlmDefinitionsResponse =
+  ListAlmDefinitionsResponses[keyof ListAlmDefinitionsResponses];
+
+export type CountAlmBindingsData = {
+  body?: never;
+  path?: never;
+  query: {
+    /**
+     * ALM setting key
+     */
+    almSetting: string;
+  };
+  url: '/alm_settings/count_binding';
+};
+
+export type CountAlmBindingsErrors = {
+  /**
+   * Authentication is required to access the requested resource. The client must include the appropriate credentials.
+   */
+  401: {
+    message: string;
+  };
+  /**
+   * The server understood the request, but refuses to authorize it. Ensure the client has appropriate permissions.
+   */
+  403: {
+    message: string;
+  };
+};
+
+export type CountAlmBindingsError =
+  CountAlmBindingsErrors[keyof CountAlmBindingsErrors];
+
+export type CountAlmBindingsResponses = {
+  /**
+   * The request was successful, and the server has returned the requested resource in the response body.
+   */
+  200: {
+    data: {
+      [key: string]: unknown;
+    };
+  };
+};
+
+export type CountAlmBindingsResponse =
+  CountAlmBindingsResponses[keyof CountAlmBindingsResponses];
+
+export type ValidateAlmSettingData = {
+  body?: never;
+  path?: never;
+  query: {
+    /**
+     * ALM setting key
+     */
+    key: string;
+  };
+  url: '/alm_settings/validate';
+};
+
+export type ValidateAlmSettingErrors = {
+  /**
+   * Authentication is required to access the requested resource. The client must include the appropriate credentials.
+   */
+  401: {
+    message: string;
+  };
+  /**
+   * The server understood the request, but refuses to authorize it. Ensure the client has appropriate permissions.
+   */
+  403: {
+    message: string;
+  };
+};
+
+export type ValidateAlmSettingError =
+  ValidateAlmSettingErrors[keyof ValidateAlmSettingErrors];
+
+export type ValidateAlmSettingResponses = {
+  /**
+   * The request was successful, and the server has returned the requested resource in the response body.
+   */
+  200: {
+    data: {
+      [key: string]: unknown;
+    };
+  };
+};
+
+export type ValidateAlmSettingResponse =
+  ValidateAlmSettingResponses[keyof ValidateAlmSettingResponses];
+
+export type CreateGithubAlmSettingData = {
+  body?: never;
+  path?: never;
+  query: {
+    /**
+     * Unique key for the GitHub ALM setting
+     */
+    key: string;
+    /**
+     * GitHub App ID
+     */
+    appId: string;
+    /**
+     * GitHub OAuth client ID
+     */
+    clientId: string;
+    /**
+     * GitHub OAuth client secret
+     */
+    clientSecret: string;
+    /**
+     * GitHub App private key
+     */
+    privateKey: string;
+    /**
+     * GitHub API URL (e.g., https://api.github.com)
+     */
+    url: string;
+    /**
+     * GitHub webhook secret
+     */
+    webhookSecret?: string;
+  };
+  url: '/alm_settings/create_github';
+};
+
+export type CreateGithubAlmSettingErrors = {
+  /**
+   * Authentication is required to access the requested resource. The client must include the appropriate credentials.
+   */
+  401: {
+    message: string;
+  };
+  /**
+   * The server understood the request, but refuses to authorize it. Ensure the client has appropriate permissions.
+   */
+  403: {
+    message: string;
+  };
+};
+
+export type CreateGithubAlmSettingError =
+  CreateGithubAlmSettingErrors[keyof CreateGithubAlmSettingErrors];
+
+export type CreateGithubAlmSettingResponses = {
+  /**
+   * The request was successful, and the server has returned the requested resource in the response body.
+   */
+  200: {
+    data: {
+      [key: string]: unknown;
+    };
+  };
+};
+
+export type CreateGithubAlmSettingResponse =
+  CreateGithubAlmSettingResponses[keyof CreateGithubAlmSettingResponses];
+
+export type CreateGitlabAlmSettingData = {
+  body?: never;
+  path?: never;
+  query: {
+    /**
+     * Unique key for the GitLab ALM setting
+     */
+    key: string;
+    /**
+     * GitLab personal access token
+     */
+    personalAccessToken: string;
+    /**
+     * GitLab API URL (e.g., https://gitlab.com/api/v4)
+     */
+    url: string;
+  };
+  url: '/alm_settings/create_gitlab';
+};
+
+export type CreateGitlabAlmSettingErrors = {
+  /**
+   * Authentication is required to access the requested resource. The client must include the appropriate credentials.
+   */
+  401: {
+    message: string;
+  };
+  /**
+   * The server understood the request, but refuses to authorize it. Ensure the client has appropriate permissions.
+   */
+  403: {
+    message: string;
+  };
+};
+
+export type CreateGitlabAlmSettingError =
+  CreateGitlabAlmSettingErrors[keyof CreateGitlabAlmSettingErrors];
+
+export type CreateGitlabAlmSettingResponses = {
+  /**
+   * The request was successful, and the server has returned the requested resource in the response body.
+   */
+  200: {
+    data: {
+      [key: string]: unknown;
+    };
+  };
+};
+
+export type CreateGitlabAlmSettingResponse =
+  CreateGitlabAlmSettingResponses[keyof CreateGitlabAlmSettingResponses];
+
+export type CreateAzureAlmSettingData = {
+  body?: never;
+  path?: never;
+  query: {
+    /**
+     * Unique key for the Azure ALM setting
+     */
+    key: string;
+    /**
+     * Azure personal access token
+     */
+    personalAccessToken: string;
+    /**
+     * Azure DevOps URL (e.g., https://dev.azure.com)
+     */
+    url: string;
+  };
+  url: '/alm_settings/create_azure';
+};
+
+export type CreateAzureAlmSettingErrors = {
+  /**
+   * Authentication is required to access the requested resource. The client must include the appropriate credentials.
+   */
+  401: {
+    message: string;
+  };
+  /**
+   * The server understood the request, but refuses to authorize it. Ensure the client has appropriate permissions.
+   */
+  403: {
+    message: string;
+  };
+};
+
+export type CreateAzureAlmSettingError =
+  CreateAzureAlmSettingErrors[keyof CreateAzureAlmSettingErrors];
+
+export type CreateAzureAlmSettingResponses = {
+  /**
+   * The request was successful, and the server has returned the requested resource in the response body.
+   */
+  200: {
+    data: {
+      [key: string]: unknown;
+    };
+  };
+};
+
+export type CreateAzureAlmSettingResponse =
+  CreateAzureAlmSettingResponses[keyof CreateAzureAlmSettingResponses];
+
+export type CreateBitbucketAlmSettingData = {
+  body?: never;
+  path?: never;
+  query: {
+    /**
+     * Unique key for the Bitbucket ALM setting
+     */
+    key: string;
+    /**
+     * Bitbucket Server personal access token
+     */
+    personalAccessToken: string;
+    /**
+     * Bitbucket Server URL
+     */
+    url: string;
+  };
+  url: '/alm_settings/create_bitbucket';
+};
+
+export type CreateBitbucketAlmSettingErrors = {
+  /**
+   * Authentication is required to access the requested resource. The client must include the appropriate credentials.
+   */
+  401: {
+    message: string;
+  };
+  /**
+   * The server understood the request, but refuses to authorize it. Ensure the client has appropriate permissions.
+   */
+  403: {
+    message: string;
+  };
+};
+
+export type CreateBitbucketAlmSettingError =
+  CreateBitbucketAlmSettingErrors[keyof CreateBitbucketAlmSettingErrors];
+
+export type CreateBitbucketAlmSettingResponses = {
+  /**
+   * The request was successful, and the server has returned the requested resource in the response body.
+   */
+  200: {
+    data: {
+      [key: string]: unknown;
+    };
+  };
+};
+
+export type CreateBitbucketAlmSettingResponse =
+  CreateBitbucketAlmSettingResponses[keyof CreateBitbucketAlmSettingResponses];
+
+export type CreateBitbucketcloudAlmSettingData = {
+  body?: never;
+  path?: never;
+  query: {
+    /**
+     * Unique key for the Bitbucket Cloud ALM setting
+     */
+    key: string;
+    /**
+     * Bitbucket Cloud OAuth client ID
+     */
+    clientId: string;
+    /**
+     * Bitbucket Cloud OAuth client secret
+     */
+    clientSecret: string;
+    /**
+     * Bitbucket Cloud workspace ID
+     */
+    workspace: string;
+  };
+  url: '/alm_settings/create_bitbucketcloud';
+};
+
+export type CreateBitbucketcloudAlmSettingErrors = {
+  /**
+   * Authentication is required to access the requested resource. The client must include the appropriate credentials.
+   */
+  401: {
+    message: string;
+  };
+  /**
+   * The server understood the request, but refuses to authorize it. Ensure the client has appropriate permissions.
+   */
+  403: {
+    message: string;
+  };
+};
+
+export type CreateBitbucketcloudAlmSettingError =
+  CreateBitbucketcloudAlmSettingErrors[keyof CreateBitbucketcloudAlmSettingErrors];
+
+export type CreateBitbucketcloudAlmSettingResponses = {
+  /**
+   * The request was successful, and the server has returned the requested resource in the response body.
+   */
+  200: {
+    data: {
+      [key: string]: unknown;
+    };
+  };
+};
+
+export type CreateBitbucketcloudAlmSettingResponse =
+  CreateBitbucketcloudAlmSettingResponses[keyof CreateBitbucketcloudAlmSettingResponses];
+
+export type SetGithubBindingData = {
+  body?: never;
+  path?: never;
+  query: {
+    /**
+     * ALM setting key
+     */
+    almSetting: string;
+    /**
+     * SonarQube project key
+     */
+    project: string;
+    /**
+     * GitHub repository name (org/repo)
+     */
+    repository: string;
+    /**
+     * Whether the project is part of a monorepo
+     */
+    monorepo?: boolean;
+    /**
+     * Enable summary comments in GitHub PRs
+     */
+    summaryCommentEnabled?: boolean;
+  };
+  url: '/alm_settings/set_github_binding';
+};
+
+export type SetGithubBindingErrors = {
+  /**
+   * Authentication is required to access the requested resource. The client must include the appropriate credentials.
+   */
+  401: {
+    message: string;
+  };
+  /**
+   * The server understood the request, but refuses to authorize it. Ensure the client has appropriate permissions.
+   */
+  403: {
+    message: string;
+  };
+};
+
+export type SetGithubBindingError =
+  SetGithubBindingErrors[keyof SetGithubBindingErrors];
+
+export type SetGithubBindingResponses = {
+  /**
+   * The request was successful, and the server has returned the requested resource in the response body.
+   */
+  200: {
+    data: {
+      [key: string]: unknown;
+    };
+  };
+};
+
+export type SetGithubBindingResponse =
+  SetGithubBindingResponses[keyof SetGithubBindingResponses];
+
+export type SetGitlabBindingData = {
+  body?: never;
+  path?: never;
+  query: {
+    /**
+     * ALM setting key
+     */
+    almSetting: string;
+    /**
+     * SonarQube project key
+     */
+    project: string;
+    /**
+     * GitLab project ID
+     */
+    repository: string;
+    /**
+     * Whether the project is part of a monorepo
+     */
+    monorepo?: boolean;
+  };
+  url: '/alm_settings/set_gitlab_binding';
+};
+
+export type SetGitlabBindingErrors = {
+  /**
+   * Authentication is required to access the requested resource. The client must include the appropriate credentials.
+   */
+  401: {
+    message: string;
+  };
+  /**
+   * The server understood the request, but refuses to authorize it. Ensure the client has appropriate permissions.
+   */
+  403: {
+    message: string;
+  };
+};
+
+export type SetGitlabBindingError =
+  SetGitlabBindingErrors[keyof SetGitlabBindingErrors];
+
+export type SetGitlabBindingResponses = {
+  /**
+   * The request was successful, and the server has returned the requested resource in the response body.
+   */
+  200: {
+    data: {
+      [key: string]: unknown;
+    };
+  };
+};
+
+export type SetGitlabBindingResponse =
+  SetGitlabBindingResponses[keyof SetGitlabBindingResponses];
+
+export type SetAzureBindingData = {
+  body?: never;
+  path?: never;
+  query: {
+    /**
+     * ALM setting key
+     */
+    almSetting: string;
+    /**
+     * SonarQube project key
+     */
+    project: string;
+    /**
+     * Azure DevOps project name
+     */
+    projectName: string;
+    /**
+     * Azure DevOps repository name
+     */
+    repositoryName: string;
+    /**
+     * Whether the project is part of a monorepo
+     */
+    monorepo?: boolean;
+  };
+  url: '/alm_settings/set_azure_binding';
+};
+
+export type SetAzureBindingErrors = {
+  /**
+   * Authentication is required to access the requested resource. The client must include the appropriate credentials.
+   */
+  401: {
+    message: string;
+  };
+  /**
+   * The server understood the request, but refuses to authorize it. Ensure the client has appropriate permissions.
+   */
+  403: {
+    message: string;
+  };
+};
+
+export type SetAzureBindingError =
+  SetAzureBindingErrors[keyof SetAzureBindingErrors];
+
+export type SetAzureBindingResponses = {
+  /**
+   * The request was successful, and the server has returned the requested resource in the response body.
+   */
+  200: {
+    data: {
+      [key: string]: unknown;
+    };
+  };
+};
+
+export type SetAzureBindingResponse =
+  SetAzureBindingResponses[keyof SetAzureBindingResponses];
+
+export type SetBitbucketBindingData = {
+  body?: never;
+  path?: never;
+  query: {
+    /**
+     * ALM setting key
+     */
+    almSetting: string;
+    /**
+     * SonarQube project key
+     */
+    project: string;
+    /**
+     * Bitbucket repository slug
+     */
+    repository: string;
+    /**
+     * Bitbucket project key
+     */
+    slug: string;
+    /**
+     * Whether the project is part of a monorepo
+     */
+    monorepo?: boolean;
+  };
+  url: '/alm_settings/set_bitbucket_binding';
+};
+
+export type SetBitbucketBindingErrors = {
+  /**
+   * Authentication is required to access the requested resource. The client must include the appropriate credentials.
+   */
+  401: {
+    message: string;
+  };
+  /**
+   * The server understood the request, but refuses to authorize it. Ensure the client has appropriate permissions.
+   */
+  403: {
+    message: string;
+  };
+};
+
+export type SetBitbucketBindingError =
+  SetBitbucketBindingErrors[keyof SetBitbucketBindingErrors];
+
+export type SetBitbucketBindingResponses = {
+  /**
+   * The request was successful, and the server has returned the requested resource in the response body.
+   */
+  200: {
+    data: {
+      [key: string]: unknown;
+    };
+  };
+};
+
+export type SetBitbucketBindingResponse =
+  SetBitbucketBindingResponses[keyof SetBitbucketBindingResponses];
+
+export type SetBitbucketcloudBindingData = {
+  body?: never;
+  path?: never;
+  query: {
+    /**
+     * ALM setting key
+     */
+    almSetting: string;
+    /**
+     * SonarQube project key
+     */
+    project: string;
+    /**
+     * Bitbucket Cloud repository slug
+     */
+    repository: string;
+    /**
+     * Whether the project is part of a monorepo
+     */
+    monorepo?: boolean;
+  };
+  url: '/alm_settings/set_bitbucketcloud_binding';
+};
+
+export type SetBitbucketcloudBindingErrors = {
+  /**
+   * Authentication is required to access the requested resource. The client must include the appropriate credentials.
+   */
+  401: {
+    message: string;
+  };
+  /**
+   * The server understood the request, but refuses to authorize it. Ensure the client has appropriate permissions.
+   */
+  403: {
+    message: string;
+  };
+};
+
+export type SetBitbucketcloudBindingError =
+  SetBitbucketcloudBindingErrors[keyof SetBitbucketcloudBindingErrors];
+
+export type SetBitbucketcloudBindingResponses = {
+  /**
+   * The request was successful, and the server has returned the requested resource in the response body.
+   */
+  200: {
+    data: {
+      [key: string]: unknown;
+    };
+  };
+};
+
+export type SetBitbucketcloudBindingResponse =
+  SetBitbucketcloudBindingResponses[keyof SetBitbucketcloudBindingResponses];
+
+export type DeleteAlmSettingData = {
+  body?: never;
+  path?: never;
+  query: {
+    /**
+     * ALM setting key
+     */
+    key: string;
+  };
+  url: '/alm_settings/delete';
+};
+
+export type DeleteAlmSettingErrors = {
+  /**
+   * Authentication is required to access the requested resource. The client must include the appropriate credentials.
+   */
+  401: {
+    message: string;
+  };
+  /**
+   * The server understood the request, but refuses to authorize it. Ensure the client has appropriate permissions.
+   */
+  403: {
+    message: string;
+  };
+};
+
+export type DeleteAlmSettingError =
+  DeleteAlmSettingErrors[keyof DeleteAlmSettingErrors];
+
+export type DeleteAlmSettingResponses = {
+  /**
+   * The request was successful, and the server has returned the requested resource in the response body.
+   */
+  200: {
+    data: {
+      [key: string]: unknown;
+    };
+  };
+};
+
+export type DeleteAlmSettingResponse =
+  DeleteAlmSettingResponses[keyof DeleteAlmSettingResponses];
+
+export type CreateApplicationData = {
+  body?: never;
+  path?: never;
+  query: {
+    /**
+     * Application key
+     */
+    key: string;
+    /**
+     * Application name
+     */
+    name: string;
+    /**
+     * Application description
+     */
+    description?: string;
+    /**
+     * Application visibility
+     */
+    visibility?: 'public' | 'private';
+  };
+  url: '/applications/create';
+};
+
+export type CreateApplicationErrors = {
+  /**
+   * Authentication is required to access the requested resource. The client must include the appropriate credentials.
+   */
+  401: {
+    message: string;
+  };
+  /**
+   * The server understood the request, but refuses to authorize it. Ensure the client has appropriate permissions.
+   */
+  403: {
+    message: string;
+  };
+};
+
+export type CreateApplicationError =
+  CreateApplicationErrors[keyof CreateApplicationErrors];
+
+export type CreateApplicationResponses = {
+  /**
+   * The request was successful, and the server has returned the requested resource in the response body.
+   */
+  200: {
+    data: {
+      [key: string]: unknown;
+    };
+  };
+};
+
+export type CreateApplicationResponse =
+  CreateApplicationResponses[keyof CreateApplicationResponses];
+
+export type ShowApplicationData = {
+  body?: never;
+  path?: never;
+  query: {
+    /**
+     * Application key
+     */
+    application: string;
+  };
+  url: '/applications/show';
+};
+
+export type ShowApplicationErrors = {
+  /**
+   * Authentication is required to access the requested resource. The client must include the appropriate credentials.
+   */
+  401: {
+    message: string;
+  };
+  /**
+   * The server understood the request, but refuses to authorize it. Ensure the client has appropriate permissions.
+   */
+  403: {
+    message: string;
+  };
+  /**
+   * Not found - The requested application does not exist
+   */
+  404: unknown;
+};
+
+export type ShowApplicationError =
+  ShowApplicationErrors[keyof ShowApplicationErrors];
+
+export type ShowApplicationResponses = {
+  /**
+   * The request was successful, and the server has returned the requested resource in the response body.
+   */
+  200: {
+    data: {
+      [key: string]: unknown;
+    };
+  };
+};
+
+export type ShowApplicationResponse =
+  ShowApplicationResponses[keyof ShowApplicationResponses];
+
+export type UpdateApplicationData = {
+  body?: never;
+  path?: never;
+  query: {
+    /**
+     * Application key
+     */
+    application: string;
+    /**
+     * New application name
+     */
+    name?: string;
+    /**
+     * New application description
+     */
+    description?: string;
+  };
+  url: '/applications/update';
+};
+
+export type UpdateApplicationErrors = {
+  /**
+   * Authentication is required to access the requested resource. The client must include the appropriate credentials.
+   */
+  401: {
+    message: string;
+  };
+  /**
+   * The server understood the request, but refuses to authorize it. Ensure the client has appropriate permissions.
+   */
+  403: {
+    message: string;
+  };
+};
+
+export type UpdateApplicationError =
+  UpdateApplicationErrors[keyof UpdateApplicationErrors];
+
+export type UpdateApplicationResponses = {
+  /**
+   * The request was successful, and the server has returned the requested resource in the response body.
+   */
+  200: {
+    data: {
+      [key: string]: unknown;
+    };
+  };
+};
+
+export type UpdateApplicationResponse =
+  UpdateApplicationResponses[keyof UpdateApplicationResponses];
+
+export type AddProjectToApplicationData = {
+  body?: never;
+  path?: never;
+  query: {
+    /**
+     * Application key
+     */
+    application: string;
+    /**
+     * Project key
+     */
+    project: string;
+  };
+  url: '/applications/add_project';
+};
+
+export type AddProjectToApplicationErrors = {
+  /**
+   * Authentication is required to access the requested resource. The client must include the appropriate credentials.
+   */
+  401: {
+    message: string;
+  };
+  /**
+   * The server understood the request, but refuses to authorize it. Ensure the client has appropriate permissions.
+   */
+  403: {
+    message: string;
+  };
+};
+
+export type AddProjectToApplicationError =
+  AddProjectToApplicationErrors[keyof AddProjectToApplicationErrors];
+
+export type AddProjectToApplicationResponses = {
+  /**
+   * The request was successful, and the server has returned the requested resource in the response body.
+   */
+  200: {
+    data: {
+      [key: string]: unknown;
+    };
+  };
+};
+
+export type AddProjectToApplicationResponse =
+  AddProjectToApplicationResponses[keyof AddProjectToApplicationResponses];
+
+export type RemoveProjectFromApplicationData = {
+  body?: never;
+  path?: never;
+  query: {
+    /**
+     * Application key
+     */
+    application: string;
+    /**
+     * Project key
+     */
+    project: string;
+  };
+  url: '/applications/remove_project';
+};
+
+export type RemoveProjectFromApplicationErrors = {
+  /**
+   * Authentication is required to access the requested resource. The client must include the appropriate credentials.
+   */
+  401: {
+    message: string;
+  };
+  /**
+   * The server understood the request, but refuses to authorize it. Ensure the client has appropriate permissions.
+   */
+  403: {
+    message: string;
+  };
+};
+
+export type RemoveProjectFromApplicationError =
+  RemoveProjectFromApplicationErrors[keyof RemoveProjectFromApplicationErrors];
+
+export type RemoveProjectFromApplicationResponses = {
+  /**
+   * The request was successful, and the server has returned the requested resource in the response body.
+   */
+  200: {
+    data: {
+      [key: string]: unknown;
+    };
+  };
+};
+
+export type RemoveProjectFromApplicationResponse =
+  RemoveProjectFromApplicationResponses[keyof RemoveProjectFromApplicationResponses];
+
+export type SetApplicationTagsData = {
+  body?: never;
+  path?: never;
+  query: {
+    /**
+     * Application key
+     */
+    application: string;
+    /**
+     * Comma-separated list of tags
+     */
+    tags: string;
+  };
+  url: '/applications/set_tags';
+};
+
+export type SetApplicationTagsErrors = {
+  /**
+   * Authentication is required to access the requested resource. The client must include the appropriate credentials.
+   */
+  401: {
+    message: string;
+  };
+  /**
+   * The server understood the request, but refuses to authorize it. Ensure the client has appropriate permissions.
+   */
+  403: {
+    message: string;
+  };
+};
+
+export type SetApplicationTagsError =
+  SetApplicationTagsErrors[keyof SetApplicationTagsErrors];
+
+export type SetApplicationTagsResponses = {
+  /**
+   * The request was successful, and the server has returned the requested resource in the response body.
+   */
+  200: {
+    data: {
+      [key: string]: unknown;
+    };
+  };
+};
+
+export type SetApplicationTagsResponse =
+  SetApplicationTagsResponses[keyof SetApplicationTagsResponses];
+
+export type SearchApplicationsData = {
+  body?: never;
+  path?: never;
+  query?: {
+    /**
+     * Current page
+     */
+    p?: number;
+    /**
+     * Page size. Must be greater than 0 and less or equal than 500
+     */
+    ps?: bigint;
+    /**
+     * Limit search to application names or keys containing the supplied string
+     */
+    q?: string;
+  };
+  url: '/applications/search';
+};
+
+export type SearchApplicationsErrors = {
+  /**
+   * Authentication is required to access the requested resource. The client must include the appropriate credentials.
+   */
+  401: {
+    message: string;
+  };
+};
+
+export type SearchApplicationsError =
+  SearchApplicationsErrors[keyof SearchApplicationsErrors];
+
+export type SearchApplicationsResponses = {
+  /**
+   * The request was successful, and the server has returned the requested resource in the response body.
+   */
+  200: {
+    data: {
+      [key: string]: unknown;
+    };
+  };
+};
+
+export type SearchApplicationsResponse =
+  SearchApplicationsResponses[keyof SearchApplicationsResponses];
+
+export type RefreshApplicationData = {
+  body?: never;
+  path?: never;
+  query: {
+    /**
+     * Application key
+     */
+    application: string;
+  };
+  url: '/applications/refresh';
+};
+
+export type RefreshApplicationErrors = {
+  /**
+   * Authentication is required to access the requested resource. The client must include the appropriate credentials.
+   */
+  401: {
+    message: string;
+  };
+  /**
+   * The server understood the request, but refuses to authorize it. Ensure the client has appropriate permissions.
+   */
+  403: {
+    message: string;
+  };
+};
+
+export type RefreshApplicationError =
+  RefreshApplicationErrors[keyof RefreshApplicationErrors];
+
+export type RefreshApplicationResponses = {
+  /**
+   * The request was successful, and the server has returned the requested resource in the response body.
+   */
+  200: {
+    data: {
+      [key: string]: unknown;
+    };
+  };
+};
+
+export type RefreshApplicationResponse =
+  RefreshApplicationResponses[keyof RefreshApplicationResponses];
+
 export type ClientOptions = {
   baseUrl: 'http://sonarqube.internal.philips/api/v2' | (string & {});
 };

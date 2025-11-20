@@ -163,6 +163,75 @@ import type {
   GetAListOfProjectsAndLicenseUsageData,
   GetAListOfProjectsAndLicenseUsageResponses,
   GetAListOfProjectsAndLicenseUsageErrors,
+  ListAlmSettingsData,
+  ListAlmSettingsResponses,
+  ListAlmSettingsErrors,
+  ListAlmDefinitionsData,
+  ListAlmDefinitionsResponses,
+  ListAlmDefinitionsErrors,
+  CountAlmBindingsData,
+  CountAlmBindingsResponses,
+  CountAlmBindingsErrors,
+  ValidateAlmSettingData,
+  ValidateAlmSettingResponses,
+  ValidateAlmSettingErrors,
+  CreateGithubAlmSettingData,
+  CreateGithubAlmSettingResponses,
+  CreateGithubAlmSettingErrors,
+  CreateGitlabAlmSettingData,
+  CreateGitlabAlmSettingResponses,
+  CreateGitlabAlmSettingErrors,
+  CreateAzureAlmSettingData,
+  CreateAzureAlmSettingResponses,
+  CreateAzureAlmSettingErrors,
+  CreateBitbucketAlmSettingData,
+  CreateBitbucketAlmSettingResponses,
+  CreateBitbucketAlmSettingErrors,
+  CreateBitbucketcloudAlmSettingData,
+  CreateBitbucketcloudAlmSettingResponses,
+  CreateBitbucketcloudAlmSettingErrors,
+  SetGithubBindingData,
+  SetGithubBindingResponses,
+  SetGithubBindingErrors,
+  SetGitlabBindingData,
+  SetGitlabBindingResponses,
+  SetGitlabBindingErrors,
+  SetAzureBindingData,
+  SetAzureBindingResponses,
+  SetAzureBindingErrors,
+  SetBitbucketBindingData,
+  SetBitbucketBindingResponses,
+  SetBitbucketBindingErrors,
+  SetBitbucketcloudBindingData,
+  SetBitbucketcloudBindingResponses,
+  SetBitbucketcloudBindingErrors,
+  DeleteAlmSettingData,
+  DeleteAlmSettingResponses,
+  DeleteAlmSettingErrors,
+  CreateApplicationData,
+  CreateApplicationResponses,
+  CreateApplicationErrors,
+  ShowApplicationData,
+  ShowApplicationResponses,
+  ShowApplicationErrors,
+  UpdateApplicationData,
+  UpdateApplicationResponses,
+  UpdateApplicationErrors,
+  AddProjectToApplicationData,
+  AddProjectToApplicationResponses,
+  AddProjectToApplicationErrors,
+  RemoveProjectFromApplicationData,
+  RemoveProjectFromApplicationResponses,
+  RemoveProjectFromApplicationErrors,
+  SetApplicationTagsData,
+  SetApplicationTagsResponses,
+  SetApplicationTagsErrors,
+  SearchApplicationsData,
+  SearchApplicationsResponses,
+  SearchApplicationsErrors,
+  RefreshApplicationData,
+  RefreshApplicationResponses,
+  RefreshApplicationErrors,
 } from './types.gen';
 import { client } from './client.gen';
 
@@ -1816,6 +1885,631 @@ export class Permission {
       ThrowOnError
     >({
       url: '/permissions/remove_group',
+      ...options,
+    });
+  }
+}
+
+export class AlmSettings {
+  /**
+   * List ALM settings
+   * List the available DevOps Platform settings for a given project, sorted by ALM key. Requires 'Administer project' permission if project is specified, or 'Create Projects' permission otherwise.
+   */
+  public static listAlmSettings<ThrowOnError extends boolean = false>(
+    options?: Options<ListAlmSettingsData, ThrowOnError>,
+  ) {
+    return (options?.client ?? client).get<
+      ListAlmSettingsResponses,
+      ListAlmSettingsErrors,
+      ThrowOnError
+    >({
+      security: [
+        {
+          scheme: 'basic',
+          type: 'http',
+        },
+        {
+          scheme: 'bearer',
+          type: 'http',
+        },
+      ],
+      url: '/alm_settings/list',
+      ...options,
+    });
+  }
+
+  /**
+   * List all ALM definitions
+   * List all DevOps Platform settings, sorted by creation date. Requires 'Administer System' permission.
+   */
+  public static listAlmDefinitions<ThrowOnError extends boolean = false>(
+    options?: Options<ListAlmDefinitionsData, ThrowOnError>,
+  ) {
+    return (options?.client ?? client).get<
+      ListAlmDefinitionsResponses,
+      ListAlmDefinitionsErrors,
+      ThrowOnError
+    >({
+      security: [
+        {
+          scheme: 'basic',
+          type: 'http',
+        },
+        {
+          scheme: 'bearer',
+          type: 'http',
+        },
+      ],
+      url: '/alm_settings/list_definitions',
+      ...options,
+    });
+  }
+
+  /**
+   * Count project bindings
+   * Returns the number of projects bound to a DevOps Platform setting. Requires 'Administer System' permission.
+   */
+  public static countAlmBindings<ThrowOnError extends boolean = false>(
+    options: Options<CountAlmBindingsData, ThrowOnError>,
+  ) {
+    return (options.client ?? client).get<
+      CountAlmBindingsResponses,
+      CountAlmBindingsErrors,
+      ThrowOnError
+    >({
+      security: [
+        {
+          scheme: 'basic',
+          type: 'http',
+        },
+        {
+          scheme: 'bearer',
+          type: 'http',
+        },
+      ],
+      url: '/alm_settings/count_binding',
+      ...options,
+    });
+  }
+
+  /**
+   * Validate ALM setting
+   * Validates an ALM setting by checking credentials and connectivity. Requires 'Administer System' permission.
+   */
+  public static validateAlmSetting<ThrowOnError extends boolean = false>(
+    options: Options<ValidateAlmSettingData, ThrowOnError>,
+  ) {
+    return (options.client ?? client).get<
+      ValidateAlmSettingResponses,
+      ValidateAlmSettingErrors,
+      ThrowOnError
+    >({
+      security: [
+        {
+          scheme: 'basic',
+          type: 'http',
+        },
+        {
+          scheme: 'bearer',
+          type: 'http',
+        },
+      ],
+      url: '/alm_settings/validate',
+      ...options,
+    });
+  }
+
+  /**
+   * Create GitHub ALM setting
+   * Creates a new GitHub integration configuration. Requires 'Administer System' permission.
+   */
+  public static createGithubAlmSetting<ThrowOnError extends boolean = false>(
+    options: Options<CreateGithubAlmSettingData, ThrowOnError>,
+  ) {
+    return (options.client ?? client).post<
+      CreateGithubAlmSettingResponses,
+      CreateGithubAlmSettingErrors,
+      ThrowOnError
+    >({
+      security: [
+        {
+          scheme: 'basic',
+          type: 'http',
+        },
+        {
+          scheme: 'bearer',
+          type: 'http',
+        },
+      ],
+      url: '/alm_settings/create_github',
+      ...options,
+    });
+  }
+
+  /**
+   * Create GitLab ALM setting
+   * Creates a new GitLab integration configuration. Requires 'Administer System' permission.
+   */
+  public static createGitlabAlmSetting<ThrowOnError extends boolean = false>(
+    options: Options<CreateGitlabAlmSettingData, ThrowOnError>,
+  ) {
+    return (options.client ?? client).post<
+      CreateGitlabAlmSettingResponses,
+      CreateGitlabAlmSettingErrors,
+      ThrowOnError
+    >({
+      security: [
+        {
+          scheme: 'basic',
+          type: 'http',
+        },
+        {
+          scheme: 'bearer',
+          type: 'http',
+        },
+      ],
+      url: '/alm_settings/create_gitlab',
+      ...options,
+    });
+  }
+
+  /**
+   * Create Azure DevOps ALM setting
+   * Creates a new Azure DevOps integration configuration. Requires 'Administer System' permission.
+   */
+  public static createAzureAlmSetting<ThrowOnError extends boolean = false>(
+    options: Options<CreateAzureAlmSettingData, ThrowOnError>,
+  ) {
+    return (options.client ?? client).post<
+      CreateAzureAlmSettingResponses,
+      CreateAzureAlmSettingErrors,
+      ThrowOnError
+    >({
+      security: [
+        {
+          scheme: 'basic',
+          type: 'http',
+        },
+        {
+          scheme: 'bearer',
+          type: 'http',
+        },
+      ],
+      url: '/alm_settings/create_azure',
+      ...options,
+    });
+  }
+
+  /**
+   * Create Bitbucket Server ALM setting
+   * Creates a new Bitbucket Server integration configuration. Requires 'Administer System' permission.
+   */
+  public static createBitbucketAlmSetting<ThrowOnError extends boolean = false>(
+    options: Options<CreateBitbucketAlmSettingData, ThrowOnError>,
+  ) {
+    return (options.client ?? client).post<
+      CreateBitbucketAlmSettingResponses,
+      CreateBitbucketAlmSettingErrors,
+      ThrowOnError
+    >({
+      security: [
+        {
+          scheme: 'basic',
+          type: 'http',
+        },
+        {
+          scheme: 'bearer',
+          type: 'http',
+        },
+      ],
+      url: '/alm_settings/create_bitbucket',
+      ...options,
+    });
+  }
+
+  /**
+   * Create Bitbucket Cloud ALM setting
+   * Creates a new Bitbucket Cloud integration configuration. Requires 'Administer System' permission.
+   */
+  public static createBitbucketcloudAlmSetting<
+    ThrowOnError extends boolean = false,
+  >(options: Options<CreateBitbucketcloudAlmSettingData, ThrowOnError>) {
+    return (options.client ?? client).post<
+      CreateBitbucketcloudAlmSettingResponses,
+      CreateBitbucketcloudAlmSettingErrors,
+      ThrowOnError
+    >({
+      security: [
+        {
+          scheme: 'basic',
+          type: 'http',
+        },
+        {
+          scheme: 'bearer',
+          type: 'http',
+        },
+      ],
+      url: '/alm_settings/create_bitbucketcloud',
+      ...options,
+    });
+  }
+
+  /**
+   * Bind project to GitHub repository
+   * Binds a SonarQube project to a GitHub repository. Requires 'Administer' permission on the project.
+   */
+  public static setGithubBinding<ThrowOnError extends boolean = false>(
+    options: Options<SetGithubBindingData, ThrowOnError>,
+  ) {
+    return (options.client ?? client).post<
+      SetGithubBindingResponses,
+      SetGithubBindingErrors,
+      ThrowOnError
+    >({
+      security: [
+        {
+          scheme: 'basic',
+          type: 'http',
+        },
+        {
+          scheme: 'bearer',
+          type: 'http',
+        },
+      ],
+      url: '/alm_settings/set_github_binding',
+      ...options,
+    });
+  }
+
+  /**
+   * Bind project to GitLab repository
+   * Binds a SonarQube project to a GitLab repository. Requires 'Administer' permission on the project.
+   */
+  public static setGitlabBinding<ThrowOnError extends boolean = false>(
+    options: Options<SetGitlabBindingData, ThrowOnError>,
+  ) {
+    return (options.client ?? client).post<
+      SetGitlabBindingResponses,
+      SetGitlabBindingErrors,
+      ThrowOnError
+    >({
+      security: [
+        {
+          scheme: 'basic',
+          type: 'http',
+        },
+        {
+          scheme: 'bearer',
+          type: 'http',
+        },
+      ],
+      url: '/alm_settings/set_gitlab_binding',
+      ...options,
+    });
+  }
+
+  /**
+   * Bind project to Azure DevOps repository
+   * Binds a SonarQube project to an Azure DevOps repository. Requires 'Administer' permission on the project.
+   */
+  public static setAzureBinding<ThrowOnError extends boolean = false>(
+    options: Options<SetAzureBindingData, ThrowOnError>,
+  ) {
+    return (options.client ?? client).post<
+      SetAzureBindingResponses,
+      SetAzureBindingErrors,
+      ThrowOnError
+    >({
+      security: [
+        {
+          scheme: 'basic',
+          type: 'http',
+        },
+        {
+          scheme: 'bearer',
+          type: 'http',
+        },
+      ],
+      url: '/alm_settings/set_azure_binding',
+      ...options,
+    });
+  }
+
+  /**
+   * Bind project to Bitbucket Server repository
+   * Binds a SonarQube project to a Bitbucket Server repository. Requires 'Administer' permission on the project.
+   */
+  public static setBitbucketBinding<ThrowOnError extends boolean = false>(
+    options: Options<SetBitbucketBindingData, ThrowOnError>,
+  ) {
+    return (options.client ?? client).post<
+      SetBitbucketBindingResponses,
+      SetBitbucketBindingErrors,
+      ThrowOnError
+    >({
+      security: [
+        {
+          scheme: 'basic',
+          type: 'http',
+        },
+        {
+          scheme: 'bearer',
+          type: 'http',
+        },
+      ],
+      url: '/alm_settings/set_bitbucket_binding',
+      ...options,
+    });
+  }
+
+  /**
+   * Bind project to Bitbucket Cloud repository
+   * Binds a SonarQube project to a Bitbucket Cloud repository. Requires 'Administer' permission on the project.
+   */
+  public static setBitbucketcloudBinding<ThrowOnError extends boolean = false>(
+    options: Options<SetBitbucketcloudBindingData, ThrowOnError>,
+  ) {
+    return (options.client ?? client).post<
+      SetBitbucketcloudBindingResponses,
+      SetBitbucketcloudBindingErrors,
+      ThrowOnError
+    >({
+      security: [
+        {
+          scheme: 'basic',
+          type: 'http',
+        },
+        {
+          scheme: 'bearer',
+          type: 'http',
+        },
+      ],
+      url: '/alm_settings/set_bitbucketcloud_binding',
+      ...options,
+    });
+  }
+
+  /**
+   * Delete ALM setting
+   * Deletes a DevOps Platform setting from SonarQube. Requires 'Administer System' permission.
+   */
+  public static deleteAlmSetting<ThrowOnError extends boolean = false>(
+    options: Options<DeleteAlmSettingData, ThrowOnError>,
+  ) {
+    return (options.client ?? client).post<
+      DeleteAlmSettingResponses,
+      DeleteAlmSettingErrors,
+      ThrowOnError
+    >({
+      security: [
+        {
+          scheme: 'basic',
+          type: 'http',
+        },
+        {
+          scheme: 'bearer',
+          type: 'http',
+        },
+      ],
+      url: '/alm_settings/delete',
+      ...options,
+    });
+  }
+}
+
+export class Applications {
+  /**
+   * Create application
+   * Creates a new application in SonarQube. Requires 'Create Applications' permission.
+   */
+  public static createApplication<ThrowOnError extends boolean = false>(
+    options: Options<CreateApplicationData, ThrowOnError>,
+  ) {
+    return (options.client ?? client).post<
+      CreateApplicationResponses,
+      CreateApplicationErrors,
+      ThrowOnError
+    >({
+      security: [
+        {
+          scheme: 'basic',
+          type: 'http',
+        },
+        {
+          scheme: 'bearer',
+          type: 'http',
+        },
+      ],
+      url: '/applications/create',
+      ...options,
+    });
+  }
+
+  /**
+   * Show application details
+   * Returns details about a specific application. Requires 'Browse' permission on the application.
+   */
+  public static showApplication<ThrowOnError extends boolean = false>(
+    options: Options<ShowApplicationData, ThrowOnError>,
+  ) {
+    return (options.client ?? client).get<
+      ShowApplicationResponses,
+      ShowApplicationErrors,
+      ThrowOnError
+    >({
+      security: [
+        {
+          scheme: 'basic',
+          type: 'http',
+        },
+        {
+          scheme: 'bearer',
+          type: 'http',
+        },
+      ],
+      url: '/applications/show',
+      ...options,
+    });
+  }
+
+  /**
+   * Update application
+   * Updates an application's name and/or description. Requires 'Administer' permission on the application.
+   */
+  public static updateApplication<ThrowOnError extends boolean = false>(
+    options: Options<UpdateApplicationData, ThrowOnError>,
+  ) {
+    return (options.client ?? client).post<
+      UpdateApplicationResponses,
+      UpdateApplicationErrors,
+      ThrowOnError
+    >({
+      security: [
+        {
+          scheme: 'basic',
+          type: 'http',
+        },
+        {
+          scheme: 'bearer',
+          type: 'http',
+        },
+      ],
+      url: '/applications/update',
+      ...options,
+    });
+  }
+
+  /**
+   * Add project to application
+   * Adds a project to an application. Requires 'Administer' permission on the application.
+   */
+  public static addProjectToApplication<ThrowOnError extends boolean = false>(
+    options: Options<AddProjectToApplicationData, ThrowOnError>,
+  ) {
+    return (options.client ?? client).post<
+      AddProjectToApplicationResponses,
+      AddProjectToApplicationErrors,
+      ThrowOnError
+    >({
+      security: [
+        {
+          scheme: 'basic',
+          type: 'http',
+        },
+        {
+          scheme: 'bearer',
+          type: 'http',
+        },
+      ],
+      url: '/applications/add_project',
+      ...options,
+    });
+  }
+
+  /**
+   * Remove project from application
+   * Removes a project from an application. Requires 'Administer' permission on the application.
+   */
+  public static removeProjectFromApplication<
+    ThrowOnError extends boolean = false,
+  >(options: Options<RemoveProjectFromApplicationData, ThrowOnError>) {
+    return (options.client ?? client).post<
+      RemoveProjectFromApplicationResponses,
+      RemoveProjectFromApplicationErrors,
+      ThrowOnError
+    >({
+      security: [
+        {
+          scheme: 'basic',
+          type: 'http',
+        },
+        {
+          scheme: 'bearer',
+          type: 'http',
+        },
+      ],
+      url: '/applications/remove_project',
+      ...options,
+    });
+  }
+
+  /**
+   * Set application tags
+   * Sets tags for an application. Requires 'Administer' permission on the application.
+   */
+  public static setApplicationTags<ThrowOnError extends boolean = false>(
+    options: Options<SetApplicationTagsData, ThrowOnError>,
+  ) {
+    return (options.client ?? client).post<
+      SetApplicationTagsResponses,
+      SetApplicationTagsErrors,
+      ThrowOnError
+    >({
+      security: [
+        {
+          scheme: 'basic',
+          type: 'http',
+        },
+        {
+          scheme: 'bearer',
+          type: 'http',
+        },
+      ],
+      url: '/applications/set_tags',
+      ...options,
+    });
+  }
+
+  /**
+   * Search applications
+   * Search for applications based on various criteria. Requires 'Browse' permission.
+   */
+  public static searchApplications<ThrowOnError extends boolean = false>(
+    options?: Options<SearchApplicationsData, ThrowOnError>,
+  ) {
+    return (options?.client ?? client).get<
+      SearchApplicationsResponses,
+      SearchApplicationsErrors,
+      ThrowOnError
+    >({
+      security: [
+        {
+          scheme: 'basic',
+          type: 'http',
+        },
+        {
+          scheme: 'bearer',
+          type: 'http',
+        },
+      ],
+      url: '/applications/search',
+      ...options,
+    });
+  }
+
+  /**
+   * Refresh application
+   * Triggers a recalculation of the application's data. Requires 'Administer' permission on the application.
+   */
+  public static refreshApplication<ThrowOnError extends boolean = false>(
+    options: Options<RefreshApplicationData, ThrowOnError>,
+  ) {
+    return (options.client ?? client).post<
+      RefreshApplicationResponses,
+      RefreshApplicationErrors,
+      ThrowOnError
+    >({
+      security: [
+        {
+          scheme: 'basic',
+          type: 'http',
+        },
+        {
+          scheme: 'bearer',
+          type: 'http',
+        },
+      ],
+      url: '/applications/refresh',
       ...options,
     });
   }
