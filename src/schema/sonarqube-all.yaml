@@ -26,6 +26,7 @@ tags:
   - name: measures
   - name: issue
   - name: permission
+  - name: user_token
 paths:
   /v2/users-management/users:
     get:
@@ -3182,6 +3183,236 @@ paths:
                   - message
         '500':
           $ref: '#/components/responses/InternalServerErrror'
+  /user_tokens/search:
+    get:
+      operationId: searchUserTokens
+      tags:
+        - user_token
+      summary: Search user tokens
+      security:
+        - basicAuth: []
+        - tokenAuth: []
+      parameters:
+        - in: query
+          name: login
+          style: form
+          schema:
+            type: string
+          explode: true
+          required: false
+          description: >-
+            User login (admin credentials required to list tokens of another
+            user)
+          allowReserved: false
+      responses:
+        '200':
+          description: >-
+            The request was successful, and the server has returned the
+            requested resource in the response body.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserTokenSearchResponse'
+        '401':
+          description: >-
+            Authentication is required to access the requested resource. The
+            client must include the appropriate credentials.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                required:
+                  - message
+        '403':
+          description: >-
+            The server understood the request, but refuses to authorize it.
+            Ensure the client has appropriate permissions.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                required:
+                  - message
+      description: >-
+        List the tokens for the current user or the specified user. Requires
+        'Administer System' permission to list tokens of another user.
+  /user_tokens/generate:
+    post:
+      operationId: generateUserToken
+      tags:
+        - user_token
+      summary: Generate a user token
+      security:
+        - basicAuth: []
+        - tokenAuth: []
+      parameters:
+        - in: query
+          name: name
+          style: form
+          schema:
+            type: string
+          explode: true
+          required: true
+          description: Token name
+          allowReserved: false
+        - in: query
+          name: login
+          style: form
+          schema:
+            type: string
+          explode: true
+          required: false
+          description: >-
+            User login (admin credentials required to generate token for another
+            user)
+          allowReserved: false
+        - in: query
+          name: type
+          style: form
+          schema:
+            type: string
+            enum:
+              - USER_TOKEN
+              - GLOBAL_ANALYSIS_TOKEN
+              - PROJECT_ANALYSIS_TOKEN
+              - PROJECT_BADGE_TOKEN
+          explode: true
+          required: false
+          description: Token type (default is USER_TOKEN)
+          allowReserved: false
+        - in: query
+          name: projectKey
+          style: form
+          schema:
+            type: string
+          explode: true
+          required: false
+          description: >-
+            Project key (required for PROJECT_ANALYSIS_TOKEN and
+            PROJECT_BADGE_TOKEN types)
+          allowReserved: false
+        - in: query
+          name: expirationDate
+          style: form
+          schema:
+            type: string
+            format: date
+          explode: true
+          required: false
+          description: Token expiration date in ISO 8601 date format (YYYY-MM-DD)
+          allowReserved: false
+      responses:
+        '200':
+          description: >-
+            The request was successful, and the server has returned the
+            requested resource in the response body.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserTokenGenerateResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          description: >-
+            Authentication is required to access the requested resource. The
+            client must include the appropriate credentials.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                required:
+                  - message
+        '403':
+          description: >-
+            The server understood the request, but refuses to authorize it.
+            Ensure the client has appropriate permissions.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                required:
+                  - message
+      description: >-
+        Generate a user token. Requires 'Administer System' permission to
+        generate a token for another user.
+  /user_tokens/revoke:
+    post:
+      operationId: revokeUserToken
+      tags:
+        - user_token
+      summary: Revoke a user token
+      security:
+        - basicAuth: []
+        - tokenAuth: []
+      parameters:
+        - in: query
+          name: name
+          style: form
+          schema:
+            type: string
+          explode: true
+          required: true
+          description: Token name
+          allowReserved: false
+        - in: query
+          name: login
+          style: form
+          schema:
+            type: string
+          explode: true
+          required: false
+          description: >-
+            User login (admin credentials required to revoke token of another
+            user)
+          allowReserved: false
+      responses:
+        '204':
+          description: No content - Token successfully revoked
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          description: >-
+            Authentication is required to access the requested resource. The
+            client must include the appropriate credentials.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                required:
+                  - message
+        '403':
+          description: >-
+            The server understood the request, but refuses to authorize it.
+            Ensure the client has appropriate permissions.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                required:
+                  - message
+        '404':
+          description: Not found - The token does not exist
+      description: >-
+        Revoke a user token. Requires 'Administer System' permission to revoke a
+        token for another user.
 components:
   schemas:
     UserCreateRestRequest:
@@ -5439,6 +5670,107 @@ components:
             qualifier:
               type: string
       description: Response from the /measures/component endpoint
+    UserTokenDetails:
+      type: object
+      title: User Token Details
+      required:
+        - name
+        - createdAt
+        - type
+      properties:
+        name:
+          type: string
+          description: Token name
+        createdAt:
+          type: string
+          format: date-time
+          description: Token creation date
+        lastConnectionDate:
+          type: string
+          format: date-time
+          description: Last date the token was used (updated hourly)
+        expirationDate:
+          type: string
+          format: date-time
+          description: Token expiration date
+        isExpired:
+          type: boolean
+          description: Whether the token has expired
+        type:
+          type: string
+          enum:
+            - USER_TOKEN
+            - GLOBAL_ANALYSIS_TOKEN
+            - PROJECT_ANALYSIS_TOKEN
+            - PROJECT_BADGE_TOKEN
+          description: Token type
+        project:
+          type: object
+          description: Project details for PROJECT_ANALYSIS_TOKEN
+          required:
+            - key
+            - name
+          properties:
+            key:
+              type: string
+              description: Project key
+            name:
+              type: string
+              description: Project name
+      description: A user token
+    UserTokenSearchResponse:
+      type: object
+      title: User Token Search Response
+      required:
+        - userTokens
+      properties:
+        login:
+          type: string
+          description: User login
+        userTokens:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserTokenDetails'
+      description: Response from the user token search endpoint
+    UserTokenGenerateResponse:
+      type: object
+      title: User Token Generate Response
+      required:
+        - login
+        - name
+        - token
+        - createdAt
+        - type
+      properties:
+        login:
+          type: string
+          description: User login
+        name:
+          type: string
+          description: Token name
+        token:
+          type: string
+          description: The generated token value (only returned once)
+        createdAt:
+          type: string
+          format: date-time
+          description: Token creation date
+        type:
+          type: string
+          enum:
+            - USER_TOKEN
+            - GLOBAL_ANALYSIS_TOKEN
+            - PROJECT_ANALYSIS_TOKEN
+            - PROJECT_BADGE_TOKEN
+          description: Token type
+        projectKey:
+          type: string
+          description: Project key for PROJECT_ANALYSIS_TOKEN
+        expirationDate:
+          type: string
+          format: date-time
+          description: Token expiration date
+      description: Response from the user token generate endpoint
   responses:
     Ok:
       content:

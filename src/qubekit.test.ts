@@ -113,4 +113,194 @@ describe('sonarqubeClient', () => {
 
     expect(header).toBe('Bearer token');
   });
+
+  it('should search for user tokens', async () => {
+    let loginParam;
+    server.use(
+      http.get(
+        'https://my-instance.com/api/user_tokens/search',
+        ({ request }) => {
+          const url = new URL(request.url);
+          loginParam = url.searchParams.get('login');
+          return HttpResponse.json({
+            login: 'testuser',
+            userTokens: [
+              {
+                name: 'test-token',
+                createdAt: '2025-01-01T00:00:00+0000',
+                type: 'USER_TOKEN',
+                lastConnectionDate: '2025-01-15T10:30:00+0000',
+                expirationDate: '2026-01-01T00:00:00+0000',
+                isExpired: false,
+              },
+            ],
+          });
+        },
+      ),
+    );
+    const client = createQubekit({
+      baseURL: 'https://my-instance.com/api',
+      token: 'token',
+    });
+
+    const result = await client.userToken.searchUserTokens({
+      query: {
+        login: 'testuser',
+      },
+    });
+
+    expect(result.data).toEqual(
+      expect.objectContaining({
+        login: 'testuser',
+        userTokens: expect.any(Array),
+      }),
+    );
+    expect(result.data?.userTokens[0]).toEqual(
+      expect.objectContaining({
+        name: 'test-token',
+        type: 'USER_TOKEN',
+        isExpired: false,
+      }),
+    );
+    expect(loginParam).toBe('testuser');
+  });
+
+  it('should generate a user token', async () => {
+    let tokenName;
+    server.use(
+      http.post(
+        'https://my-instance.com/api/user_tokens/generate',
+        async ({ request }) => {
+          const url = new URL(request.url);
+          tokenName = url.searchParams.get('name');
+          return HttpResponse.json({
+            login: 'testuser',
+            name: 'new-token',
+            token: 'generated-token-value',
+            createdAt: '2025-01-01T00:00:00+0000',
+            type: 'USER_TOKEN',
+          });
+        },
+      ),
+    );
+    const client = createQubekit({
+      baseURL: 'https://my-instance.com/api',
+      token: 'token',
+    });
+
+    const result = await client.userToken.generateUserToken({
+      query: {
+        name: 'new-token',
+      },
+    });
+
+    expect(result.data).toEqual(
+      expect.objectContaining({
+        login: 'testuser',
+        name: 'new-token',
+        token: 'generated-token-value',
+        type: 'USER_TOKEN',
+      }),
+    );
+    expect(tokenName).toBe('new-token');
+  });
+
+  it('should revoke a user token', async () => {
+    let revokedTokenName;
+    server.use(
+      http.post(
+        'https://my-instance.com/api/user_tokens/revoke',
+        async ({ request }) => {
+          const url = new URL(request.url);
+          revokedTokenName = url.searchParams.get('name');
+          return new HttpResponse(null, { status: 204 });
+        },
+      ),
+    );
+    const client = createQubekit({
+      baseURL: 'https://my-instance.com/api',
+      token: 'token',
+    });
+
+    await client.userToken.revokeUserToken({
+      query: {
+        name: 'token-to-revoke',
+      },
+    });
+
+    expect(revokedTokenName).toBe('token-to-revoke');
+  });
+
+  it('should search for project analysis tokens with nested project structure', async () => {
+    server.use(
+      http.get('https://my-instance.com/api/user_tokens/search', () => {
+        return HttpResponse.json({
+          login: 'testuser',
+          userTokens: [
+            {
+              name: 'project-token',
+              createdAt: '2025-01-01T00:00:00+0000',
+              type: 'PROJECT_ANALYSIS_TOKEN',
+              project: {
+                key: 'my-project',
+                name: 'My Project',
+              },
+            },
+          ],
+        });
+      }),
+    );
+    const client = createQubekit({
+      baseURL: 'https://my-instance.com/api',
+      token: 'token',
+    });
+
+    const result = await client.userToken.searchUserTokens();
+
+    expect(result.data?.userTokens[0]).toEqual(
+      expect.objectContaining({
+        name: 'project-token',
+        type: 'PROJECT_ANALYSIS_TOKEN',
+        project: {
+          key: 'my-project',
+          name: 'My Project',
+        },
+      }),
+    );
+  });
+
+  it('should generate a project analysis token', async () => {
+    server.use(
+      http.post('https://my-instance.com/api/user_tokens/generate', () => {
+        return HttpResponse.json({
+          login: 'testuser',
+          name: 'project-token',
+          token: 'generated-project-token',
+          createdAt: '2025-01-01T00:00:00+0000',
+          type: 'PROJECT_ANALYSIS_TOKEN',
+          projectKey: 'my-project',
+        });
+      }),
+    );
+    const client = createQubekit({
+      baseURL: 'https://my-instance.com/api',
+      token: 'token',
+    });
+
+    const result = await client.userToken.generateUserToken({
+      query: {
+        name: 'project-token',
+        type: 'PROJECT_ANALYSIS_TOKEN',
+        projectKey: 'my-project',
+      },
+    });
+
+    expect(result.data).toEqual(
+      expect.objectContaining({
+        name: 'project-token',
+        type: 'PROJECT_ANALYSIS_TOKEN',
+        projectKey: 'my-project',
+      }),
+    );
+  });
 });

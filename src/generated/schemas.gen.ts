@@ -2896,6 +2896,127 @@ export const MeasureComponentResponseSchema = {
   description: 'Response from the /measures/component endpoint',
 } as const;
 
+export const UserTokenDetailsSchema = {
+  type: 'object',
+  title: 'User Token Details',
+  required: ['name', 'createdAt', 'type'],
+  properties: {
+    name: {
+      type: 'string',
+      description: 'Token name',
+    },
+    createdAt: {
+      type: 'string',
+      format: 'date-time',
+      description: 'Token creation date',
+    },
+    lastConnectionDate: {
+      type: 'string',
+      format: 'date-time',
+      description: 'Last date the token was used (updated hourly)',
+    },
+    expirationDate: {
+      type: 'string',
+      format: 'date-time',
+      description: 'Token expiration date',
+    },
+    isExpired: {
+      type: 'boolean',
+      description: 'Whether the token has expired',
+    },
+    type: {
+      type: 'string',
+      enum: [
+        'USER_TOKEN',
+        'GLOBAL_ANALYSIS_TOKEN',
+        'PROJECT_ANALYSIS_TOKEN',
+        'PROJECT_BADGE_TOKEN',
+      ],
+      description: 'Token type',
+    },
+    project: {
+      type: 'object',
+      description: 'Project details for PROJECT_ANALYSIS_TOKEN',
+      required: ['key', 'name'],
+      properties: {
+        key: {
+          type: 'string',
+          description: 'Project key',
+        },
+        name: {
+          type: 'string',
+          description: 'Project name',
+        },
+      },
+    },
+  },
+  description: 'A user token',
+} as const;
+
+export const UserTokenSearchResponseSchema = {
+  type: 'object',
+  title: 'User Token Search Response',
+  required: ['userTokens'],
+  properties: {
+    login: {
+      type: 'string',
+      description: 'User login',
+    },
+    userTokens: {
+      type: 'array',
+      items: {
+        $ref: '#/components/schemas/UserTokenDetails',
+      },
+    },
+  },
+  description: 'Response from the user token search endpoint',
+} as const;
+
+export const UserTokenGenerateResponseSchema = {
+  type: 'object',
+  title: 'User Token Generate Response',
+  required: ['login', 'name', 'token', 'createdAt', 'type'],
+  properties: {
+    login: {
+      type: 'string',
+      description: 'User login',
+    },
+    name: {
+      type: 'string',
+      description: 'Token name',
+    },
+    token: {
+      type: 'string',
+      description: 'The generated token value (only returned once)',
+    },
+    createdAt: {
+      type: 'string',
+      format: 'date-time',
+      description: 'Token creation date',
+    },
+    type: {
+      type: 'string',
+      enum: [
+        'USER_TOKEN',
+        'GLOBAL_ANALYSIS_TOKEN',
+        'PROJECT_ANALYSIS_TOKEN',
+        'PROJECT_BADGE_TOKEN',
+      ],
+      description: 'Token type',
+    },
+    projectKey: {
+      type: 'string',
+      description: 'Project key for PROJECT_ANALYSIS_TOKEN',
+    },
+    expirationDate: {
+      type: 'string',
+      format: 'date-time',
+      description: 'Token expiration date',
+    },
+  },
+  description: 'Response from the user token generate endpoint',
+} as const;
+
 export const UserCreateRestRequestWritableSchema = {
   type: 'object',
   properties: {

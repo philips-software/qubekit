@@ -1323,6 +1323,105 @@ export type MeasureComponentResponse = {
   };
 };
 
+/**
+ * User Token Details
+ * A user token
+ */
+export type UserTokenDetails = {
+  /**
+   * Token name
+   */
+  name: string;
+  /**
+   * Token creation date
+   */
+  createdAt: Date;
+  /**
+   * Last date the token was used (updated hourly)
+   */
+  lastConnectionDate?: Date;
+  /**
+   * Token expiration date
+   */
+  expirationDate?: Date;
+  /**
+   * Whether the token has expired
+   */
+  isExpired?: boolean;
+  /**
+   * Token type
+   */
+  type:
+    | 'USER_TOKEN'
+    | 'GLOBAL_ANALYSIS_TOKEN'
+    | 'PROJECT_ANALYSIS_TOKEN'
+    | 'PROJECT_BADGE_TOKEN';
+  /**
+   * Project details for PROJECT_ANALYSIS_TOKEN
+   */
+  project?: {
+    /**
+     * Project key
+     */
+    key: string;
+    /**
+     * Project name
+     */
+    name: string;
+  };
+};
+
+/**
+ * User Token Search Response
+ * Response from the user token search endpoint
+ */
+export type UserTokenSearchResponse = {
+  /**
+   * User login
+   */
+  login?: string;
+  userTokens: Array<UserTokenDetails>;
+};
+
+/**
+ * User Token Generate Response
+ * Response from the user token generate endpoint
+ */
+export type UserTokenGenerateResponse = {
+  /**
+   * User login
+   */
+  login: string;
+  /**
+   * Token name
+   */
+  name: string;
+  /**
+   * The generated token value (only returned once)
+   */
+  token: string;
+  /**
+   * Token creation date
+   */
+  createdAt: Date;
+  /**
+   * Token type
+   */
+  type:
+    | 'USER_TOKEN'
+    | 'GLOBAL_ANALYSIS_TOKEN'
+    | 'PROJECT_ANALYSIS_TOKEN'
+    | 'PROJECT_BADGE_TOKEN';
+  /**
+   * Project key for PROJECT_ANALYSIS_TOKEN
+   */
+  projectKey?: string;
+  /**
+   * Token expiration date
+   */
+  expirationDate?: Date;
+};
+
 export type UserCreateRestRequestWritable = {
   /**
    * User email
@@ -3812,6 +3911,172 @@ export type GetAListOfProjectsAndLicenseUsageResponses = {
 
 export type GetAListOfProjectsAndLicenseUsageResponse =
   GetAListOfProjectsAndLicenseUsageResponses[keyof GetAListOfProjectsAndLicenseUsageResponses];
+
+export type SearchUserTokensData = {
+  body?: never;
+  path?: never;
+  query?: {
+    /**
+     * User login (admin credentials required to list tokens of another user)
+     */
+    login?: string;
+  };
+  url: '/user_tokens/search';
+};
+
+export type SearchUserTokensErrors = {
+  /**
+   * Authentication is required to access the requested resource. The client must include the appropriate credentials.
+   */
+  401: {
+    message: string;
+  };
+  /**
+   * The server understood the request, but refuses to authorize it. Ensure the client has appropriate permissions.
+   */
+  403: {
+    message: string;
+  };
+};
+
+export type SearchUserTokensError =
+  SearchUserTokensErrors[keyof SearchUserTokensErrors];
+
+export type SearchUserTokensResponses = {
+  /**
+   * The request was successful, and the server has returned the requested resource in the response body.
+   */
+  200: UserTokenSearchResponse;
+};
+
+export type SearchUserTokensResponse =
+  SearchUserTokensResponses[keyof SearchUserTokensResponses];
+
+export type GenerateUserTokenData = {
+  body?: never;
+  path?: never;
+  query: {
+    /**
+     * Token name
+     */
+    name: string;
+    /**
+     * User login (admin credentials required to generate token for another user)
+     */
+    login?: string;
+    /**
+     * Token type (default is USER_TOKEN)
+     */
+    type?:
+      | 'USER_TOKEN'
+      | 'GLOBAL_ANALYSIS_TOKEN'
+      | 'PROJECT_ANALYSIS_TOKEN'
+      | 'PROJECT_BADGE_TOKEN';
+    /**
+     * Project key (required for PROJECT_ANALYSIS_TOKEN and PROJECT_BADGE_TOKEN types)
+     */
+    projectKey?: string;
+    /**
+     * Token expiration date in ISO 8601 date format (YYYY-MM-DD)
+     */
+    expirationDate?: Date;
+  };
+  url: '/user_tokens/generate';
+};
+
+export type GenerateUserTokenErrors = {
+  /**
+   * The server could not understand the request due to invalid syntax. The client should modify the request and try again.
+   */
+  400: {
+    errors?: Array<{
+      message: string;
+    }>;
+    message: string;
+  };
+  /**
+   * Authentication is required to access the requested resource. The client must include the appropriate credentials.
+   */
+  401: {
+    message: string;
+  };
+  /**
+   * The server understood the request, but refuses to authorize it. Ensure the client has appropriate permissions.
+   */
+  403: {
+    message: string;
+  };
+};
+
+export type GenerateUserTokenError =
+  GenerateUserTokenErrors[keyof GenerateUserTokenErrors];
+
+export type GenerateUserTokenResponses = {
+  /**
+   * The request was successful, and the server has returned the requested resource in the response body.
+   */
+  200: UserTokenGenerateResponse;
+};
+
+export type GenerateUserTokenResponse =
+  GenerateUserTokenResponses[keyof GenerateUserTokenResponses];
+
+export type RevokeUserTokenData = {
+  body?: never;
+  path?: never;
+  query: {
+    /**
+     * Token name
+     */
+    name: string;
+    /**
+     * User login (admin credentials required to revoke token of another user)
+     */
+    login?: string;
+  };
+  url: '/user_tokens/revoke';
+};
+
+export type RevokeUserTokenErrors = {
+  /**
+   * The server could not understand the request due to invalid syntax. The client should modify the request and try again.
+   */
+  400: {
+    errors?: Array<{
+      message: string;
+    }>;
+    message: string;
+  };
+  /**
+   * Authentication is required to access the requested resource. The client must include the appropriate credentials.
+   */
+  401: {
+    message: string;
+  };
+  /**
+   * The server understood the request, but refuses to authorize it. Ensure the client has appropriate permissions.
+   */
+  403: {
+    message: string;
+  };
+  /**
+   * Not found - The token does not exist
+   */
+  404: unknown;
+};
+
+export type RevokeUserTokenError =
+  RevokeUserTokenErrors[keyof RevokeUserTokenErrors];
+
+export type RevokeUserTokenResponses = {
+  /**
+   * No content - Token successfully revoked
+   */
+  204: void;
+};
+
+export type RevokeUserTokenResponse =
+  RevokeUserTokenResponses[keyof RevokeUserTokenResponses];
 
 export type ClientOptions = {
   baseUrl: 'http://sonarqube.internal.philips/api/v2' | (string & {});
