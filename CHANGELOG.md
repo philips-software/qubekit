@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.0](https://github.com/philips-software/qubekit/compare/v1.2.0...v1.3.0) (2025-11-21)
+
+
+### Features
+
+* Add user_tokens endpoints to v1 API specification ([#109](https://github.com/philips-software/qubekit/issues/109)) ([270a479](https://github.com/philips-software/qubekit/commit/270a4798226e261b403fc6312d897243b4aa5c2d))
+
 ## [1.2.0](https://github.com/philips-software/qubekit/compare/v1.1.0...v1.2.0) (2025-09-23)
 
 
