@@ -64,7 +64,7 @@ describe('sonarqubeClient', () => {
       token: 'token',
     });
 
-    await client.issue.searchIssues();
+    await client.searchIssues.searchIssues();
 
     expect(header).toBe('Bearer token');
   });

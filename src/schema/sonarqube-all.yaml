@@ -442,8 +442,8 @@ paths:
               $ref: '#/components/schemas/IssueReleaseAddCommentRestRequest'
         required: true
       responses:
-        '200':
-          description: OK
+        '201':
+          description: Created
       x-sonar-internal: 'true'
   /v2/marketplace/azure/billing:
     post:
@@ -469,7 +469,7 @@ paths:
       description: |
         Fetch the Jira work items for a specific Sonar project and resource.
         Accepts only authenticated requests.
-      operationId: य़
+      operationId: 鲥
       parameters:
         - name: sonarProjectId
           in: query
@@ -506,7 +506,7 @@ paths:
 
         Accepts only authenticated requests with issue administration
         permission.
-      operationId: य़_1
+      operationId: 鲥_1
       requestBody:
         content:
           application/json:
@@ -527,7 +527,7 @@ paths:
       summary: Delete Jira work items
       description: |
         Delete the Jira work items associated with a specific resource.
-      operationId: 곳
+      operationId: 絛
       parameters:
         - name: sonarProjectId
           in: query
@@ -559,7 +559,7 @@ paths:
       description: |
         Fetch the Jira project binding for a specific Sonar project.
         Accepts only authenticated requests.
-      operationId: य़_2
+      operationId: 鲥_2
       parameters:
         - name: sonarProjectId
           in: query
@@ -581,7 +581,7 @@ paths:
       description: |
         Create or update a Jira project binding for a specific Sonar project.
         Accepts only authenticated requests.
-      operationId: य़_3
+      operationId: 鲥_3
       requestBody:
         content:
           application/json:
@@ -603,7 +603,7 @@ paths:
       description: |
         Delete the Jira project binding for a specific Sonar project.
         Accepts only authenticated requests.
-      operationId: 곳_1
+      operationId: 絛_1
       parameters:
         - name: sonarProjectId
           in: query
@@ -621,7 +621,7 @@ paths:
       description: |
         Update an existing Jira project binding for a specific Sonar project.
         Accepts only authenticated requests.
-      operationId: य़_4
+      operationId: 鲥_4
       requestBody:
         content:
           application/json:
@@ -644,7 +644,7 @@ paths:
       description: |
         Fetch the Jira instance binding.
         Requires global administrator permission.
-      operationId: य़_5
+      operationId: 絛_2
       parameters:
         - name: sonarOrganizationUuid
           in: query
@@ -672,7 +672,7 @@ paths:
         available resources.
 
         Requires global administrator permission.
-      operationId: य़_6
+      operationId: 鲥_5
       requestBody:
         content:
           application/json:
@@ -695,7 +695,7 @@ paths:
       description: |
         Deletes the Jira instance binding from the database.
         Requires global administrator permission.
-      operationId: 곳_2
+      operationId: 鲥_6
       parameters:
         - name: sonarOrganizationUuid
           in: query
@@ -716,7 +716,7 @@ paths:
       description: >
         Binds the specified pending instance binding with the specified jira
         cloud ID
-      operationId: य़_7
+      operationId: 鲥_7
       requestBody:
         content:
           application/json:
@@ -817,7 +817,7 @@ paths:
         '200':
           description: OK
           content:
-            application/json:
+            text/plain:
               schema:
                 type: string
       x-sonar-internal: 'true'
@@ -1426,7 +1426,7 @@ paths:
       description: |
         Fetch the Atlassian Authentication details if they exist.
         Specifically, only the client ID is returned for security purposes.
-      operationId: य़_8
+      operationId: 鲥_8
       responses:
         '200':
           description: OK
@@ -1442,7 +1442,7 @@ paths:
       summary: Create/Update the Atlassian Authentication details
       description: |
         Create/Update the Atlassian Authentication details.
-      operationId: य़_9
+      operationId: 鲥_9
       requestBody:
         content:
           application/json:
@@ -1828,8 +1828,8 @@ paths:
             type: string
             description: Issue release change key
       responses:
-        '200':
-          description: OK
+        '204':
+          description: No Content
       x-sonar-internal: 'true'
     patch:
       tags:
@@ -1907,7 +1907,7 @@ paths:
 
         Also checks which work types are selected for a given sonar project.
         Conditionally, also includes field metadata.
-      operationId: य़_10
+      operationId: 鲥_10
       parameters:
         - name: jiraProjectKey
           in: query
@@ -1947,7 +1947,7 @@ paths:
       description: >
         Receives a Jira project key and a list of work type and stores the work
         types.
-      operationId: य़_11
+      operationId: 鲥_11
       requestBody:
         content:
           application/json:
@@ -1957,6 +1957,28 @@ paths:
       responses:
         '200':
           description: OK
+      x-sonar-internal: 'true'
+  /v2/jira/organization-binding-edit:
+    patch:
+      tags:
+        - Jira
+      summary: TODO
+      description: |
+        TODO
+      operationId: 鲥_12
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchJiraOrganizationBindingEditResource'
+        required: true
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JiraOrganizationBindingResource'
       x-sonar-internal: 'true'
   /v2/issues/sandbox-settings:
     get:
@@ -2590,6 +2612,42 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Health'
+  /v2/software-quality-reports/accessibility-reports:
+    get:
+      tags:
+        - software-quality-reports-controller
+      summary: Get accessibility report
+      description: Get the accessibility report for a project branch.
+      operationId: 鲥_13
+      parameters:
+        - name: branchKey
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: projectKey
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: standard
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: version
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetAccessibilityReportResponse'
+      x-sonar-internal: 'true'
   /v2/sca/self-test:
     get:
       tags:
@@ -3545,7 +3603,7 @@ paths:
         the context of a specific project.
 
         If the user is not authenticated, returns an empty list.
-      operationId: य़_12
+      operationId: 鲥_14
       parameters:
         - name: sonarProjectId
           in: query
@@ -3568,7 +3626,7 @@ paths:
         - Jira
       summary: Returns a list of all the available Jira projects
       description: Returns a list of all the available Jira projects
-      operationId: य़_13
+      operationId: 鲥_15
       parameters:
         - name: sonarOrganizationUuid
           in: query
@@ -3594,7 +3652,7 @@ paths:
       description: |
         Count the number of Jira issues linked to a specific Sonar project.
         Accepts only authenticated requests.
-      operationId: य़_14
+      operationId: 鲥_16
       parameters:
         - name: sonarProjectId
           in: path
@@ -3840,7 +3898,7 @@ paths:
       description: |
         Generate the authentication URL for Jira OAuth flow.
         Requires authenticated user.
-      operationId: य़_15
+      operationId: 鲥_17
       parameters:
         - name: sonarOrganizationKey
           in: query
@@ -3868,7 +3926,7 @@ paths:
       summary: >-
         Search all current graphs available for a branch. This endpoint do not
         includes graph Data itself
-      operationId: य़_16
+      operationId: 鲥_18
       parameters:
         - name: projectKey
           in: query
@@ -3888,7 +3946,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/_p'
+                $ref: '#/components/schemas/_a'
       x-sonar-internal: 'true'
   '/v2/architecture/graphs/{id}':
     get:
@@ -3896,7 +3954,7 @@ paths:
         - Architecture
       summary: Get graph data by id.
       description: Fetch the graph data produced by analysis.
-      operationId: य़_17
+      operationId: 鲥_19
       parameters:
         - name: id
           in: path
@@ -3917,7 +3975,7 @@ paths:
       tags:
         - Architecture
       summary: Find the file graph for this project branch and source.
-      operationId: य़_18
+      operationId: 鲥_20
       parameters:
         - name: projectKey
           in: query
@@ -4103,7 +4161,7 @@ paths:
   /issues/search:
     get:
       tags:
-        - issue
+        - searchIssues
       summary: Search Issues
       security:
         - basicAuth: []
@@ -6920,8 +6978,6 @@ components:
       properties:
         id:
           type: string
-        key:
-          type: string
         name:
           type: string
         default:
@@ -6983,7 +7039,7 @@ components:
           type: string
         key:
           type: string
-        isPullRequest:
+        pullRequest:
           type: boolean
         projectKey:
           type: string
@@ -7423,6 +7479,10 @@ components:
           type: integer
           format: int64
           description: Creation timestamp
+          readOnly: true
+        isTokenShared:
+          type: boolean
+          description: TODO
           readOnly: true
     OAuthResource:
       type: object
@@ -8400,8 +8460,8 @@ components:
           type: string
           description: The new status of this license.
           enum:
-            - ALLOW
             - DENY
+            - ALLOW
       required:
         - policy
     LicensePolicyLicenseResource:
@@ -8427,8 +8487,8 @@ components:
           type: string
           description: The policy status of this license.
           enum:
-            - ALLOW
             - DENY
+            - ALLOW
     LicenseProfileCategoryUpdateRestRequest:
       type: object
       properties:
@@ -8436,8 +8496,8 @@ components:
           type: string
           description: The new status of this category.
           enum:
-            - ALLOW
             - DENY
+            - ALLOW
       required:
         - policy
     LicenseProfileCategoryResource:
@@ -8459,8 +8519,8 @@ components:
           type: string
           description: The policy status of this category.
           enum:
-            - ALLOW
             - DENY
+            - ALLOW
     AssignedProjectsUpdateRestRequest:
       type: object
       properties:
@@ -8550,6 +8610,21 @@ components:
       required:
         - jiraCloudId
         - jiraInstanceUrl
+        - sonarOrganizationUuid
+    PatchJiraOrganizationBindingEditResource:
+      type: object
+      properties:
+        sonarOrganizationUuid:
+          type: string
+          format: uuid
+          description: Sonar organization UUID
+          writeOnly: true
+        isTokenShared:
+          type: boolean
+          description: TODO
+          writeOnly: true
+      required:
+        - isTokenShared
         - sonarOrganizationUuid
     RuleTypeMapping:
       type: object
@@ -8846,6 +8921,24 @@ components:
             $ref: '#/components/schemas/EmailConfigurationResource'
         page:
           $ref: '#/components/schemas/PageRestResponse'
+    Category:
+      type: object
+      properties:
+        activeRules:
+          type: integer
+          format: int32
+        issues:
+          type: integer
+          format: int32
+        key:
+          type: string
+    GetAccessibilityReportResponse:
+      type: object
+      properties:
+        categories:
+          type: array
+          items:
+            $ref: '#/components/schemas/Category'
     SelfTestHttpCallResource:
       type: object
       properties:
@@ -8960,7 +9053,7 @@ components:
           type: string
         key:
           type: string
-        isPullRequest:
+        pullRequest:
           type: boolean
         projectKey:
           type: string
@@ -9535,8 +9628,6 @@ components:
           type: boolean
         licenseKey:
           type: string
-        expired:
-          type: boolean
         validEdition:
           type: boolean
         validServerId:
@@ -9546,6 +9637,8 @@ components:
         supported:
           type: boolean
         legacy:
+          type: boolean
+        expired:
           type: boolean
         disabled:
           type: boolean
@@ -9647,7 +9740,14 @@ components:
             $ref: '#/components/schemas/GroupMembershipRestResponse'
         page:
           $ref: '#/components/schemas/PageRestResponse'
-    _e:
+    _a:
+      type: object
+      properties:
+        graphs:
+          type: array
+          items:
+            $ref: '#/components/schemas/_h'
+    _h:
       type: object
       properties:
         id:
@@ -9672,13 +9772,6 @@ components:
           type: string
         graphVersion:
           type: string
-    _p:
-      type: object
-      properties:
-        graphs:
-          type: array
-          items:
-            $ref: '#/components/schemas/_e'
     JreInfoRestResponse:
       type: object
       properties:

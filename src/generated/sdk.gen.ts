@@ -34,28 +34,28 @@ import type {
   AddCommentResponses,
   BillAzureAccountData,
   BillAzureAccountResponses,
-  곳Data,
-  곳Responses,
-  य़Data,
-  य़Responses,
-  य़1Data,
-  य़1Responses,
-  곳1Data,
-  곳1Responses,
-  य़2Data,
-  य़2Responses,
-  य़4Data,
-  य़4Responses,
-  य़3Data,
-  य़3Responses,
-  곳2Data,
-  곳2Responses,
-  य़5Data,
-  य़5Responses,
-  य़7Data,
-  य़7Responses,
-  य़6Data,
-  य़6Responses,
+  絛Data,
+  絛Responses,
+  鲥Data,
+  鲥Responses,
+  鲥1Data,
+  鲥1Responses,
+  絛1Data,
+  絛1Responses,
+  鲥2Data,
+  鲥2Responses,
+  鲥4Data,
+  鲥4Responses,
+  鲥3Data,
+  鲥3Responses,
+  鲥6Data,
+  鲥6Responses,
+  絛2Data,
+  絛2Responses,
+  鲥7Data,
+  鲥7Responses,
+  鲥5Data,
+  鲥5Responses,
   CreateUserBindingData,
   CreateUserBindingResponses,
   CreateUserBindingErrors,
@@ -1091,11 +1091,11 @@ export class Jira {
    * Delete the Jira work items associated with a specific resource.
    *
    */
-  public static 곳<ThrowOnError extends boolean = false>(
-    options: Options<곳Data, ThrowOnError>,
+  public static 絛<ThrowOnError extends boolean = false>(
+    options: Options<絛Data, ThrowOnError>,
   ) {
     return (options.client ?? client).delete<
-      곳Responses,
+      絛Responses,
       unknown,
       ThrowOnError
     >({
@@ -1110,10 +1110,10 @@ export class Jira {
    * Accepts only authenticated requests.
    *
    */
-  public static य़<ThrowOnError extends boolean = false>(
-    options: Options<य़Data, ThrowOnError>,
+  public static 鲥<ThrowOnError extends boolean = false>(
+    options: Options<鲥Data, ThrowOnError>,
   ) {
-    return (options.client ?? client).get<य़Responses, unknown, ThrowOnError>({
+    return (options.client ?? client).get<鲥Responses, unknown, ThrowOnError>({
       url: '/v2/jira/work-items',
       ...options,
     });
@@ -1125,17 +1125,19 @@ export class Jira {
    * Accepts only authenticated requests with issue administration permission.
    *
    */
-  public static य़1<ThrowOnError extends boolean = false>(
-    options: Options<य़1Data, ThrowOnError>,
+  public static 鲥1<ThrowOnError extends boolean = false>(
+    options: Options<鲥1Data, ThrowOnError>,
   ) {
-    return (options.client ?? client).post<य़1Responses, unknown, ThrowOnError>({
-      url: '/v2/jira/work-items',
-      ...options,
-      headers: {
-        'Content-Type': 'application/json',
-        ...options.headers,
+    return (options.client ?? client).post<鲥1Responses, unknown, ThrowOnError>(
+      {
+        url: '/v2/jira/work-items',
+        ...options,
+        headers: {
+          'Content-Type': 'application/json',
+          ...options.headers,
+        },
       },
-    });
+    );
   }
 
   /**
@@ -1144,11 +1146,11 @@ export class Jira {
    * Accepts only authenticated requests.
    *
    */
-  public static 곳1<ThrowOnError extends boolean = false>(
-    options: Options<곳1Data, ThrowOnError>,
+  public static 絛1<ThrowOnError extends boolean = false>(
+    options: Options<絛1Data, ThrowOnError>,
   ) {
     return (options.client ?? client).delete<
-      곳1Responses,
+      絛1Responses,
       unknown,
       ThrowOnError
     >({
@@ -1163,10 +1165,10 @@ export class Jira {
    * Accepts only authenticated requests.
    *
    */
-  public static य़2<ThrowOnError extends boolean = false>(
-    options: Options<य़2Data, ThrowOnError>,
+  public static 鲥2<ThrowOnError extends boolean = false>(
+    options: Options<鲥2Data, ThrowOnError>,
   ) {
-    return (options.client ?? client).get<य़2Responses, unknown, ThrowOnError>({
+    return (options.client ?? client).get<鲥2Responses, unknown, ThrowOnError>({
       url: '/v2/jira/project-bindings',
       ...options,
     });
@@ -1178,10 +1180,33 @@ export class Jira {
    * Accepts only authenticated requests.
    *
    */
-  public static य़4<ThrowOnError extends boolean = false>(
-    options: Options<य़4Data, ThrowOnError>,
+  public static 鲥4<ThrowOnError extends boolean = false>(
+    options: Options<鲥4Data, ThrowOnError>,
   ) {
-    return (options.client ?? client).patch<य़4Responses, unknown, ThrowOnError>(
+    return (options.client ?? client).patch<
+      鲥4Responses,
+      unknown,
+      ThrowOnError
+    >({
+      url: '/v2/jira/project-bindings',
+      ...options,
+      headers: {
+        'Content-Type': 'application/json',
+        ...options.headers,
+      },
+    });
+  }
+
+  /**
+   * Create or update Jira project binding
+   * Create or update a Jira project binding for a specific Sonar project.
+   * Accepts only authenticated requests.
+   *
+   */
+  public static 鲥3<ThrowOnError extends boolean = false>(
+    options: Options<鲥3Data, ThrowOnError>,
+  ) {
+    return (options.client ?? client).post<鲥3Responses, unknown, ThrowOnError>(
       {
         url: '/v2/jira/project-bindings',
         ...options,
@@ -1194,35 +1219,16 @@ export class Jira {
   }
 
   /**
-   * Create or update Jira project binding
-   * Create or update a Jira project binding for a specific Sonar project.
-   * Accepts only authenticated requests.
-   *
-   */
-  public static य़3<ThrowOnError extends boolean = false>(
-    options: Options<य़3Data, ThrowOnError>,
-  ) {
-    return (options.client ?? client).post<य़3Responses, unknown, ThrowOnError>({
-      url: '/v2/jira/project-bindings',
-      ...options,
-      headers: {
-        'Content-Type': 'application/json',
-        ...options.headers,
-      },
-    });
-  }
-
-  /**
    * Delete the Jira instance binding
    * Deletes the Jira instance binding from the database.
    * Requires global administrator permission.
    *
    */
-  public static 곳2<ThrowOnError extends boolean = false>(
-    options: Options<곳2Data, ThrowOnError>,
+  public static 鲥6<ThrowOnError extends boolean = false>(
+    options: Options<鲥6Data, ThrowOnError>,
   ) {
     return (options.client ?? client).delete<
-      곳2Responses,
+      鲥6Responses,
       unknown,
       ThrowOnError
     >({
@@ -1237,11 +1243,11 @@ export class Jira {
    * Requires global administrator permission.
    *
    */
-  public static य़5<ThrowOnError extends boolean = false>(
-    options: Options<य़5Data, ThrowOnError>,
+  public static 絛2<ThrowOnError extends boolean = false>(
+    options: Options<絛2Data, ThrowOnError>,
   ) {
-    return (options.client ?? client).get<य़5Responses, unknown, ThrowOnError>({
-      responseTransformer: य़5ResponseTransformer,
+    return (options.client ?? client).get<絛2Responses, unknown, ThrowOnError>({
+      responseTransformer: 絛2ResponseTransformer,
       url: '/v2/jira/organization-bindings',
       ...options,
     });
@@ -1252,12 +1258,37 @@ export class Jira {
    * Binds the specified pending instance binding with the specified jira cloud ID
    *
    */
-  public static य़7<ThrowOnError extends boolean = false>(
-    options: Options<य़7Data, ThrowOnError>,
+  public static 鲥7<ThrowOnError extends boolean = false>(
+    options: Options<鲥7Data, ThrowOnError>,
   ) {
-    return (options.client ?? client).patch<य़7Responses, unknown, ThrowOnError>(
+    return (options.client ?? client).patch<
+      鲥7Responses,
+      unknown,
+      ThrowOnError
+    >({
+      responseTransformer: 鲥7ResponseTransformer,
+      url: '/v2/jira/organization-bindings',
+      ...options,
+      headers: {
+        'Content-Type': 'application/json',
+        ...options.headers,
+      },
+    });
+  }
+
+  /**
+   * Create a new Jira instance binding
+   * Receives the 3LO state and authorization code parameters and attempts to create an instance binding.
+   * If successful, returns the binding. Otherwise, returns a list of available resources.
+   * Requires global administrator permission.
+   *
+   */
+  public static 鲥5<ThrowOnError extends boolean = false>(
+    options: Options<鲥5Data, ThrowOnError>,
+  ) {
+    return (options.client ?? client).post<鲥5Responses, unknown, ThrowOnError>(
       {
-        responseTransformer: य़7ResponseTransformer,
+        responseTransformer: 鲥5ResponseTransformer,
         url: '/v2/jira/organization-bindings',
         ...options,
         headers: {
@@ -1269,18 +1300,36 @@ export class Jira {
   }
 
   /**
-   * Create a new Jira instance binding
-   * Receives the 3LO state and authorization code parameters and attempts to create an instance binding.
-   * If successful, returns the binding. Otherwise, returns a list of available resources.
-   * Requires global administrator permission.
+   * Returns a list of all the available Jira work types for a specific Jira project
+   * Returns a list of all the available Jira work types for a specific Jira project.
+   * Also checks which work types are selected for a given sonar project. Conditionally, also includes field metadata.
    *
    */
-  public static य़6<ThrowOnError extends boolean = false>(
-    options: Options<य़6Data, ThrowOnError>,
+  public static 鲥10<ThrowOnError extends boolean = false>(
+    options: Options<鲥10Data, ThrowOnError>,
   ) {
-    return (options.client ?? client).post<य़6Responses, unknown, ThrowOnError>({
-      responseTransformer: य़6ResponseTransformer,
-      url: '/v2/jira/organization-bindings',
+    return (options.client ?? client).get<鲥10Responses, unknown, ThrowOnError>(
+      {
+        url: '/v2/jira/work-types',
+        ...options,
+      },
+    );
+  }
+
+  /**
+   * Saves the selected Jira work types for a project
+   * Receives a Jira project key and a list of work type and stores the work types.
+   *
+   */
+  public static 鲥11<ThrowOnError extends boolean = false>(
+    options: Options<鲥11Data, ThrowOnError>,
+  ) {
+    return (options.client ?? client).patch<
+      鲥11Responses,
+      unknown,
+      ThrowOnError
+    >({
+      url: '/v2/jira/work-types',
       ...options,
       headers: {
         'Content-Type': 'application/json',
@@ -1290,34 +1339,20 @@ export class Jira {
   }
 
   /**
-   * Returns a list of all the available Jira work types for a specific Jira project
-   * Returns a list of all the available Jira work types for a specific Jira project.
-   * Also checks which work types are selected for a given sonar project. Conditionally, also includes field metadata.
+   * TODO
+   * TODO
    *
    */
-  public static य़10<ThrowOnError extends boolean = false>(
-    options: Options<य़10Data, ThrowOnError>,
-  ) {
-    return (options.client ?? client).get<य़10Responses, unknown, ThrowOnError>({
-      url: '/v2/jira/work-types',
-      ...options,
-    });
-  }
-
-  /**
-   * Saves the selected Jira work types for a project
-   * Receives a Jira project key and a list of work type and stores the work types.
-   *
-   */
-  public static य़11<ThrowOnError extends boolean = false>(
-    options: Options<य़11Data, ThrowOnError>,
+  public static 鲥12<ThrowOnError extends boolean = false>(
+    options: Options<鲥12Data, ThrowOnError>,
   ) {
     return (options.client ?? client).patch<
-      य़11Responses,
+      鲥12Responses,
       unknown,
       ThrowOnError
     >({
-      url: '/v2/jira/work-types',
+      responseTransformer: 鲥12ResponseTransformer,
+      url: '/v2/jira/organization-binding-edit',
       ...options,
       headers: {
         'Content-Type': 'application/json',
@@ -1332,26 +1367,30 @@ export class Jira {
    * If the user is not authenticated, returns an empty list.
    *
    */
-  public static य़12<ThrowOnError extends boolean = false>(
-    options: Options<य़12Data, ThrowOnError>,
+  public static 鲥14<ThrowOnError extends boolean = false>(
+    options: Options<鲥14Data, ThrowOnError>,
   ) {
-    return (options.client ?? client).get<य़12Responses, unknown, ThrowOnError>({
-      url: '/v2/jira/user-actions',
-      ...options,
-    });
+    return (options.client ?? client).get<鲥14Responses, unknown, ThrowOnError>(
+      {
+        url: '/v2/jira/user-actions',
+        ...options,
+      },
+    );
   }
 
   /**
    * Returns a list of all the available Jira projects
    * Returns a list of all the available Jira projects
    */
-  public static य़13<ThrowOnError extends boolean = false>(
-    options: Options<य़13Data, ThrowOnError>,
+  public static 鲥15<ThrowOnError extends boolean = false>(
+    options: Options<鲥15Data, ThrowOnError>,
   ) {
-    return (options.client ?? client).get<य़13Responses, unknown, ThrowOnError>({
-      url: '/v2/jira/projects',
-      ...options,
-    });
+    return (options.client ?? client).get<鲥15Responses, unknown, ThrowOnError>(
+      {
+        url: '/v2/jira/projects',
+        ...options,
+      },
+    );
   }
 
   /**
@@ -1360,13 +1399,15 @@ export class Jira {
    * Accepts only authenticated requests.
    *
    */
-  public static य़14<ThrowOnError extends boolean = false>(
-    options: Options<य़14Data, ThrowOnError>,
+  public static 鲥16<ThrowOnError extends boolean = false>(
+    options: Options<鲥16Data, ThrowOnError>,
   ) {
-    return (options.client ?? client).get<य़14Responses, unknown, ThrowOnError>({
-      url: '/v2/jira/linked-issues-count/{sonarProjectId}',
-      ...options,
-    });
+    return (options.client ?? client).get<鲥16Responses, unknown, ThrowOnError>(
+      {
+        url: '/v2/jira/linked-issues-count/{sonarProjectId}',
+        ...options,
+      },
+    );
   }
 }
 
@@ -2485,13 +2526,15 @@ export class Atlassian {
    *
    * Add a user to a group.
    */
-  public static य़8<ThrowOnError extends boolean = false>(
-    options?: Options<य़8Data, ThrowOnError>,
+  public static 鲥8<ThrowOnError extends boolean = false>(
+    options?: Options<鲥8Data, ThrowOnError>,
   ) {
-    return (options?.client ?? client).get<य़8Responses, unknown, ThrowOnError>({
-      url: '/v2/atlassian/application-configuration',
-      ...options,
-    });
+    return (options?.client ?? client).get<鲥8Responses, unknown, ThrowOnError>(
+      {
+        url: '/v2/atlassian/application-configuration',
+        ...options,
+      },
+    );
   }
 
   /**
@@ -2499,17 +2542,19 @@ export class Atlassian {
    * Create/Update the Atlassian Authentication details.
    *
    */
-  public static य़9<ThrowOnError extends boolean = false>(
-    options: Options<य़9Data, ThrowOnError>,
+  public static 鲥9<ThrowOnError extends boolean = false>(
+    options: Options<鲥9Data, ThrowOnError>,
   ) {
-    return (options.client ?? client).post<य़9Responses, unknown, ThrowOnError>({
-      url: '/v2/atlassian/application-configuration',
-      ...options,
-      headers: {
-        'Content-Type': 'application/json',
-        ...options.headers,
+    return (options.client ?? client).post<鲥9Responses, unknown, ThrowOnError>(
+      {
+        url: '/v2/atlassian/application-configuration',
+        ...options,
+        headers: {
+          'Content-Type': 'application/json',
+          ...options.headers,
+        },
       },
-    });
+    );
   }
 
   /**
@@ -2517,8 +2562,8 @@ export class Atlassian {
    *
    * Remove a user from a group
    */
-  public static य़15<ThrowOnError extends boolean = false>(
-    options: Options<य़15Data, ThrowOnError>,
+  public static 鲥17<ThrowOnError extends boolean = false>(
+    options: Options<鲥17Data, ThrowOnError>,
   ) {
     return (options.client ?? client).delete<
       DeleteResponses,
@@ -2630,6 +2675,23 @@ export class Issues {
       unknown,
       ThrowOnError
     >({ url: '/v2/sca/issues-releases', ...options });
+  }
+}
+
+export class SoftwareQualityReportsController {
+  /**
+   * Get accessibility report
+   * Get the accessibility report for a project branch.
+   */
+  public static 鲥13<ThrowOnError extends boolean = false>(
+    options: Options<鲥13Data, ThrowOnError>,
+  ) {
+    return (options.client ?? client).get<鲥13Responses, unknown, ThrowOnError>(
+      {
+        url: '/v2/software-quality-reports/accessibility-reports',
+        ...options,
+      },
+    );
   }
 }
 
@@ -2897,8 +2959,8 @@ export class Architecture {
    *
    * Requires Code Viewer permission.
    */
-  public static य़16<ThrowOnError extends boolean = false>(
-    options: Options<य़16Data, ThrowOnError>,
+  public static 鲥18<ThrowOnError extends boolean = false>(
+    options: Options<鲥18Data, ThrowOnError>,
   ) {
     return (options.client ?? client).get<Get1Responses, unknown, ThrowOnError>(
       { url: '/v2/fix-suggestions/issues/{issueId}', ...options },
@@ -2924,8 +2986,8 @@ export class ProjectBindingsController {
    * Get graph data by id.
    * Fetch the graph data produced by analysis.
    */
-  public static य़17<ThrowOnError extends boolean = false>(
-    options: Options<य़17Data, ThrowOnError>,
+  public static 鲥19<ThrowOnError extends boolean = false>(
+    options: Options<鲥19Data, ThrowOnError>,
   ) {
     return (options.client ?? client).get<
       GetProjectBindingResponses,
@@ -2939,8 +3001,8 @@ export class ProjectBindingsController {
    *
    * Requires the 'Create Projects' permission
    */
-  public static य़18<ThrowOnError extends boolean = false>(
-    options: Options<य़18Data, ThrowOnError>,
+  public static 鲥20<ThrowOnError extends boolean = false>(
+    options: Options<鲥20Data, ThrowOnError>,
   ) {
     return (options?.client ?? client).get<
       FetchAllDopSettingsResponses,
@@ -3027,7 +3089,7 @@ export class Analysis {
   }
 }
 
-export class Issue {
+export class SearchIssues {
   /**
    * Search Issues
    *

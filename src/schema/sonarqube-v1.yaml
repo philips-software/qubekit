@@ -14,7 +14,7 @@ paths:
   /issues/search:
     get:
       tags:
-        - issue
+        - searchIssues
       summary: Search Issues
       security:
         - basicAuth: []
@@ -992,7 +992,9 @@ paths:
             type: string
           explode: true
           required: false
-          description: User login (admin credentials required to list tokens of another user)
+          description:
+            User login (admin credentials required to list tokens of another
+            user)
           allowReserved: false
       responses:
         '200':
@@ -1058,7 +1060,9 @@ paths:
             type: string
           explode: true
           required: false
-          description: User login (admin credentials required to generate token for another user)
+          description:
+            User login (admin credentials required to generate token for another
+            user)
           allowReserved: false
         - in: query
           name: type
@@ -1081,7 +1085,9 @@ paths:
             type: string
           explode: true
           required: false
-          description: Project key (required for PROJECT_ANALYSIS_TOKEN and PROJECT_BADGE_TOKEN types)
+          description:
+            Project key (required for PROJECT_ANALYSIS_TOKEN and
+            PROJECT_BADGE_TOKEN types)
           allowReserved: false
         - in: query
           name: expirationDate
@@ -1091,7 +1097,8 @@ paths:
             format: date
           explode: true
           required: false
-          description: Token expiration date in ISO 8601 date format (YYYY-MM-DD)
+          description:
+            Token expiration date in ISO 8601 date format (YYYY-MM-DD)
           allowReserved: false
       responses:
         '200':
@@ -1159,7 +1166,9 @@ paths:
             type: string
           explode: true
           required: false
-          description: User login (admin credentials required to revoke token of another user)
+          description:
+            User login (admin credentials required to revoke token of another
+            user)
           allowReserved: false
       responses:
         '204':

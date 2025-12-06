@@ -156,7 +156,6 @@ export type LicenseProfilesCreateRestRequest = {
 
 export type LicenseProfileResource = {
   id?: string;
-  key?: string;
   name?: string;
   default?: boolean;
   actions?: LicenseProfileSingleActions;
@@ -196,7 +195,7 @@ export type AffectedPackageResource = {
 export type IssueReleaseBranchResource = {
   uuid?: string;
   key?: string;
-  isPullRequest?: boolean;
+  pullRequest?: boolean;
   projectKey?: string;
   projectName?: string;
   legacyProjectUuid?: string;
@@ -484,6 +483,10 @@ export type JiraOrganizationBindingResource = {
    * Creation timestamp
    */
   readonly createdAt?: bigint;
+  /**
+   * TODO
+   */
+  readonly isTokenShared?: boolean;
 };
 
 export type OAuthResource = {
@@ -1131,7 +1134,7 @@ export type LicensePolicyLicenseUpdateRestRequest = {
   /**
    * The new status of this license.
    */
-  policy: 'ALLOW' | 'DENY';
+  policy: 'DENY' | 'ALLOW';
 };
 
 export type LicensePolicyLicenseResource = {
@@ -1149,14 +1152,14 @@ export type LicensePolicyLicenseResource = {
   /**
    * The policy status of this license.
    */
-  policy?: 'ALLOW' | 'DENY';
+  policy?: 'DENY' | 'ALLOW';
 };
 
 export type LicenseProfileCategoryUpdateRestRequest = {
   /**
    * The new status of this category.
    */
-  policy: 'ALLOW' | 'DENY';
+  policy: 'DENY' | 'ALLOW';
 };
 
 export type LicenseProfileCategoryResource = {
@@ -1172,7 +1175,7 @@ export type LicenseProfileCategoryResource = {
   /**
    * The policy status of this category.
    */
-  policy?: 'ALLOW' | 'DENY';
+  policy?: 'DENY' | 'ALLOW';
 };
 
 export type AssignedProjectsUpdateRestRequest = {
@@ -1243,6 +1246,17 @@ export type PatchJiraOrganizationBindingRequestResource = {
    * Jira instance URL
    */
   jiraInstanceUrl: string;
+};
+
+export type PatchJiraOrganizationBindingEditResource = {
+  /**
+   * Sonar organization UUID
+   */
+  sonarOrganizationUuid: string;
+  /**
+   * TODO
+   */
+  isTokenShared: boolean;
 };
 
 export type RuleTypeMapping = {
@@ -1462,6 +1476,16 @@ export type EmailConfigurationSearchRestResponse = {
   page?: PageRestResponse;
 };
 
+export type Category = {
+  activeRules?: number;
+  issues?: number;
+  key?: string;
+};
+
+export type GetAccessibilityReportResponse = {
+  categories?: Array<Category>;
+};
+
 export type SelfTestHttpCallResource = {
   attemptedUrl?: string;
   attemptedMethod?: string;
@@ -1512,7 +1536,7 @@ export type StatusChange = {
 export type BranchResource = {
   uuid?: string;
   key?: string;
-  isPullRequest?: boolean;
+  pullRequest?: boolean;
   projectKey?: string;
   projectName?: string;
 };
@@ -1835,12 +1859,12 @@ export type LicenseRestResponse = {
   startDate?: string;
   activatedOnline?: boolean;
   licenseKey?: string;
-  expired?: boolean;
   validEdition?: boolean;
   validServerId?: boolean;
   officialDistribution?: boolean;
   supported?: boolean;
   legacy?: boolean;
+  expired?: boolean;
   disabled?: boolean;
 };
 
@@ -1898,17 +1922,17 @@ export type GroupsMembershipSearchRestResponse = {
   page?: PageRestResponse;
 };
 
-export type E = {
+export type A = {
+  graphs?: Array<H>;
+};
+
+export type H = {
   id?: string;
   branchId?: string;
   type?: 'file_graph' | 'namespace_graph';
   ecosystem?: 'java' | 'js' | 'ts' | 'py' | 'cs' | 'xoo';
   perspectiveKey?: string;
   graphVersion?: string;
-};
-
-export type P = {
-  graphs?: Array<E>;
 };
 
 export type JreInfoRestResponse = {
@@ -2699,7 +2723,7 @@ export type GroupsMembershipSearchRestResponseWritable = {
 /**
  * Current page
  */
-export type P2 = number;
+export type P = number;
 
 /**
  * Page size. Must be greater than 0 and less or equal than 500
@@ -2934,9 +2958,9 @@ export type AddCommentData = {
 
 export type AddCommentResponses = {
   /**
-   * OK
+   * Created
    */
-  200: unknown;
+  201: unknown;
 };
 
 export type BillAzureAccountData = {
@@ -2956,7 +2980,7 @@ export type BillAzureAccountResponses = {
 export type BillAzureAccountResponse =
   BillAzureAccountResponses[keyof BillAzureAccountResponses];
 
-export type 곳Data = {
+export type 絛Data = {
   body?: never;
   path?: never;
   query: {
@@ -2967,16 +2991,16 @@ export type 곳Data = {
   url: '/v2/jira/work-items';
 };
 
-export type 곳Responses = {
+export type 絛Responses = {
   /**
    * No Content
    */
   204: void;
 };
 
-export type 곳Response = 곳Responses[keyof 곳Responses];
+export type 絛Response = 絛Responses[keyof 絛Responses];
 
-export type य़Data = {
+export type 鲥Data = {
   body?: never;
   path?: never;
   query: {
@@ -2987,32 +3011,32 @@ export type य़Data = {
   url: '/v2/jira/work-items';
 };
 
-export type य़Responses = {
+export type 鲥Responses = {
   /**
    * OK
    */
   200: JiraWorkItemResource;
 };
 
-export type य़Response = य़Responses[keyof य़Responses];
+export type 鲥Response = 鲥Responses[keyof 鲥Responses];
 
-export type य़1Data = {
+export type 鲥1Data = {
   body: PostJiraWorkItemRequestResource;
   path?: never;
   query?: never;
   url: '/v2/jira/work-items';
 };
 
-export type य़1Responses = {
+export type 鲥1Responses = {
   /**
    * Created
    */
   201: JiraWorkItemResource;
 };
 
-export type य़1Response = य़1Responses[keyof य़1Responses];
+export type 鲥1Response = 鲥1Responses[keyof 鲥1Responses];
 
-export type 곳1Data = {
+export type 絛1Data = {
   body?: never;
   path?: never;
   query: {
@@ -3021,16 +3045,16 @@ export type 곳1Data = {
   url: '/v2/jira/project-bindings';
 };
 
-export type 곳1Responses = {
+export type 絛1Responses = {
   /**
    * No Content
    */
   204: void;
 };
 
-export type 곳1Response = 곳1Responses[keyof 곳1Responses];
+export type 絛1Response = 絛1Responses[keyof 絛1Responses];
 
-export type य़2Data = {
+export type 鲥2Data = {
   body?: never;
   path?: never;
   query: {
@@ -3039,48 +3063,48 @@ export type य़2Data = {
   url: '/v2/jira/project-bindings';
 };
 
-export type य़2Responses = {
+export type 鲥2Responses = {
   /**
    * OK
    */
   200: JiraProjectBindingResource;
 };
 
-export type य़2Response = य़2Responses[keyof य़2Responses];
+export type 鲥2Response = 鲥2Responses[keyof 鲥2Responses];
 
-export type य़4Data = {
+export type 鲥4Data = {
   body: PatchJiraProjectBindingRequestResource;
   path?: never;
   query?: never;
   url: '/v2/jira/project-bindings';
 };
 
-export type य़4Responses = {
+export type 鲥4Responses = {
   /**
    * OK
    */
   200: JiraProjectBindingResource;
 };
 
-export type य़4Response = य़4Responses[keyof य़4Responses];
+export type 鲥4Response = 鲥4Responses[keyof 鲥4Responses];
 
-export type य़3Data = {
+export type 鲥3Data = {
   body: PostJiraProjectBindingRequestResource;
   path?: never;
   query?: never;
   url: '/v2/jira/project-bindings';
 };
 
-export type य़3Responses = {
+export type 鲥3Responses = {
   /**
    * Created
    */
   201: JiraProjectBindingResource;
 };
 
-export type य़3Response = य़3Responses[keyof य़3Responses];
+export type 鲥3Response = 鲥3Responses[keyof 鲥3Responses];
 
-export type 곳2Data = {
+export type 鲥6Data = {
   body?: never;
   path?: never;
   query: {
@@ -3089,16 +3113,16 @@ export type 곳2Data = {
   url: '/v2/jira/organization-bindings';
 };
 
-export type 곳2Responses = {
+export type 鲥6Responses = {
   /**
    * No Content
    */
   204: void;
 };
 
-export type 곳2Response = 곳2Responses[keyof 곳2Responses];
+export type 鲥6Response = 鲥6Responses[keyof 鲥6Responses];
 
-export type य़5Data = {
+export type 絛2Data = {
   body?: never;
   path?: never;
   query: {
@@ -3107,46 +3131,46 @@ export type य़5Data = {
   url: '/v2/jira/organization-bindings';
 };
 
-export type य़5Responses = {
+export type 絛2Responses = {
   /**
    * OK
    */
   200: JiraOrganizationBindingResource;
 };
 
-export type य़5Response = य़5Responses[keyof य़5Responses];
+export type 絛2Response = 絛2Responses[keyof 絛2Responses];
 
-export type य़7Data = {
+export type 鲥7Data = {
   body: PatchJiraOrganizationBindingRequestResource;
   path?: never;
   query?: never;
   url: '/v2/jira/organization-bindings';
 };
 
-export type य़7Responses = {
+export type 鲥7Responses = {
   /**
    * Created
    */
   201: JiraOrganizationBindingResource;
 };
 
-export type य़7Response = य़7Responses[keyof य़7Responses];
+export type 鲥7Response = 鲥7Responses[keyof 鲥7Responses];
 
-export type य़6Data = {
+export type 鲥5Data = {
   body: PostJiraOrganizationBindingRequestResource;
   path?: never;
   query?: never;
   url: '/v2/jira/organization-bindings';
 };
 
-export type य़6Responses = {
+export type 鲥5Responses = {
   /**
    * Created
    */
   201: PostJiraOrganizationBindingResponseResource;
 };
 
-export type य़6Response = य़6Responses[keyof य़6Responses];
+export type 鲥5Response = 鲥5Responses[keyof 鲥5Responses];
 
 export type CreateUserBindingData = {
   body: UserBindingCreationRequest;
@@ -3656,37 +3680,37 @@ export type Create8Responses = {
 
 export type Create8Response = Create8Responses[keyof Create8Responses];
 
-export type य़8Data = {
+export type 鲥8Data = {
   body?: never;
   path?: never;
   query?: never;
   url: '/v2/atlassian/application-configuration';
 };
 
-export type य़8Responses = {
+export type 鲥8Responses = {
   /**
    * OK
    */
   200: AtlassianAuthenticationDetailsResultResource;
 };
 
-export type य़8Response = य़8Responses[keyof य़8Responses];
+export type 鲥8Response = 鲥8Responses[keyof 鲥8Responses];
 
-export type य़9Data = {
+export type 鲥9Data = {
   body: AtlassianAuthenticationDetailsResource;
   path?: never;
   query?: never;
   url: '/v2/atlassian/application-configuration';
 };
 
-export type य़9Responses = {
+export type 鲥9Responses = {
   /**
    * OK
    */
   200: AtlassianAuthenticationDetailsResultResource;
 };
 
-export type य़9Response = य़9Responses[keyof य़9Responses];
+export type 鲥9Response = 鲥9Responses[keyof 鲥9Responses];
 
 export type DeactivateData = {
   body?: never;
@@ -3973,10 +3997,13 @@ export type DeleteCommentData = {
 
 export type DeleteCommentResponses = {
   /**
-   * OK
+   * No Content
    */
-  200: unknown;
+  204: void;
 };
+
+export type DeleteCommentResponse =
+  DeleteCommentResponses[keyof DeleteCommentResponses];
 
 export type GetChangelogData = {
   body?: never;
@@ -4053,7 +4080,7 @@ export type UpdateFeatureEnablementResponses = {
 export type UpdateFeatureEnablementResponse =
   UpdateFeatureEnablementResponses[keyof UpdateFeatureEnablementResponses];
 
-export type य़10Data = {
+export type 鲥10Data = {
   body?: never;
   path?: never;
   query: {
@@ -4065,28 +4092,44 @@ export type य़10Data = {
   url: '/v2/jira/work-types';
 };
 
-export type य़10Responses = {
+export type 鲥10Responses = {
   /**
    * OK
    */
   200: Array<JiraWorkTypeResultResource>;
 };
 
-export type य़10Response = य़10Responses[keyof य़10Responses];
+export type 鲥10Response = 鲥10Responses[keyof 鲥10Responses];
 
-export type य़11Data = {
+export type 鲥11Data = {
   body: JiraWorkTypesSelectionResource;
   path?: never;
   query?: never;
   url: '/v2/jira/work-types';
 };
 
-export type य़11Responses = {
+export type 鲥11Responses = {
   /**
    * OK
    */
   200: unknown;
 };
+
+export type 鲥12Data = {
+  body: PatchJiraOrganizationBindingEditResource;
+  path?: never;
+  query?: never;
+  url: '/v2/jira/organization-binding-edit';
+};
+
+export type 鲥12Responses = {
+  /**
+   * Created
+   */
+  201: JiraOrganizationBindingResource;
+};
+
+export type 鲥12Response = 鲥12Responses[keyof 鲥12Responses];
 
 export type GetSandboxSettingsData = {
   body?: never;
@@ -4653,6 +4696,27 @@ export type GetHealthResponses = {
 
 export type GetHealthResponse = GetHealthResponses[keyof GetHealthResponses];
 
+export type 鲥13Data = {
+  body?: never;
+  path?: never;
+  query: {
+    branchKey?: string;
+    projectKey: string;
+    standard: string;
+    version: string;
+  };
+  url: '/v2/software-quality-reports/accessibility-reports';
+};
+
+export type 鲥13Responses = {
+  /**
+   * OK
+   */
+  200: GetAccessibilityReportResponse;
+};
+
+export type 鲥13Response = 鲥13Responses[keyof 鲥13Responses];
+
 export type PerformSelfTestData = {
   body?: never;
   path?: never;
@@ -5137,7 +5201,7 @@ export type FetchAnalysisResponses = {
 export type FetchAnalysisResponse =
   FetchAnalysisResponses[keyof FetchAnalysisResponses];
 
-export type य़12Data = {
+export type 鲥14Data = {
   body?: never;
   path?: never;
   query: {
@@ -5146,16 +5210,16 @@ export type य़12Data = {
   url: '/v2/jira/user-actions';
 };
 
-export type य़12Responses = {
+export type 鲥14Responses = {
   /**
    * OK
    */
   200: Array<string>;
 };
 
-export type य़12Response = य़12Responses[keyof य़12Responses];
+export type 鲥14Response = 鲥14Responses[keyof 鲥14Responses];
 
-export type य़13Data = {
+export type 鲥15Data = {
   body?: never;
   path?: never;
   query: {
@@ -5164,16 +5228,16 @@ export type य़13Data = {
   url: '/v2/jira/projects';
 };
 
-export type य़13Responses = {
+export type 鲥15Responses = {
   /**
    * OK
    */
   200: Array<JiraProjectResultResource>;
 };
 
-export type य़13Response = य़13Responses[keyof य़13Responses];
+export type 鲥15Response = 鲥15Responses[keyof 鲥15Responses];
 
-export type य़14Data = {
+export type 鲥16Data = {
   body?: never;
   path: {
     sonarProjectId: string;
@@ -5182,14 +5246,14 @@ export type य़14Data = {
   url: '/v2/jira/linked-issues-count/{sonarProjectId}';
 };
 
-export type य़14Responses = {
+export type 鲥16Responses = {
   /**
    * OK
    */
   200: LinkedIssuesCountResource;
 };
 
-export type य़14Response = य़14Responses[keyof य़14Responses];
+export type 鲥16Response = 鲥16Responses[keyof 鲥16Responses];
 
 export type GetUserBindingData = {
   body?: never;
@@ -5393,7 +5457,7 @@ export type FetchAllDopSettingsResponses = {
 export type FetchAllDopSettingsResponse =
   FetchAllDopSettingsResponses[keyof FetchAllDopSettingsResponses];
 
-export type य़15Data = {
+export type 鲥17Data = {
   body?: never;
   path?: never;
   query: {
@@ -5403,16 +5467,16 @@ export type य़15Data = {
   url: '/v2/atlassian/auth-url';
 };
 
-export type य़15Responses = {
+export type 鲥17Responses = {
   /**
    * OK
    */
   200: string;
 };
 
-export type य़15Response = य़15Responses[keyof य़15Responses];
+export type 鲥17Response = 鲥17Responses[keyof 鲥17Responses];
 
-export type य़16Data = {
+export type 鲥18Data = {
   body?: never;
   path?: never;
   query: {
@@ -5428,16 +5492,16 @@ export type य़16Data = {
   url: '/v2/architecture/graphs';
 };
 
-export type य़16Responses = {
+export type 鲥18Responses = {
   /**
    * OK
    */
-  200: P;
+  200: A;
 };
 
-export type य़16Response = य़16Responses[keyof य़16Responses];
+export type 鲥18Response = 鲥18Responses[keyof 鲥18Responses];
 
-export type य़17Data = {
+export type 鲥19Data = {
   body?: never;
   path: {
     /**
@@ -5449,16 +5513,16 @@ export type य़17Data = {
   url: '/v2/architecture/graphs/{id}';
 };
 
-export type य़17Responses = {
+export type 鲥19Responses = {
   /**
    * OK
    */
   200: string;
 };
 
-export type य़17Response = य़17Responses[keyof य़17Responses];
+export type 鲥19Response = 鲥19Responses[keyof 鲥19Responses];
 
-export type य़18Data = {
+export type 鲥20Data = {
   body?: never;
   path?: never;
   query: {
@@ -5478,14 +5542,14 @@ export type य़18Data = {
   url: '/v2/architecture/file-graph';
 };
 
-export type य़18Responses = {
+export type 鲥20Responses = {
   /**
    * OK
    */
   200: string;
 };
 
-export type य़18Response = य़18Responses[keyof य़18Responses];
+export type 鲥20Response = 鲥20Responses[keyof 鲥20Responses];
 
 export type GetVersionData = {
   body?: never;

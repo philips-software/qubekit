@@ -257,9 +257,6 @@ export const LicenseProfileResourceSchema = {
     id: {
       type: 'string',
     },
-    key: {
-      type: 'string',
-    },
     name: {
       type: 'string',
     },
@@ -349,7 +346,7 @@ export const IssueReleaseBranchResourceSchema = {
     key: {
       type: 'string',
     },
-    isPullRequest: {
+    pullRequest: {
       type: 'boolean',
     },
     projectKey: {
@@ -916,6 +913,11 @@ export const JiraOrganizationBindingResourceSchema = {
       type: 'integer',
       format: 'int64',
       description: 'Creation timestamp',
+      readOnly: true,
+    },
+    isTokenShared: {
+      type: 'boolean',
+      description: 'TODO',
       readOnly: true,
     },
   },
@@ -2085,7 +2087,7 @@ export const LicensePolicyLicenseUpdateRestRequestSchema = {
     policy: {
       type: 'string',
       description: 'The new status of this license.',
-      enum: ['ALLOW', 'DENY'],
+      enum: ['DENY', 'ALLOW'],
     },
   },
   required: ['policy'],
@@ -2118,7 +2120,7 @@ export const LicensePolicyLicenseResourceSchema = {
     policy: {
       type: 'string',
       description: 'The policy status of this license.',
-      enum: ['ALLOW', 'DENY'],
+      enum: ['DENY', 'ALLOW'],
     },
   },
 } as const;
@@ -2129,7 +2131,7 @@ export const LicenseProfileCategoryUpdateRestRequestSchema = {
     policy: {
       type: 'string',
       description: 'The new status of this category.',
-      enum: ['ALLOW', 'DENY'],
+      enum: ['DENY', 'ALLOW'],
     },
   },
   required: ['policy'],
@@ -2156,7 +2158,7 @@ export const LicenseProfileCategoryResourceSchema = {
     policy: {
       type: 'string',
       description: 'The policy status of this category.',
-      enum: ['ALLOW', 'DENY'],
+      enum: ['DENY', 'ALLOW'],
     },
   },
 } as const;
@@ -2273,6 +2275,24 @@ export const PatchJiraOrganizationBindingRequestResourceSchema = {
     },
   },
   required: ['jiraCloudId', 'jiraInstanceUrl', 'sonarOrganizationUuid'],
+} as const;
+
+export const PatchJiraOrganizationBindingEditResourceSchema = {
+  type: 'object',
+  properties: {
+    sonarOrganizationUuid: {
+      type: 'string',
+      format: 'uuid',
+      description: 'Sonar organization UUID',
+      writeOnly: true,
+    },
+    isTokenShared: {
+      type: 'boolean',
+      description: 'TODO',
+      writeOnly: true,
+    },
+  },
+  required: ['isTokenShared', 'sonarOrganizationUuid'],
 } as const;
 
 export const RuleTypeMappingSchema = {
@@ -2659,6 +2679,35 @@ export const EmailConfigurationSearchRestResponseSchema = {
   },
 } as const;
 
+export const CategorySchema = {
+  type: 'object',
+  properties: {
+    activeRules: {
+      type: 'integer',
+      format: 'int32',
+    },
+    issues: {
+      type: 'integer',
+      format: 'int32',
+    },
+    key: {
+      type: 'string',
+    },
+  },
+} as const;
+
+export const GetAccessibilityReportResponseSchema = {
+  type: 'object',
+  properties: {
+    categories: {
+      type: 'array',
+      items: {
+        $ref: '#/components/schemas/Category',
+      },
+    },
+  },
+} as const;
+
 export const SelfTestHttpCallResourceSchema = {
   type: 'object',
   properties: {
@@ -2816,7 +2865,7 @@ export const BranchResourceSchema = {
     key: {
       type: 'string',
     },
-    isPullRequest: {
+    pullRequest: {
       type: 'boolean',
     },
     projectKey: {
@@ -3664,9 +3713,6 @@ export const LicenseRestResponseSchema = {
     licenseKey: {
       type: 'string',
     },
-    expired: {
-      type: 'boolean',
-    },
     validEdition: {
       type: 'boolean',
     },
@@ -3680,6 +3726,9 @@ export const LicenseRestResponseSchema = {
       type: 'boolean',
     },
     legacy: {
+      type: 'boolean',
+    },
+    expired: {
       type: 'boolean',
     },
     disabled: {
@@ -3839,7 +3888,19 @@ export const GroupsMembershipSearchRestResponseSchema = {
   },
 } as const;
 
-export const _eSchema = {
+export const _aSchema = {
+  type: 'object',
+  properties: {
+    graphs: {
+      type: 'array',
+      items: {
+        $ref: '#/components/schemas/_h',
+      },
+    },
+  },
+} as const;
+
+export const _hSchema = {
   type: 'object',
   properties: {
     id: {
@@ -3861,18 +3922,6 @@ export const _eSchema = {
     },
     graphVersion: {
       type: 'string',
-    },
-  },
-} as const;
-
-export const _pSchema = {
-  type: 'object',
-  properties: {
-    graphs: {
-      type: 'array',
-      items: {
-        $ref: '#/components/schemas/_e',
-      },
     },
   },
 } as const;
