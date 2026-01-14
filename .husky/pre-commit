@@ -1,0 +1,7 @@
+echo "[pre-commit] Running OpenAPI TypeScript generation…"
+yarn openapi-ts
+ 
+echo "[pre-commit] Staging generated files (src/generated, src/schema/sonarqube-all.yaml)…"
+git add src/generated src/schema/sonarqube-all.yaml
+ 
+echo "[pre-commit] Done."
