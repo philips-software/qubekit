@@ -490,9 +490,8 @@ export const GithubConfigurationCreateRestRequestSchema = {
     },
     synchronizeGroups: {
       type: 'boolean',
-      description: `Synchronize GitHub team with SonarQube group memberships when users log in to SonarQube.
-For each GitHub team they belong to, users will be associated to a group of the same name if it exists in SonarQube.
-`,
+      description:
+        'Synchronize GitHub team with SonarQube group memberships when users log in to SonarQube.\nFor each GitHub team they belong to, users will be associated to a group of the same name if it exists in SonarQube.\n',
     },
     apiUrl: {
       type: 'string',
@@ -501,8 +500,8 @@ For each GitHub team they belong to, users will be associated to a group of the 
     },
     webUrl: {
       type: 'string',
-      description: `The WEB url for a GitHub instance. https://github.com/ for Github.com, https://github.company.com/ when using GitHub Enterprise.
-`,
+      description:
+        'The WEB url for a GitHub instance. https://github.com/ for Github.com, https://github.company.com/ when using GitHub Enterprise.\n',
     },
     allowedOrganizations: {
       type: 'array',
@@ -521,10 +520,8 @@ For each GitHub team they belong to, users will be associated to a group of the 
     },
     projectVisibility: {
       type: 'boolean',
-      description: `Change project visibility based on GitHub repository visibility.
-If disabled, every provisioned project will be private in SonarQube and visible only to users with explicit GitHub permissions for the corresponding repository.
-Changes take effect at the next synchronization.
-`,
+      description:
+        'Change project visibility based on GitHub repository visibility.\nIf disabled, every provisioned project will be private in SonarQube and visible only to users with explicit GitHub permissions for the corresponding repository.\nChanges take effect at the next synchronization.\n',
     },
     userConsentRequiredAfterUpgrade: {
       type: 'boolean',
@@ -617,34 +614,23 @@ export const BoundProjectCreateRestRequestSchema = {
     },
     repositoryIdentifier: {
       type: 'string',
-      description: `Identifier of the DevOps platform repository to import:
-- repository slug for GitHub and Bitbucket (Cloud and Server)
-- repository id for GitLab
-- repository name for Azure DevOps
-`,
+      description:
+        'Identifier of the DevOps platform repository to import:\n- repository slug for GitHub and Bitbucket (Cloud and Server)\n- repository id for GitLab\n- repository name for Azure DevOps\n',
     },
     projectIdentifier: {
       type: 'string',
-      description: `Identifier of the DevOps platform project in which the repository is located.
-This is only needed for Azure and BitBucket Server platforms
-`,
+      description:
+        'Identifier of the DevOps platform project in which the repository is located.\nThis is only needed for Azure and BitBucket Server platforms\n',
     },
     newCodeDefinitionType: {
       type: 'string',
-      description: `  Project New Code Definition Type
-  New code definitions of the following types are allowed:
-    - PREVIOUS_VERSION
-    - NUMBER_OF_DAYS
-    - REFERENCE_BRANCH - will default to the main branch.
-`,
+      description:
+        '  Project New Code Definition Type\n  New code definitions of the following types are allowed:\n    - PREVIOUS_VERSION\n    - NUMBER_OF_DAYS\n    - REFERENCE_BRANCH - will default to the main branch.\n',
     },
     newCodeDefinitionValue: {
       type: 'string',
-      description: `  Project New Code Definition Value
-  For each new code definition type, a different value is expected:
-  - no value, when the new code definition type is PREVIOUS_VERSION and REFERENCE_BRANCH
-  - a number between 1 and 90, when the new code definition type is NUMBER_OF_DAYS
-`,
+      description:
+        '  Project New Code Definition Value\n  For each new code definition type, a different value is expected:\n  - no value, when the new code definition type is PREVIOUS_VERSION and REFERENCE_BRANCH\n  - a number between 1 and 90, when the new code definition type is NUMBER_OF_DAYS\n',
     },
     monorepo: {
       type: 'boolean',
@@ -1076,10 +1062,8 @@ export const UserUpdateRestRequestSchema = {
     },
     externalProvider: {
       type: 'string',
-      description: `New identity provider. Only providers configured in your platform are supported. This could be: github, gitlab, bitbucket, saml, LDAP, LDAP_{serverKey}
-(according to your server configuration file).
-Warning: when this is updated, the user will only be able to authenticate using the new identity provider. Also, it is not possible to remove the identity provider of a user.
-`,
+      description:
+        'New identity provider. Only providers configured in your platform are supported. This could be: github, gitlab, bitbucket, saml, LDAP, LDAP_{serverKey}\n(according to your server configuration file).\nWarning: when this is updated, the user will only be able to authenticate using the new identity provider. Also, it is not possible to remove the identity provider of a user.\n',
     },
     externalLogin: {
       type: 'string',
@@ -3360,16 +3344,14 @@ export const GithubConfigurationCreateRestRequestWritableSchema = {
     },
     privateKey: {
       type: 'string',
-      description: `Your GitHub App's private key. You can generate a .pem file from your GitHub App's page under Private keys.
-Copy and paste the whole contents of the file here.
-`,
+      description:
+        "Your GitHub App's private key. You can generate a .pem file from your GitHub App's page under Private keys.\nCopy and paste the whole contents of the file here.\n",
       writeOnly: true,
     },
     synchronizeGroups: {
       type: 'boolean',
-      description: `Synchronize GitHub team with SonarQube group memberships when users log in to SonarQube.
-For each GitHub team they belong to, users will be associated to a group of the same name if it exists in SonarQube.
-`,
+      description:
+        'Synchronize GitHub team with SonarQube group memberships when users log in to SonarQube.\nFor each GitHub team they belong to, users will be associated to a group of the same name if it exists in SonarQube.\n',
     },
     apiUrl: {
       type: 'string',
@@ -3378,8 +3360,8 @@ For each GitHub team they belong to, users will be associated to a group of the 
     },
     webUrl: {
       type: 'string',
-      description: `The WEB url for a GitHub instance. https://github.com/ for Github.com, https://github.company.com/ when using GitHub Enterprise.
-`,
+      description:
+        'The WEB url for a GitHub instance. https://github.com/ for Github.com, https://github.company.com/ when using GitHub Enterprise.\n',
     },
     allowedOrganizations: {
       type: 'array',
@@ -3398,10 +3380,8 @@ For each GitHub team they belong to, users will be associated to a group of the 
     },
     projectVisibility: {
       type: 'boolean',
-      description: `Change project visibility based on GitHub repository visibility.
-If disabled, every provisioned project will be private in SonarQube and visible only to users with explicit GitHub permissions for the corresponding repository.
-Changes take effect at the next synchronization.
-`,
+      description:
+        'Change project visibility based on GitHub repository visibility.\nIf disabled, every provisioned project will be private in SonarQube and visible only to users with explicit GitHub permissions for the corresponding repository.\nChanges take effect at the next synchronization.\n',
     },
     userConsentRequiredAfterUpgrade: {
       type: 'boolean',
@@ -3481,8 +3461,216 @@ export const ParameterWritableSchema = {
   },
 } as const;
 
+export const RuleCreateRestRequestWritableSchema = {
+  type: 'object',
+  properties: {
+    key: {
+      type: 'string',
+      description:
+        'Key of the custom rule to create, must include the repository',
+      maxLength: 200,
+      minLength: 0,
+    },
+    templateKey: {
+      type: 'string',
+      description:
+        'Key of the rule template to be used to create the custom rule',
+      maxLength: 200,
+      minLength: 0,
+    },
+    name: {
+      type: 'string',
+      description: 'Rule name',
+      maxLength: 200,
+      minLength: 0,
+    },
+    markdownDescription: {
+      type: 'string',
+      description: 'Rule description in markdown format',
+    },
+    status: {
+      type: 'string',
+      default: 'READY',
+      description: 'Rule status',
+      enum: ['BETA', 'DEPRECATED', 'READY', 'REMOVED'],
+    },
+    parameters: {
+      type: 'array',
+      description: 'Custom rule parameters',
+      items: {
+        $ref: '#/components/schemas/ParameterWritable',
+      },
+    },
+    cleanCodeAttribute: {
+      type: 'string',
+      description: 'Clean code attribute',
+      enum: [
+        'CONVENTIONAL',
+        'FORMATTED',
+        'IDENTIFIABLE',
+        'CLEAR',
+        'COMPLETE',
+        'EFFICIENT',
+        'LOGICAL',
+        'DISTINCT',
+        'FOCUSED',
+        'MODULAR',
+        'TESTED',
+        'LAWFUL',
+        'RESPECTFUL',
+        'TRUSTWORTHY',
+      ],
+    },
+    impacts: {
+      type: 'array',
+      description: 'Impacts',
+      items: {
+        $ref: '#/components/schemas/Impact',
+      },
+    },
+    severity: {
+      type: 'string',
+      description: 'Severity',
+    },
+    type: {
+      type: 'string',
+      description: 'Rule type',
+      enum: ['CODE_SMELL', 'BUG', 'VULNERABILITY', 'SECURITY_HOTSPOT'],
+    },
+  },
+  required: ['impacts', 'key', 'markdownDescription', 'name', 'templateKey'],
+} as const;
+
 export const RuleDescriptionSectionRestResponseWritableSchema = {
   type: 'object',
+} as const;
+
+export const RuleRestResponseWritableSchema = {
+  type: 'object',
+  properties: {
+    id: {
+      type: 'string',
+    },
+    key: {
+      type: 'string',
+    },
+    repositoryKey: {
+      type: 'string',
+    },
+    name: {
+      type: 'string',
+    },
+    severity: {
+      type: 'string',
+    },
+    type: {
+      type: 'string',
+      enum: ['CODE_SMELL', 'BUG', 'VULNERABILITY', 'SECURITY_HOTSPOT'],
+    },
+    impacts: {
+      type: 'array',
+      items: {
+        $ref: '#/components/schemas/Impact',
+      },
+    },
+    cleanCodeAttribute: {
+      type: 'string',
+      enum: [
+        'CONVENTIONAL',
+        'FORMATTED',
+        'IDENTIFIABLE',
+        'CLEAR',
+        'COMPLETE',
+        'EFFICIENT',
+        'LOGICAL',
+        'DISTINCT',
+        'FOCUSED',
+        'MODULAR',
+        'TESTED',
+        'LAWFUL',
+        'RESPECTFUL',
+        'TRUSTWORTHY',
+      ],
+    },
+    cleanCodeAttributeCategory: {
+      type: 'string',
+      enum: ['ADAPTABLE', 'CONSISTENT', 'INTENTIONAL', 'RESPONSIBLE'],
+    },
+    status: {
+      type: 'string',
+      enum: ['BETA', 'DEPRECATED', 'READY', 'REMOVED'],
+    },
+    external: {
+      type: 'boolean',
+    },
+    createdAt: {
+      type: 'string',
+    },
+    descriptionSections: {
+      type: 'array',
+      items: {
+        $ref: '#/components/schemas/RuleDescriptionSectionRestResponseWritable',
+      },
+    },
+    markdownDescription: {
+      type: 'string',
+    },
+    gapDescription: {
+      type: 'string',
+    },
+    htmlNote: {
+      type: 'string',
+    },
+    markdownNote: {
+      type: 'string',
+    },
+    educationPrinciples: {
+      type: 'array',
+      items: {
+        type: 'string',
+      },
+    },
+    template: {
+      type: 'boolean',
+    },
+    templateId: {
+      type: 'string',
+    },
+    tags: {
+      type: 'array',
+      items: {
+        type: 'string',
+      },
+    },
+    systemTags: {
+      type: 'array',
+      items: {
+        type: 'string',
+      },
+    },
+    languageKey: {
+      type: 'string',
+    },
+    languageName: {
+      type: 'string',
+    },
+    parameters: {
+      type: 'array',
+      items: {
+        $ref: '#/components/schemas/ParameterWritable',
+      },
+    },
+    remediationFunctionType: {
+      type: 'string',
+    },
+    remediationFunctionGapMultiplier: {
+      type: 'string',
+    },
+    remediationFunctionBaseEffort: {
+      type: 'string',
+    },
+  },
+  readOnly: true,
 } as const;
 
 export const GroupRestResponseWritableSchema = {
@@ -3508,6 +3696,66 @@ export const ModeResourceWritableSchema = {
   required: ['mode'],
 } as const;
 
+export const UsersSearchRestResponseWritableSchema = {
+  type: 'object',
+  properties: {
+    users: {
+      type: 'array',
+      items: {
+        $ref: '#/components/schemas/UserRestResponseForAdminsWritable',
+      },
+    },
+    page: {
+      $ref: '#/components/schemas/PageRestResponse',
+    },
+  },
+} as const;
+
+export const EmailConfigurationSearchRestResponseWritableSchema = {
+  type: 'object',
+  properties: {
+    emailConfigurations: {
+      type: 'array',
+      items: {
+        $ref: '#/components/schemas/EmailConfigurationResourceWritable',
+      },
+    },
+    page: {
+      $ref: '#/components/schemas/PageRestResponse',
+    },
+  },
+} as const;
+
+export const GitlabConfigurationSearchRestResponseWritableSchema = {
+  type: 'object',
+  properties: {
+    gitlabConfigurations: {
+      type: 'array',
+      items: {
+        $ref: '#/components/schemas/GitlabConfigurationResourceWritable',
+      },
+    },
+    page: {
+      $ref: '#/components/schemas/PageRestResponse',
+    },
+  },
+} as const;
+
+export const GithubConfigurationSearchRestResponseWritableSchema = {
+  type: 'object',
+  properties: {
+    githubConfigurations: {
+      type: 'array',
+      items: {
+        $ref: '#/components/schemas/GithubConfigurationResourceWritable',
+      },
+    },
+    page: {
+      $ref: '#/components/schemas/PageRestResponse',
+    },
+  },
+} as const;
+
 export const DopSettingsResourceWritableSchema = {
   type: 'object',
   properties: {
@@ -3524,6 +3772,36 @@ export const DopSettingsResourceWritableSchema = {
     },
     appId: {
       type: 'string',
+    },
+  },
+} as const;
+
+export const DopSettingsRestResponseWritableSchema = {
+  type: 'object',
+  properties: {
+    dopSettings: {
+      type: 'array',
+      items: {
+        $ref: '#/components/schemas/DopSettingsResourceWritable',
+      },
+    },
+    page: {
+      $ref: '#/components/schemas/PageRestResponse',
+    },
+  },
+} as const;
+
+export const GroupsSearchRestResponseWritableSchema = {
+  type: 'object',
+  properties: {
+    groups: {
+      type: 'array',
+      items: {
+        $ref: '#/components/schemas/GroupRestResponseWritable',
+      },
+    },
+    page: {
+      $ref: '#/components/schemas/PageRestResponse',
     },
   },
 } as const;
