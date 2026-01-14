@@ -1396,6 +1396,7 @@ export const GithubConfigurationCreateRestRequestSchema = {
       type: 'string',
       description:
         'The WEB url for a GitHub instance. https://github.com/ for Github.com, https://github.company.com/ when using GitHub Enterprise.\n',
+      minLength: 1,
     },
     allowedOrganizations: {
       type: 'array',
@@ -1513,6 +1514,7 @@ export const BoundProjectCreateRestRequestSchema = {
       type: 'string',
       description:
         'Identifier of the DevOps platform repository to import:\n- repository slug for GitHub and Bitbucket (Cloud and Server)\n- repository id for GitLab\n- repository name for Azure DevOps\n',
+      minLength: 1,
     },
     projectIdentifier: {
       type: 'string',
@@ -5109,6 +5111,7 @@ export const GithubConfigurationCreateRestRequestWritableSchema = {
       type: 'string',
       description:
         "Your GitHub App's private key. You can generate a .pem file from your GitHub App's page under Private keys.\nCopy and paste the whole contents of the file here.\n",
+      minLength: 1,
       writeOnly: true,
     },
     synchronizeGroups: {
@@ -5126,6 +5129,7 @@ export const GithubConfigurationCreateRestRequestWritableSchema = {
       type: 'string',
       description:
         'The WEB url for a GitHub instance. https://github.com/ for Github.com, https://github.company.com/ when using GitHub Enterprise.\n',
+      minLength: 1,
     },
     allowedOrganizations: {
       type: 'array',
