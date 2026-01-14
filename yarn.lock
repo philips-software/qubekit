@@ -1128,7 +1128,7 @@ __metadata:
     "@types/jest": "npm:^30.0.0"
     "@types/node": "npm:^24.10.1"
     eslint: "npm:^9.36.0"
-    husky: "npm:^9.0.0"
+    husky: "npm:^9.1.7"
     jest: "npm:^30.2.0"
     msw: "npm:^2.11.2"
     openapi-merge-cli: "npm:^1.3.2"
@@ -2797,7 +2797,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"husky@npm:^9.0.0":
+"husky@npm:^9.1.7":
   version: 9.1.7
   resolution: "husky@npm:9.1.7"
   bin:
