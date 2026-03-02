@@ -2,18 +2,19 @@
   "openapi": "3.1.0",
   "info": {
     "title": "SonarQube Web API v2",
-    "description": "The SonarQube API v2 is a REST API which enables you to interact with SonarQube programmatically. Endpoint listed here should work as expected.\nHowever, you should not consider the API stable for now as it is still under development. New releases of SonarQube can bring changes to existing endpoint definitions.\n"
+    "description": "The SonarQube API v2 is a REST API which enables you to interact with SonarQube programmatically.\nWhile not all endpoints of the former Web API are available yet, the ones available are stable and can be used in production environments.\n",
+    "version": "2025.6.0.116828"
   },
   "servers": [
     {
-      "url": "http://sonarqube.internal.philips/api/v2",
+      "url": "http://next.sonarqube.com/sonarqube/api/v2",
       "description": "Generated server url"
     }
   ],
   "paths": {
     "/users-management/users": {
       "get": {
-        "tags": ["user-controller"],
+        "tags": ["Users Management"],
         "summary": "Users search",
         "description": "  Get a list of users. By default, only active users are returned.\n  The following fields are only returned when user has Administer System permission or for logged-in in user :\n    'email',\n    'externalIdentity',\n    'externalProvider',\n    'groups',\n    'lastConnectionDate',\n    'sonarLintLastConnectionDate',\n    'tokensCount'.\n  Field 'sonarqubeLastConnectionDate' is only updated every hour, so it may not be accurate, for instance when a user authenticates many times in less than one hour.\n  The results are sorted alphabetically by login.\n",
         "operationId": "search",
@@ -114,8 +115,10 @@
             "required": false,
             "schema": {
               "type": "string",
-              "description": "Filter users belonging to group. Only available for system administrators. Using != operator will exclude users from this group."
-            }
+              "description": "Filter users belonging to group. Only available for system administrators. Using != operator will exclude users from this group.",
+              "internal": "true"
+            },
+            "x-internal": "true"
           },
           {
             "name": "pageSize",
@@ -141,6 +144,7 @@
               "format": "int32",
               "default": 1,
               "description": "1-based page index",
+              "exclusiveMinimum": 0,
               "minimum": 1
             }
           }
@@ -159,7 +163,7 @@
         }
       },
       "post": {
-        "tags": ["user-controller"],
+        "tags": ["Users Management"],
         "summary": "User creation",
         "description": "  Create a user.\n  If a deactivated user account exists with the given login, it will be reactivated.\n  Requires Administer System permission.\n",
         "operationId": "create",
@@ -187,7 +191,7 @@
     },
     "/system/email-configurations": {
       "get": {
-        "tags": ["email-configuration-controller"],
+        "tags": ["System"],
         "summary": "Search email configurations",
         "description": "  Get the list of email configurations.\n  Note that a single configuration is supported at this time.\n  Requires 'Administer System' permission.\n",
         "operationId": "searchEmailConfigurations",
@@ -206,7 +210,7 @@
         "x-sonar-internal": "true"
       },
       "post": {
-        "tags": ["email-configuration-controller"],
+        "tags": ["System"],
         "summary": "Create an email configuration",
         "description": "  Create a new email configuration.\n  Note that only a single configuration can exist at a time.\n  Requires 'Administer System' permission.\n",
         "operationId": "createEmailConfiguration",
@@ -235,9 +239,676 @@
         "x-sonar-internal": "true"
       }
     },
+    "/sca/license-profiles": {
+      "get": {
+        "tags": ["License Profiles"],
+        "summary": "List license profiles",
+        "description": "  List the license profiles that have been configured for use when evaluating license issues.\n",
+        "operationId": "index",
+        "parameters": [
+          {
+            "name": "projectKey",
+            "in": "query",
+            "description": "If provided, filter to the license profile that is used to analyze the project (if one exists).\n",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "If provided, filter to the license profile that is used to analyze the project (if one exists).\n"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LicenseProfileIndexRestResponse"
+                }
+              }
+            }
+          }
+        },
+        "x-sonar-internal": "true"
+      },
+      "post": {
+        "tags": ["License Profiles"],
+        "summary": "Create new license profile",
+        "description": "  Create a new license profile for projects to use when evaluating license issues.\n",
+        "operationId": "create_1",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LicenseProfilesCreateRestRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LicenseProfileResource"
+                }
+              }
+            }
+          }
+        },
+        "x-sonar-internal": "true"
+      }
+    },
+    "/sca/issues-releases/update-assignee": {
+      "post": {
+        "tags": ["Issues-Releases"],
+        "summary": "Update the assignee of an (issue,release) pair",
+        "description": "Update the assignee of an (issue,release) pair (dependency risk).\n\nThis is an internal API and is subject to change without notice.\n",
+        "operationId": "updateAssignee",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateAssigneeRestRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IssueReleaseDetailsResource"
+                }
+              }
+            }
+          }
+        },
+        "x-sonar-internal": "true"
+      }
+    },
+    "/sca/issues-releases/set-severity": {
+      "post": {
+        "tags": ["Issues-Releases"],
+        "summary": "Manually change the severity of an issue-release pair",
+        "description": "Change the severity of a (issue,release) pair (dependency risk).\n\nThis is an internal API and is subject to change without notice.\n",
+        "operationId": "setSeverity",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IssueReleaseSetSeverityRestRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IssueReleaseDetailsResource"
+                }
+              }
+            }
+          }
+        },
+        "x-sonar-internal": "true"
+      }
+    },
+    "/sca/issues-releases/clear-severity-warning": {
+      "post": {
+        "tags": ["Issues-Releases"],
+        "summary": "Dismiss the increased severity warning for an issue-release pair after reviewing the warning",
+        "description": "Dismiss the increased severity warning for an (issue,release) pair (dependency risk) after reviewing the warning.\n\nThis is an internal API and is subject to change without notice.\n",
+        "operationId": "clearSeverityWarning",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IssueReleaseClearSeverityWarningRestRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IssueReleaseDetailsResource"
+                }
+              }
+            }
+          }
+        },
+        "x-sonar-internal": "true"
+      }
+    },
+    "/sca/issues-releases/change-status": {
+      "post": {
+        "tags": ["Issues-Releases"],
+        "summary": "Transition an issue-release pair to a new status",
+        "description": "Transition a single (issue,release) pair (dependency risk) to a new status with a comment about why the status is changing.\n\nThis is an internal API and is subject to change without notice.\n",
+        "operationId": "transitionIssueRelease",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IssueReleaseStatusTransitionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IssueReleaseDetailsResource"
+                }
+              }
+            }
+          }
+        },
+        "x-sonar-internal": "true"
+      }
+    },
+    "/sca/issues-releases/add-comment": {
+      "post": {
+        "tags": ["Issues-Releases"],
+        "summary": "Add a comment to an issue-release pair",
+        "description": "Add a comment to a (issue,release) pair (dependency risk).\n\nThis is an internal API and is subject to change without notice.\n",
+        "operationId": "addComment",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IssueReleaseAddCommentRestRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": { "201": { "description": "Created" } },
+        "x-sonar-internal": "true"
+      }
+    },
+    "/marketplace/azure/billing": {
+      "post": {
+        "tags": ["Marketplace Azure"],
+        "summary": "Bills user's Azure account with the cost of SonarQube Server license",
+        "description": "Used by admin to bill user's Azure account with the cost of SonarQube Server license.",
+        "operationId": "billAzureAccount",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AzureBillingRestResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/jira/work-items": {
+      "get": {
+        "tags": ["Jira"],
+        "summary": "Fetch Jira work items",
+        "description": "Fetch the Jira work items for a specific Sonar project and resource.\nAccepts only authenticated requests.\n",
+        "operationId": "鲥",
+        "parameters": [
+          {
+            "name": "sonarProjectId",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "resourceId",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "resourceType",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": ["SONAR_ISSUE", "DEPENDENCY_RISK"]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JiraWorkItemResource"
+                }
+              }
+            }
+          }
+        },
+        "x-sonar-internal": "true"
+      },
+      "post": {
+        "tags": ["Jira"],
+        "summary": "Create Jira work item",
+        "description": "Create a Jira work item for a specific resource.\nAccepts only authenticated requests with issue administration permission.\n",
+        "operationId": "鲥_1",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PostJiraWorkItemRequestResource"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JiraWorkItemResource"
+                }
+              }
+            }
+          }
+        },
+        "x-sonar-internal": "true"
+      },
+      "delete": {
+        "tags": ["Jira"],
+        "summary": "Delete Jira work items",
+        "description": "Delete the Jira work items associated with a specific resource.\n",
+        "operationId": "絛",
+        "parameters": [
+          {
+            "name": "sonarProjectId",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "resourceId",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "resourceType",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": ["SONAR_ISSUE", "DEPENDENCY_RISK"]
+            }
+          }
+        ],
+        "responses": { "204": { "description": "No Content" } },
+        "x-sonar-internal": "true"
+      }
+    },
+    "/jira/project-bindings": {
+      "get": {
+        "tags": ["Jira"],
+        "summary": "Fetch Jira project bindings",
+        "description": "Fetch the Jira project binding for a specific Sonar project.\nAccepts only authenticated requests.\n",
+        "operationId": "鲥_2",
+        "parameters": [
+          {
+            "name": "sonarProjectId",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JiraProjectBindingResource"
+                }
+              }
+            }
+          }
+        },
+        "x-sonar-internal": "true"
+      },
+      "post": {
+        "tags": ["Jira"],
+        "summary": "Create or update Jira project binding",
+        "description": "Create or update a Jira project binding for a specific Sonar project.\nAccepts only authenticated requests.\n",
+        "operationId": "鲥_3",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PostJiraProjectBindingRequestResource"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JiraProjectBindingResource"
+                }
+              }
+            }
+          }
+        },
+        "x-sonar-internal": "true"
+      },
+      "delete": {
+        "tags": ["Jira"],
+        "summary": "Delete Jira project binding",
+        "description": "Delete the Jira project binding for a specific Sonar project.\nAccepts only authenticated requests.\n",
+        "operationId": "絛_1",
+        "parameters": [
+          {
+            "name": "sonarProjectId",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": { "204": { "description": "No Content" } },
+        "x-sonar-internal": "true"
+      },
+      "patch": {
+        "tags": ["Jira"],
+        "summary": "Update Jira project binding",
+        "description": "Update an existing Jira project binding for a specific Sonar project.\nAccepts only authenticated requests.\n",
+        "operationId": "鲥_4",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchJiraProjectBindingRequestResource"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JiraProjectBindingResource"
+                }
+              }
+            }
+          }
+        },
+        "x-sonar-internal": "true"
+      }
+    },
+    "/jira/organization-bindings": {
+      "get": {
+        "tags": ["Jira"],
+        "summary": "Fetch the Jira instance binding",
+        "description": "Fetch the Jira instance binding.\nRequires global administrator permission.\n",
+        "operationId": "絛_2",
+        "parameters": [
+          {
+            "name": "sonarOrganizationUuid",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JiraOrganizationBindingResource"
+                }
+              }
+            }
+          }
+        },
+        "x-sonar-internal": "true"
+      },
+      "post": {
+        "tags": ["Jira"],
+        "summary": "Create a new Jira instance binding",
+        "description": "Receives the 3LO state and authorization code parameters and attempts to create an instance binding.\nIf successful, returns the binding. Otherwise, returns a list of available resources.\nRequires global administrator permission.\n",
+        "operationId": "鲥_5",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PostJiraOrganizationBindingRequestResource"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PostJiraOrganizationBindingResponseResource"
+                }
+              }
+            }
+          }
+        },
+        "x-sonar-internal": "true"
+      },
+      "delete": {
+        "tags": ["Jira"],
+        "summary": "Delete the Jira instance binding",
+        "description": "Deletes the Jira instance binding from the database.\nRequires global administrator permission.\n",
+        "operationId": "鲥_6",
+        "parameters": [
+          {
+            "name": "sonarOrganizationUuid",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "responses": { "204": { "description": "No Content" } },
+        "x-sonar-internal": "true"
+      },
+      "patch": {
+        "tags": ["Jira"],
+        "summary": "Binds the specified pending instance binding with the specified jira cloud ID",
+        "description": "Binds the specified pending instance binding with the specified jira cloud ID\n",
+        "operationId": "鲥_7",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchJiraOrganizationBindingRequestResource"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JiraOrganizationBindingResource"
+                }
+              }
+            }
+          }
+        },
+        "x-sonar-internal": "true"
+      }
+    },
+    "/integrations/user-bindings": {
+      "post": {
+        "tags": ["Slack User Bindings"],
+        "summary": "Create Slack user binding",
+        "description": "Creates a new user binding between a SonarQube user and their Slack account.\nThis endpoint is used during the Slack OAuth flow when users connect their accounts\nvia the /sonarqube-server connect slash command.\n",
+        "operationId": "createUserBinding",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserBindingCreationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "User binding created successfully",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/UserBindingResponse" }
+              }
+            }
+          },
+          "400": { "description": "Invalid request data" },
+          "401": { "description": "Authentication required" },
+          "403": { "description": "Insufficient permissions" },
+          "409": { "description": "User binding already exists" },
+          "500": { "description": "Internal server error" }
+        },
+        "x-sonar-internal": "true"
+      }
+    },
+    "/integrations/slack/slash-commands": {
+      "post": {
+        "tags": ["slack-slash-command-controller"],
+        "summary": "Handle Slack Slash Commands",
+        "description": "Handles incoming Slack slash command requests and command processing.\nThe request body is form-encoded and contains command details. Signature validation is performed via\nSlackSlashCommandSignatureValidationAdvice before reaching this controller.\n",
+        "operationId": "handleSlashCommand",
+        "requestBody": {
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": { "type": "string" }
+            }
+          },
+          "required": true
+        },
+        "responses": { "200": { "description": "OK" } },
+        "x-sonar-internal": "true"
+      }
+    },
+    "/integrations/slack/events": {
+      "post": {
+        "tags": ["slack-event-controller"],
+        "summary": "Handle Slack Events API",
+        "description": "Handles incoming Slack Events API requests including URL verification and workspace lifecycle events.\nThe request body is JSON and contains event details. Signature validation is performed via\nSlackEventsSignatureValidationAdvice before reaching this controller.\n",
+        "operationId": "handleEvent",
+        "requestBody": {
+          "content": { "application/json": { "schema": { "type": "string" } } },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "text/plain": { "schema": { "type": "string" } } }
+          }
+        },
+        "x-sonar-internal": "true"
+      }
+    },
+    "/integrations/integration-configurations": {
+      "get": {
+        "tags": ["integration-configurations-controller"],
+        "summary": "Get integration configurations.",
+        "description": "Requires global administrator permission.",
+        "operationId": "get",
+        "parameters": [
+          {
+            "name": "integrationType",
+            "in": "query",
+            "description": "Integration type",
+            "required": true,
+            "schema": { "type": "string", "enum": ["SLACK"] }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IntegrationConfigurationSearchResponse"
+                }
+              }
+            }
+          }
+        },
+        "x-sonar-internal": "true"
+      },
+      "post": {
+        "tags": ["integration-configurations-controller"],
+        "summary": "Create a configuration for an integration.",
+        "description": "Requires global administrator permission.",
+        "operationId": "create_2",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IntegrationConfigurationPostRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IntegrationConfigurationResponse"
+                }
+              }
+            }
+          }
+        },
+        "x-sonar-internal": "true"
+      }
+    },
     "/fix-suggestions/feature-enablements/awareness-banner-interactions": {
       "post": {
-        "tags": ["feature-enablement-controller"],
+        "tags": ["Fix Suggestions"],
         "summary": "Starts a GitLab synchronization run.",
         "operationId": "createAwarenessBannerClicked",
         "requestBody": {
@@ -267,10 +938,10 @@
     },
     "/fix-suggestions/ai-suggestions": {
       "post": {
-        "tags": ["fix-suggestion-controller"],
+        "tags": ["Fix Suggestions"],
         "summary": "Suggest a fix for the given issueId",
         "description": "Requires Code Viewer permission.",
-        "operationId": "create_1",
+        "operationId": "create_3",
         "requestBody": {
           "content": {
             "application/json": {
@@ -295,12 +966,115 @@
         }
       }
     },
+    "/entitlements/online-activation": {
+      "post": {
+        "tags": ["Entitlements"],
+        "summary": "Sets the license",
+        "description": "  Only third party license keys are accepted.\n  Requires 'Administer System' permission.\n",
+        "operationId": "setLicense",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/LicenseRestRequest" }
+            }
+          },
+          "required": true
+        },
+        "responses": { "200": { "description": "OK" } },
+        "x-sonar-internal": "true"
+      }
+    },
+    "/entitlements/offline-deactivation": {
+      "post": {
+        "tags": ["Entitlements"],
+        "summary": "Deactivates offline license",
+        "description": "  This method is for users who activated the license using offline method. It should be used to\n  fully deactivate the license (i.e. in cases of migrating the installation to a new server).\n",
+        "operationId": "deactivateLicense",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": { "type": "string", "format": "binary" }
+              }
+            }
+          }
+        },
+        "x-sonar-internal": "true"
+      }
+    },
+    "/entitlements/offline-activation": {
+      "get": {
+        "tags": ["Entitlements"],
+        "summary": "Retrieve a valid .req file for offline activation",
+        "description": "  Retrieves a .req file for offline activation of a license.\n  Requires 'Administer System' permission.\n",
+        "operationId": "retrieveRequestFile",
+        "parameters": [
+          {
+            "name": "License-Key",
+            "in": "header",
+            "description": "The unique license key associated with the license, in the format 'ABCD-EFGH-IJKL-MNOP'. Required in the 'License-Key' HTTP header for offline activation.",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": { "type": "string", "format": "binary" }
+              }
+            }
+          }
+        },
+        "x-sonar-internal": "true"
+      },
+      "post": {
+        "tags": ["Entitlements"],
+        "summary": "Uploads a license",
+        "description": "  The content of the request body should be the text of the license file, along with a valid license key.\n  Requires 'Administer System' permission.\n",
+        "operationId": "uploadLicense",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LicenseUploadActivationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": { "200": { "description": "OK" } },
+        "x-sonar-internal": "true"
+      }
+    },
+    "/entitlements/legacy-activation": {
+      "post": {
+        "tags": ["Entitlements"],
+        "summary": "Sets the license",
+        "description": "  Only license keys received from Sonar are accepted.\n  Requires 'Administer System' permission.\n",
+        "operationId": "setLegacyLicense",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LegacyLicenseRestRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": { "200": { "description": "OK" } },
+        "x-sonar-internal": "true"
+      }
+    },
     "/dop-translation/gitlab-synchronization-runs": {
       "post": {
-        "tags": ["gitlab-synchronization-run-controller"],
+        "tags": ["Dop Translation"],
         "summary": "Starts a GitLab synchronization run.",
         "description": "  Adds a new GitLab synchronization run in the background tasks. Requires sys-admins permissions.\n",
-        "operationId": "create_2",
+        "operationId": "create_4",
         "responses": {
           "200": {
             "description": "OK",
@@ -318,7 +1092,7 @@
     },
     "/dop-translation/gitlab-permission-mappings": {
       "get": {
-        "tags": ["gitlab-permission-mappings-controller"],
+        "tags": ["Dop Translation"],
         "summary": "Fetch permissions mapping",
         "description": "Get the list of all the existing roles with their permission mappings. Requires 'Administer System' permission.",
         "operationId": "fetchAll",
@@ -337,7 +1111,7 @@
         "x-sonar-internal": "true"
       },
       "post": {
-        "tags": ["gitlab-permission-mappings-controller"],
+        "tags": ["Dop Translation"],
         "summary": "Create a permission mapping for a custom role",
         "description": "Requires 'Administer System' permission.",
         "operationId": "createMapping",
@@ -368,7 +1142,7 @@
     },
     "/dop-translation/gitlab-configurations": {
       "get": {
-        "tags": ["gitlab-configuration-controller"],
+        "tags": ["Dop Translation"],
         "summary": "Search GitLab configs",
         "description": "  Get the list of GitLab configurations.\n  Note that a single configuration is supported at this time.\n  Requires 'Administer System' permission.\n",
         "operationId": "searchGitlabConfiguration",
@@ -387,10 +1161,10 @@
         "x-sonar-internal": "true"
       },
       "post": {
-        "tags": ["gitlab-configuration-controller"],
+        "tags": ["Dop Translation"],
         "summary": "Create Gitlab configuration",
         "description": "  Create a new Gitlab configuration.\n  Note that only a single configuration can exist at a time.\n  Requires 'Administer System' permission.\n",
-        "operationId": "create_3",
+        "operationId": "create_5",
         "requestBody": {
           "content": {
             "application/json": {
@@ -418,7 +1192,7 @@
     },
     "/dop-translation/github-permission-mappings": {
       "get": {
-        "tags": ["github-permission-mappings-controller"],
+        "tags": ["Dop Translation"],
         "summary": "Fetch permissions mapping",
         "description": "Get the list of all the existing roles with their permission mappings. Requires 'Administer System' permission.",
         "operationId": "fetchAll_1",
@@ -437,7 +1211,7 @@
         "x-sonar-internal": "true"
       },
       "post": {
-        "tags": ["github-permission-mappings-controller"],
+        "tags": ["Dop Translation"],
         "summary": "Create a permission mapping for a custom role",
         "description": "Requires 'Administer System' permission.",
         "operationId": "createMapping_1",
@@ -468,7 +1242,7 @@
     },
     "/dop-translation/github-configurations": {
       "get": {
-        "tags": ["github-configuration-controller"],
+        "tags": ["Dop Translation"],
         "summary": "Search GitHub configs",
         "description": "  Get the list of GitHub configurations.\n  Note that a single configuration is supported at this time.\n  Requires 'Administer System' permission.\n",
         "operationId": "searchGithubConfiguration",
@@ -487,7 +1261,7 @@
         "x-sonar-internal": "true"
       },
       "post": {
-        "tags": ["github-configuration-controller"],
+        "tags": ["Dop Translation"],
         "summary": "Create GitHub configuration",
         "description": "  Create a new GitHub configuration.\n  Note that only a single configuration can exist at a time.\n  Requires 'Administer System' permission.\n",
         "operationId": "createGithubConfiguration",
@@ -518,7 +1292,7 @@
     },
     "/dop-translation/bound-projects": {
       "post": {
-        "tags": ["bound-projects-controller"],
+        "tags": ["Dop Translation"],
         "summary": "Create a SonarQube project with the information from the provided DevOps platform project.",
         "description": "Create a SonarQube project with the information from the provided DevOps platform project.\nAutoconfigure Pull-Request decoration mechanism.\nRequires the 'Create Projects' permission and setting a Personal Access Token with api/alm_integrations/set_pat for a user who will be using this endpoint\n",
         "operationId": "createBoundProject",
@@ -548,10 +1322,10 @@
     },
     "/clean-code-policy/rules": {
       "post": {
-        "tags": ["rule-controller"],
+        "tags": ["Clean Code Policy"],
         "summary": "Custom rule creation",
         "description": "  Create a custom rule.\n  Requires the 'Administer Quality Profiles' permission.\n",
-        "operationId": "create_4",
+        "operationId": "create_6",
         "requestBody": {
           "content": {
             "application/json": {
@@ -569,12 +1343,13 @@
               }
             }
           }
-        }
+        },
+        "x-internal": "true"
       }
     },
     "/authorizations/groups": {
       "get": {
-        "tags": ["group-controller"],
+        "tags": ["Authorizations"],
         "summary": "Group search",
         "description": "  Get the list of groups.\n  The results are sorted alphabetically by group name.\n",
         "operationId": "search_1",
@@ -600,6 +1375,18 @@
             }
           },
           {
+            "name": "userId",
+            "in": "query",
+            "description": "Filter groups containing the user. Only available for system administrators. Using != operator will search for groups without the user.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Filter groups containing the user. Only available for system administrators. Using != operator will search for groups without the user.",
+              "internal": "true"
+            },
+            "x-internal": "true"
+          },
+          {
             "name": "pageSize",
             "in": "query",
             "description": "Number of results per page. A value of 0 will only return the pagination information.",
@@ -623,6 +1410,7 @@
               "format": "int32",
               "default": 1,
               "description": "1-based page index",
+              "exclusiveMinimum": 0,
               "minimum": 1
             }
           }
@@ -641,10 +1429,10 @@
         }
       },
       "post": {
-        "tags": ["group-controller"],
+        "tags": ["Authorizations"],
         "summary": "Create a new group",
         "description": "Create a new group.",
-        "operationId": "create_5",
+        "operationId": "create_7",
         "requestBody": {
           "content": {
             "application/json": {
@@ -669,7 +1457,7 @@
     },
     "/authorizations/group-memberships": {
       "get": {
-        "tags": ["group-membership-controller"],
+        "tags": ["Authorizations"],
         "summary": "Search across group memberships",
         "description": "  Get the list of groups and members matching the query.\n",
         "operationId": "search_2",
@@ -718,6 +1506,7 @@
               "format": "int32",
               "default": 1,
               "description": "1-based page index",
+              "exclusiveMinimum": 0,
               "minimum": 1
             }
           }
@@ -736,10 +1525,10 @@
         }
       },
       "post": {
-        "tags": ["group-membership-controller"],
+        "tags": ["Authorizations"],
         "summary": "Add a group membership",
         "description": "Add a user to a group.",
-        "operationId": "create_6",
+        "operationId": "create_8",
         "requestBody": {
           "content": {
             "application/json": {
@@ -764,9 +1553,59 @@
         }
       }
     },
+    "/atlassian/application-configuration": {
+      "get": {
+        "tags": ["Atlassian"],
+        "summary": "Fetch the Atlassian Authentication details if they exist",
+        "description": "Fetch the Atlassian Authentication details if they exist.\nSpecifically, only the client ID is returned for security purposes.\n",
+        "operationId": "鲥_8",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AtlassianAuthenticationDetailsResultResource"
+                }
+              }
+            }
+          }
+        },
+        "x-sonar-internal": "true"
+      },
+      "post": {
+        "tags": ["Atlassian"],
+        "summary": "Create/Update the Atlassian Authentication details",
+        "description": "Create/Update the Atlassian Authentication details.\n",
+        "operationId": "鲥_9",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AtlassianAuthenticationDetailsResource"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AtlassianAuthenticationDetailsResultResource"
+                }
+              }
+            }
+          }
+        },
+        "x-sonar-internal": "true"
+      }
+    },
     "/users-management/users/{id}": {
       "get": {
-        "tags": ["user-controller"],
+        "tags": ["Users Management"],
         "summary": "Fetch a single user",
         "description": "Fetch a single user.\nThe following fields are only returned when user has Administer System permission or for logged-in in user :\n    'email'\n    'externalIdentity'\n    'externalProvider'\n    'groups'\n    'lastConnectionDate'\n    'sonarLintLastConnectionDate'\n    'tokensCount'\n  Field 'sonarqubeLastConnectionDate' is only updated every hour, so it may not be accurate, for instance when a user authenticates many times in less than one hour.\n",
         "operationId": "fetchUser",
@@ -793,7 +1632,7 @@
         }
       },
       "delete": {
-        "tags": ["user-controller"],
+        "tags": ["Users Management"],
         "summary": "Deactivate a user",
         "description": "Deactivates a user. Requires Administer System permission.",
         "operationId": "deactivate",
@@ -816,7 +1655,7 @@
         "responses": { "204": { "description": "No Content" } }
       },
       "patch": {
-        "tags": ["user-controller"],
+        "tags": ["Users Management"],
         "summary": "Update a user",
         "description": "Update users attributes.\n",
         "operationId": "updateUser",
@@ -852,7 +1691,7 @@
     },
     "/system/email-configurations/{id}": {
       "get": {
-        "tags": ["email-configuration-controller"],
+        "tags": ["System"],
         "summary": "Fetch an email configuration",
         "description": "Fetch a Email configuration. Requires 'Administer System' permission.\n",
         "operationId": "getEmailConfiguration",
@@ -880,7 +1719,7 @@
         "x-sonar-internal": "true"
       },
       "delete": {
-        "tags": ["email-configuration-controller"],
+        "tags": ["System"],
         "summary": "Delete an email configuration",
         "description": "Delete an email configuration.\nRequires 'Administer System' permission.\n",
         "operationId": "deleteEmailConfiguration",
@@ -897,7 +1736,7 @@
         "x-sonar-internal": "true"
       },
       "patch": {
-        "tags": ["email-configuration-controller"],
+        "tags": ["System"],
         "summary": "Update an email configuration",
         "description": "Update an email configuration. Requires 'Administer System' permission.\n",
         "operationId": "updateEmailConfiguration",
@@ -934,10 +1773,315 @@
         "x-sonar-internal": "true"
       }
     },
+    "/sca/license-profiles/{license-profile-key}": {
+      "get": {
+        "tags": ["License Profiles"],
+        "summary": "Get the license policy for a given profile",
+        "description": "Get the license policy for a given profile.\n",
+        "operationId": "get_1",
+        "parameters": [
+          {
+            "name": "license-profile-key",
+            "in": "path",
+            "description": "The license profile key.",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LicenseProfileDetailsResource"
+                }
+              }
+            }
+          }
+        },
+        "x-sonar-internal": "true"
+      },
+      "delete": {
+        "tags": ["License Profiles"],
+        "summary": "Delete the license profile",
+        "description": "Delete the license profile.",
+        "operationId": "delete",
+        "parameters": [
+          {
+            "name": "license-profile-key",
+            "in": "path",
+            "description": "The id of the license profile",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": { "204": { "description": "No Content" } },
+        "x-sonar-internal": "true"
+      },
+      "patch": {
+        "tags": ["License Profiles"],
+        "summary": "Update the license profile",
+        "description": "  Update the license profile for projects to use when evaluating license issues.\n",
+        "operationId": "update",
+        "parameters": [
+          {
+            "name": "license-profile-key",
+            "in": "path",
+            "description": "The id of the license profile",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LicenseProfilesUpdateRestRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LicenseProfileResource"
+                }
+              }
+            }
+          }
+        },
+        "x-sonar-internal": "true"
+      }
+    },
+    "/sca/license-profiles/{license-profile-key}/licenses/{license-policy-id}": {
+      "patch": {
+        "tags": ["License Profiles"],
+        "summary": "Update the policy for a single license",
+        "description": "  Update the policy for a single license in the license profile.\n",
+        "operationId": "patchLicense",
+        "parameters": [
+          {
+            "name": "license-profile-key",
+            "in": "path",
+            "description": "The license profile key.",
+            "required": true,
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "license-policy-id",
+            "in": "path",
+            "description": "The license ID.",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LicensePolicyLicenseUpdateRestRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LicensePolicyLicenseResource"
+                }
+              }
+            }
+          }
+        },
+        "x-sonar-internal": "true"
+      }
+    },
+    "/sca/license-profiles/{license-profile-key}/categories/{category-key}": {
+      "patch": {
+        "tags": ["License Profiles"],
+        "summary": "Update the policy for a license category",
+        "description": "  Update the policy for an entire category in the license profile.\n",
+        "operationId": "patchCategory",
+        "parameters": [
+          {
+            "name": "license-profile-key",
+            "in": "path",
+            "description": "The license profile key.",
+            "required": true,
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "category-key",
+            "in": "path",
+            "description": "The category key.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "UNKNOWN",
+                "COPYLEFT_WEAK",
+                "COPYLEFT_STRONG",
+                "COPYLEFT_NETWORK",
+                "COPYLEFT_MAXIMAL",
+                "PERMISSIVE_STANDARD",
+                "PERMISSIVE_AMATEUR"
+              ]
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LicenseProfileCategoryUpdateRestRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LicenseProfileCategoryResource"
+                }
+              }
+            }
+          }
+        },
+        "x-sonar-internal": "true"
+      }
+    },
+    "/sca/license-profiles/assigned-projects": {
+      "patch": {
+        "tags": ["License Profiles"],
+        "summary": "Assign project to license profile",
+        "description": "  Configure which license profile should be used when analyzing a project for license issues.\n",
+        "operationId": "update_1",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssignedProjectsUpdateRestRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "The provided project has been assigned to the license profile.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LicenseProfileResource"
+                }
+              }
+            }
+          }
+        },
+        "x-sonar-internal": "true"
+      }
+    },
+    "/sca/issues-releases/{key}/changelog": {
+      "get": {
+        "tags": ["Issues-Releases"],
+        "summary": "Get the changelog for a single issue-release pair",
+        "description": "Get the changelog for a single (issue,release) pair (dependency risk), using the key from the search endpoint.\n\nThis is an internal API and is subject to change without notice.\n",
+        "operationId": "getChangelog",
+        "parameters": [
+          {
+            "name": "key",
+            "in": "path",
+            "description": "The key of the (issue,release) pair.",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IssuesReleasesChangesRestResponse"
+                }
+              }
+            }
+          }
+        },
+        "x-sonar-internal": "true"
+      },
+      "delete": {
+        "tags": ["Issues-Releases"],
+        "summary": "Delete a comment from an issue-release pair",
+        "description": "Delete a comment from a (issue,release) pair (dependency risk).\n\nThis is an internal API and is subject to change without notice.\n",
+        "operationId": "deleteComment",
+        "parameters": [
+          {
+            "name": "key",
+            "in": "path",
+            "description": "The key of the (issue,release) pair.",
+            "required": true,
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "issueReleaseChangeKey",
+            "in": "query",
+            "description": "Issue release change key",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Issue release change key"
+            }
+          }
+        ],
+        "responses": { "204": { "description": "No Content" } },
+        "x-sonar-internal": "true"
+      },
+      "patch": {
+        "tags": ["Issues-Releases"],
+        "summary": "Update a comment on an issue-release pair",
+        "description": "Update a comment on a (issue,release) pair (dependency risk).\n\nThis is an internal API and is subject to change without notice.\n",
+        "operationId": "updateComment",
+        "parameters": [
+          {
+            "name": "key",
+            "in": "path",
+            "description": "The key of the (issue,release) pair.",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IssueReleaseUpdateCommentRestRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": { "200": { "description": "OK" } },
+        "x-sonar-internal": "true"
+      }
+    },
     "/sca/feature-enablements": {
       "get": {
-        "tags": ["k"],
-        "summary": "Get the status of SCA enablement",
+        "tags": ["Feature Enablement"],
+        "summary": "Get the status of SCA feature opt-in (should only be used for the configuration UX in frontend)",
         "operationId": "getFeatureEnablement",
         "responses": {
           "200": {
@@ -954,8 +2098,8 @@
         "x-sonar-internal": "true"
       },
       "patch": {
-        "tags": ["k"],
-        "summary": "Update SCA enablement settings",
+        "tags": ["Feature Enablement"],
+        "summary": "Update SCA feature opt-in (should only be used for the configuration UX in frontend)",
         "operationId": "updateFeatureEnablement",
         "requestBody": {
           "content": {
@@ -982,9 +2126,281 @@
         "x-sonar-internal": "true"
       }
     },
+    "/jira/work-types": {
+      "get": {
+        "tags": ["Jira"],
+        "summary": "Returns a list of all the available Jira work types for a specific Jira project",
+        "description": "Returns a list of all the available Jira work types for a specific Jira project.\nAlso checks which work types are selected for a given sonar project. Conditionally, also includes field metadata.\n",
+        "operationId": "鲥_10",
+        "parameters": [
+          {
+            "name": "jiraProjectKey",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "sonarOrganizationUuid",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          },
+          {
+            "name": "sonarProjectId",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "includeFields",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "boolean" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/JiraWorkTypeResultResource"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-sonar-internal": "true"
+      },
+      "patch": {
+        "tags": ["Jira"],
+        "summary": "Saves the selected Jira work types for a project",
+        "description": "Receives a Jira project key and a list of work type and stores the work types.\n",
+        "operationId": "鲥_11",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/JiraWorkTypesSelectionResource"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": { "200": { "description": "OK" } },
+        "x-sonar-internal": "true"
+      }
+    },
+    "/jira/organization-binding-edit": {
+      "patch": {
+        "tags": ["Jira"],
+        "summary": "TODO",
+        "description": "TODO\n",
+        "operationId": "鲥_12",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchJiraOrganizationBindingEditResource"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JiraOrganizationBindingResource"
+                }
+              }
+            }
+          }
+        },
+        "x-sonar-internal": "true"
+      }
+    },
+    "/issues/sandbox-settings": {
+      "get": {
+        "tags": ["Issues"],
+        "summary": "Fetch instance sandbox settings",
+        "description": "Fetch the current instance-level sandbox settings.\nReturns configuration including enabled status, default value, allowOverride setting, and software qualities or rule types based on current mode.\nRequires 'Administer System' permission.\n",
+        "operationId": "getSandboxSettings",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SandboxSettingsResource"
+                }
+              }
+            }
+          }
+        },
+        "x-sonar-internal": "true"
+      },
+      "patch": {
+        "tags": ["Issues"],
+        "summary": "Update instance sandbox settings",
+        "description": "Update the instance-level sandbox settings.\nCannot enable sandbox without providing software qualities or rule types unless they already exist.\nWhen disabling allowOverride, all project-level software quality overrides are deleted.\nRequires 'Administer System' permission.\n",
+        "operationId": "patchSandboxSettings",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SandboxSettingsResource"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SandboxSettingsResource"
+                }
+              }
+            }
+          }
+        },
+        "x-sonar-internal": "true"
+      }
+    },
+    "/issues/sandbox-settings/{projectKey}": {
+      "get": {
+        "tags": ["Issues"],
+        "summary": "Fetch project sandbox settings",
+        "description": "Fetch the sandbox settings for a specific project.\nReturns effective configuration including enabled status, software qualities overrides, and whether settings are inherited from instance or overridden at project level.\nRequires 'Administer Project' permission.\n",
+        "operationId": "getProjectSandboxSettings",
+        "parameters": [
+          {
+            "name": "projectKey",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SandboxSettingsProjectResource"
+                }
+              }
+            }
+          }
+        },
+        "x-sonar-internal": "true"
+      },
+      "patch": {
+        "tags": ["Issues"],
+        "summary": "Update project sandbox settings",
+        "description": "Update the sandbox settings for a specific project.\nThe enabled setting can be changed independently of software quality overrides.\nWhen allowOverride is disabled at instance level, software quality changes are not allowed but enabled changes are still permitted.\nSetting overridden=false removes project-level software quality overrides to inherit from instance settings.\nRequires 'Administer Project' permission and instance sandbox must be enabled.\n",
+        "operationId": "patchProjectSandboxSettings",
+        "parameters": [
+          {
+            "name": "projectKey",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SandboxSettingsProjectResource"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SandboxSettingsProjectResource"
+                }
+              }
+            }
+          }
+        },
+        "x-sonar-internal": "true"
+      }
+    },
+    "/integrations/integration-configurations/{id}": {
+      "delete": {
+        "tags": ["integration-configurations-controller"],
+        "summary": "Delete an integration configuration and all its related data.",
+        "description": "Requires global administrator permission.\nThis will permanently delete the integration configuration, all associated workspaces, user bindings, and subscriptions.\n",
+        "operationId": "delete_1",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the integration configuration",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "responses": { "204": { "description": "No Content" } },
+        "x-sonar-internal": "true"
+      },
+      "patch": {
+        "tags": ["integration-configurations-controller"],
+        "summary": "Update an integration configuration.",
+        "description": "Requires global administrator permission.",
+        "operationId": "update_2",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the integration configuration",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IntegrationConfigurationPatchRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IntegrationConfigurationResponse"
+                }
+              }
+            }
+          }
+        },
+        "x-sonar-internal": "true"
+      }
+    },
     "/fix-suggestions/feature-enablements": {
       "get": {
-        "tags": ["feature-enablement-controller"],
+        "tags": ["Fix Suggestions"],
         "summary": "Fetch the Ai CodeFix feature enablement configurations",
         "operationId": "getFeatureEnablement_1",
         "responses": {
@@ -998,10 +2414,11 @@
               }
             }
           }
-        }
+        },
+        "x-sonar-internal": "true"
       },
       "patch": {
-        "tags": ["feature-enablement-controller"],
+        "tags": ["Fix Suggestions"],
         "summary": "Enable/Disable the AI CodeFix feature at the instance or project level",
         "operationId": "updateFeatureEnablement_1",
         "requestBody": {
@@ -1014,12 +2431,48 @@
           },
           "required": true
         },
-        "responses": { "204": { "description": "No Content" } }
+        "responses": { "204": { "description": "No Content" } },
+        "x-sonar-internal": "true"
+      }
+    },
+    "/entitlements/license": {
+      "get": {
+        "tags": ["Entitlements"],
+        "summary": "Returns information about the license",
+        "description": "  Returns information about the current license.\n  Requires 'Administer System' permission.\n",
+        "operationId": "getLicense",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/LicenseRestResponse" }
+              }
+            }
+          }
+        },
+        "x-sonar-internal": "true"
+      },
+      "delete": {
+        "tags": ["Entitlements"],
+        "summary": "Deletes the existing license",
+        "description": "  Deletes the license. Both license keys received from Sonar and from 3rd party system can be removed.\n  Requires 'Administer System' permission.\n",
+        "operationId": "deleteLicense",
+        "responses": { "200": { "description": "OK" } },
+        "x-sonar-internal": "true"
+      },
+      "patch": {
+        "tags": ["Entitlements"],
+        "summary": "Refreshes the existing license",
+        "description": "  Fetches the latest information about the license and updates it on the SonarQube Server instance.\n  Requires 'Administer System' permission.\n",
+        "operationId": "refreshLicense",
+        "responses": { "200": { "description": "OK" } },
+        "x-sonar-internal": "true"
       }
     },
     "/dop-translation/gitlab-permission-mappings/{role}": {
       "delete": {
-        "tags": ["gitlab-permission-mappings-controller"],
+        "tags": ["Dop Translation"],
         "summary": "Delete a single permission mappings",
         "description": "Requires 'Administer System' permission.",
         "operationId": "deleteMapping",
@@ -1036,7 +2489,7 @@
         "x-sonar-internal": "true"
       },
       "patch": {
-        "tags": ["gitlab-permission-mappings-controller"],
+        "tags": ["Dop Translation"],
         "summary": "Update a single permission mapping",
         "description": "Requires 'Administer System' permission.",
         "operationId": "updateMapping",
@@ -1076,7 +2529,7 @@
     },
     "/dop-translation/gitlab-configurations/{id}": {
       "get": {
-        "tags": ["gitlab-configuration-controller"],
+        "tags": ["Dop Translation"],
         "summary": "Fetch a GitLab configuration",
         "description": "Fetch a GitLab configuration. Requires 'Administer System' permission.\n",
         "operationId": "getGitlabConfiguration",
@@ -1104,7 +2557,7 @@
         "x-sonar-internal": "true"
       },
       "delete": {
-        "tags": ["gitlab-configuration-controller"],
+        "tags": ["Dop Translation"],
         "summary": "Delete a GitLab configuration",
         "description": "Delete a GitLab configuration.\nRequires 'Administer System' permission.\n",
         "operationId": "deleteGitlabConfiguration",
@@ -1121,7 +2574,7 @@
         "x-sonar-internal": "true"
       },
       "patch": {
-        "tags": ["gitlab-configuration-controller"],
+        "tags": ["Dop Translation"],
         "summary": "Update a Gitlab configuration",
         "description": "Update a Gitlab configuration. Requires 'Administer System' permission.\n",
         "operationId": "updateGitlabConfiguration",
@@ -1160,7 +2613,7 @@
     },
     "/dop-translation/github-permission-mappings/{role}": {
       "delete": {
-        "tags": ["github-permission-mappings-controller"],
+        "tags": ["Dop Translation"],
         "summary": "Delete a single permission mappings",
         "description": "Requires 'Administer System' permission.",
         "operationId": "deleteMapping_1",
@@ -1177,7 +2630,7 @@
         "x-sonar-internal": "true"
       },
       "patch": {
-        "tags": ["github-permission-mappings-controller"],
+        "tags": ["Dop Translation"],
         "summary": "Update a single permission mapping",
         "description": "Requires 'Administer System' permission.",
         "operationId": "updateMapping_1",
@@ -1217,7 +2670,7 @@
     },
     "/dop-translation/github-configurations/{id}": {
       "get": {
-        "tags": ["github-configuration-controller"],
+        "tags": ["Dop Translation"],
         "summary": "Fetch a GitHub configuration",
         "description": "Fetch a GitHub configuration. Requires 'Administer System' permission.\n",
         "operationId": "getGithubConfiguration",
@@ -1245,7 +2698,7 @@
         "x-sonar-internal": "true"
       },
       "delete": {
-        "tags": ["github-configuration-controller"],
+        "tags": ["Dop Translation"],
         "summary": "Delete a GitHub configuration",
         "description": "Delete a GitHub configuration.\nRequires 'Administer System' permission.\n",
         "operationId": "deleteGithubConfiguration",
@@ -1262,7 +2715,7 @@
         "x-sonar-internal": "true"
       },
       "patch": {
-        "tags": ["github-configuration-controller"],
+        "tags": ["Dop Translation"],
         "summary": "Update a GitHub configuration",
         "description": "Update a GitHub configuration. Requires 'Administer System' permission.\n",
         "operationId": "updateGithubConfiguration",
@@ -1301,7 +2754,7 @@
     },
     "/clean-code-policy/mode": {
       "get": {
-        "tags": ["mode-controller"],
+        "tags": ["Clean Code Policy"],
         "summary": "Retrieve current instance Mode",
         "description": "Fetch the current instance mode. Can be Multi-Quality Rules (MQR) Mode or Standard Experience.\n",
         "operationId": "getMode",
@@ -1318,7 +2771,7 @@
         "x-sonar-internal": "true"
       },
       "patch": {
-        "tags": ["mode-controller"],
+        "tags": ["Clean Code Policy"],
         "summary": "Update current instance Mode",
         "description": "Update the current instance mode. Can be Multi-Quality Rules (MQR) Mode or Standard Experience.\nRequires 'Administer System' permission.\n",
         "operationId": "patchMode",
@@ -1345,7 +2798,7 @@
     },
     "/authorizations/groups/{id}": {
       "get": {
-        "tags": ["group-controller"],
+        "tags": ["Authorizations"],
         "summary": "Fetch a single group",
         "description": "Fetch a single group.",
         "operationId": "fetchGroup",
@@ -1370,7 +2823,7 @@
         }
       },
       "delete": {
-        "tags": ["group-controller"],
+        "tags": ["Authorizations"],
         "summary": "Deletes a group",
         "description": "Deletes a group.",
         "operationId": "deleteGroup",
@@ -1386,7 +2839,7 @@
         "responses": { "204": { "description": "No Content" } }
       },
       "patch": {
-        "tags": ["group-controller"],
+        "tags": ["Authorizations"],
         "summary": "Update a group",
         "description": "Update a group name or description.\n",
         "operationId": "updateGroup",
@@ -1422,7 +2875,7 @@
     },
     "/system/migrations-status": {
       "get": {
-        "tags": ["database-migrations-controller"],
+        "tags": ["System"],
         "summary": "Gets the status of ongoing database migrations, if any",
         "description": "Return the detailed status of ongoing database migrations including starting date. If no migration is ongoing or needed it is still possible to call this endpoint and receive appropriate information.",
         "operationId": "getStatus",
@@ -1442,7 +2895,7 @@
     },
     "/system/liveness": {
       "get": {
-        "tags": ["liveness-controller"],
+        "tags": ["System"],
         "summary": "Provide liveness of SonarQube, meant to be used as a liveness probe on Kubernetes",
         "description": "  Require 'Administer System' permission or authentication with passcode.\n\n  When SonarQube is fully started, liveness check for database connectivity, Compute Engine status, and, except for DataCenter Edition, if ElasticSearch is Green or Yellow.\n\n  When SonarQube is on Safe Mode (for example when a database migration is running), liveness check only for database connectivity\n",
         "operationId": "livenessCheck",
@@ -1465,7 +2918,7 @@
     },
     "/system/health": {
       "get": {
-        "tags": ["health-controller"],
+        "tags": ["System"],
         "operationId": "getHealth",
         "parameters": [
           {
@@ -1487,25 +2940,120 @@
         }
       }
     },
-    "/sca/sbom-reports": {
+    "/software-quality-reports/accessibility-reports": {
       "get": {
-        "tags": ["k"],
-        "summary": "Get a software bill of materials (SBOM) report",
-        "description": "Return a report based on the dependencies in this project's branch, using\nthe type parameter and Accept header to select the report to generate.\n\nRight now, the available reports have specialized MIME types that\ngo along with those formats:\n\n* CycloneDX: https://cyclonedx.org/specification/overview/\n  * JSON & XML\n* SPDX 2.3: https://spdx.github.io/spdx-spec/v2.3/\n  * JSON & XML\n\nTheoretically you could send just the MIME type for the format you wanted\nas the Accept header and get that report. However, there may be other\nformats that don't have a specific MIME type attached -- think two\ndifferent flavors of a CSV report, for example. In that case, we still\nneed a specific report type parameter to help differentiate more.\n\nThis is an internal API and is subject to change without notice.\n",
-        "operationId": "generateReport",
+        "tags": ["software-quality-reports-controller"],
+        "summary": "Get accessibility report",
+        "description": "Get the accessibility report for a project branch.",
+        "operationId": "鲥_13",
         "parameters": [
+          {
+            "name": "branchKey",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "string" }
+          },
           {
             "name": "projectKey",
             "in": "query",
-            "description": "Key of the project to build report for",
+            "required": true,
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "standard",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "version",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetAccessibilityReportResponse"
+                }
+              }
+            }
+          }
+        },
+        "x-sonar-internal": "true"
+      }
+    },
+    "/sca/self-test": {
+      "get": {
+        "tags": ["Self Test"],
+        "summary": "Run a self test",
+        "description": "Run a self test that the dependency analysis (SCA) feature is enabled and\nable to reach the cloud services it relies on.\n\nThis is an internal API and is subject to change without notice.\n",
+        "operationId": "performSelfTest",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/SelfTestResponse" }
+              }
+            }
+          }
+        },
+        "x-sonar-internal": "true"
+      }
+    },
+    "/sca/self-test/spring-configuration": {
+      "get": {
+        "tags": ["Self Test"],
+        "summary": "Run a self test that Spring is configured as expected",
+        "description": "Run a self test that Spring is set up and working as we expect.\n\nThis is an internal API and is subject to change without notice.\n",
+        "operationId": "performSpringConfigurationSelfTest",
+        "parameters": [
+          {
+            "name": "selfTestName",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string", "minLength": 1 }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SelfTestSpringConfigurationResponse"
+                }
+              }
+            }
+          }
+        },
+        "x-sonar-internal": "true"
+      }
+    },
+    "/sca/sbom-reports": {
+      "get": {
+        "tags": ["SBOM Reports"],
+        "summary": "Get a software bill of materials (SBOM) report",
+        "description": "Return a report based on the dependencies in this component's branch, using\nthe type parameter and Accept header to select the report to generate.\n\nRight now, the available reports have specialized MIME types that\ngo along with those formats:\n\n* CycloneDX: https://cyclonedx.org/specification/overview/\n  * JSON & XML\n* SPDX 2.3: https://spdx.github.io/spdx-spec/v2.3/\n  * JSON & XML\n* SPDX 3.0: https://spdx.github.io/spdx-spec/v3.0.1/\n  * JSON\n",
+        "operationId": "generateReport",
+        "parameters": [
+          {
+            "name": "component",
+            "in": "query",
+            "description": "Key of the component (project, application, portfolio) to build report for",
             "required": true,
             "schema": {
               "type": "string",
-              "description": "Key of the project to build report for"
+              "description": "Key of the component (project, application, portfolio) to build report for"
             }
           },
           {
-            "name": "branchKey",
+            "name": "branch",
             "in": "query",
             "description": "Key of the branch to build report for",
             "required": false,
@@ -1517,12 +3065,12 @@
           {
             "name": "type",
             "in": "query",
-            "description": "Type of report to generate.\nThe `Accept` header sent by the client determines the format of the report.\nCurrently supported: cyclonedx (application/vnd.cyclonedx+json), cyclonedx (application/vnd.cyclonedx+xml),\nspdx (application/vnd.spdx+json), spdx (application/vnd.spdx+xml)\n",
+            "description": "Type of report to generate.\nThe `Accept` header sent by the client determines the format of the report.\nCurrently supported: cyclonedx (application/vnd.cyclonedx+json), cyclonedx (application/vnd.cyclonedx+xml),\nspdx_23 (application/spdx+json), spdx_23 (application/spdx+xml),\nspdx_30 (application/spdx+json)\n",
             "required": true,
             "schema": {
               "type": "string",
-              "description": "Type of report to generate.\nThe `Accept` header sent by the client determines the format of the report.\nCurrently supported: cyclonedx (application/vnd.cyclonedx+json), cyclonedx (application/vnd.cyclonedx+xml),\nspdx (application/vnd.spdx+json), spdx (application/vnd.spdx+xml)\n",
-              "enum": ["cyclonedx", "spdx_23"]
+              "description": "Type of report to generate.\nThe `Accept` header sent by the client determines the format of the report.\nCurrently supported: cyclonedx (application/vnd.cyclonedx+json), cyclonedx (application/vnd.cyclonedx+xml),\nspdx_23 (application/spdx+json), spdx_23 (application/spdx+xml),\nspdx_30 (application/spdx+json)\n",
+              "enum": ["cyclonedx", "spdx_23", "spdx_30"]
             }
           }
         ],
@@ -1541,44 +3089,100 @@
             }
           }
         },
-        "x-sonar-internal": "true"
+        "x-sonar-public": "true"
+      }
+    },
+    "/sca/risk-reports": {
+      "get": {
+        "tags": ["Risk Reports"],
+        "summary": "Get a report for all the current SCA dependency risks for a given component and branch",
+        "description": "Returns list of all risks for a given component and branch. CSV format is available by setting `Accept: text/csv` in your request headers.\n",
+        "operationId": "getReport",
+        "parameters": [
+          {
+            "name": "component",
+            "in": "query",
+            "description": "Key of the component (project, application, portfolio) to build report for",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Key of the component (project, application, portfolio) to build report for"
+            }
+          },
+          {
+            "name": "branch",
+            "in": "query",
+            "description": "Key of the branch to build report for",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Key of the branch to build report for"
+            }
+          },
+          {
+            "name": "riskType",
+            "in": "query",
+            "description": "Type of risk to filter the report by. If not provided, all risks types are included.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Type of risk to filter the report by. If not provided, all risks types are included.",
+              "enum": ["VULNERABILITY", "PROHIBITED_LICENSE"]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The report in the desired output format",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/RiskReportItem" }
+                }
+              },
+              "text/csv": { "schema": { "type": "string" } }
+            }
+          }
+        },
+        "x-sonar-public": "true"
       }
     },
     "/sca/releases": {
       "get": {
-        "tags": ["k"],
+        "tags": ["Releases"],
         "summary": "Search for releases",
-        "description": "Search for package releases that appear in the analyzed project,\nas determined by software composition analysis.\n\nThis endpoint returns one result for each release,\nrather than one result for each time a release is pulled in.\nEach result may appear in multiple files or scopes that\nall use the same version of the affected package.\n\nThe search results do not include full details on the dependencies\nthat pull in each release, only a summary. To get the full dependency\ndetails, use the /releases/{key} endpoint for a single release.\n\nIn the terminology of this endpoint, a \"release\" is a version of\na package like \"lodash 1.2.3\", and a \"dependency\" is a specific file\nand scope that pulls in the release such as \"subproject/pom.xml test\".\nEach returned release may have multiple dependencies.\n\nThis is an internal API and is subject to change without notice.\n",
+        "description": "Search for package releases that appear in the analyzed project,\napplication, or portfolio, as determined by software composition analysis.\n\nThis endpoint returns one result for each release,\nrather than one result for each time a release is pulled in.\nEach result may appear in multiple files or scopes that\nall use the same version of the affected package.\n\nThe search results do not include full details on the dependencies\nthat pull in each release, only a summary. To get the full dependency\ndetails, use the /releases/{key} endpoint for a single release.\n\nIn the terminology of this endpoint, a \"release\" is a version of\na package like \"lodash 1.2.3\", and a \"dependency\" is a specific file\nand scope that pulls in the release such as \"subproject/pom.xml test\".\nEach returned release may have multiple dependencies.\n\nThis is an internal API and is subject to change without notice.\n",
         "operationId": "search_3",
         "parameters": [
           {
             "name": "projectKey",
             "in": "query",
-            "description": "Key of the project to fetch all dependencies from",
+            "description": "Key of the component (project, application, or portfolio) to fetch all dependencies from",
             "required": true,
             "schema": {
               "type": "string",
-              "description": "Key of the project to fetch all dependencies from"
+              "description": "Key of the component (project, application, or portfolio) to fetch all dependencies from"
             }
           },
           {
             "name": "branchKey",
             "in": "query",
-            "description": "Key of the Branch to fetch all dependencies from. If not provided, the default branch will be used unless a Pull Request Key is provided.",
+            "description": "Key of the branch to fetch all dependencies from. If not provided, the default branch will be used unless a pull request key is provided.",
             "required": false,
             "schema": {
               "type": "string",
-              "description": "Key of the Branch to fetch all dependencies from. If not provided, the default branch will be used unless a Pull Request Key is provided."
+              "description": "Key of the branch to fetch all dependencies from. If not provided, the default branch will be used unless a pull request key is provided."
             }
           },
           {
             "name": "pullRequestKey",
             "in": "query",
-            "description": "Key of the Pull Request to fetch all dependencies from.",
+            "description": "Key of the pull request to fetch all dependencies from.",
             "required": false,
             "schema": {
               "type": "string",
-              "description": "Key of the Pull Request to fetch all dependencies from."
+              "description": "Key of the pull request to fetch all dependencies from."
             }
           },
           {
@@ -1592,13 +3196,13 @@
             }
           },
           {
-            "name": "newInPullRequest",
+            "name": "newlyIntroduced",
             "in": "query",
-            "description": "Filter on the newInPullRequest attribute. TRUE stands for only releases introduced vs. the target branch, FALSE for releases shared with target.",
+            "description": "Filter on the newlyIntroduced attribute. TRUE stands for only releases introduced vs. the target branch, FALSE for releases shared with target.",
             "required": false,
             "schema": {
               "type": "boolean",
-              "description": "Filter on the newInPullRequest attribute. TRUE stands for only releases introduced vs. the target branch, FALSE for releases shared with target."
+              "description": "Filter on the newlyIntroduced attribute. TRUE stands for only releases introduced vs. the target branch, FALSE for releases shared with target."
             }
           },
           {
@@ -1656,6 +3260,7 @@
               "format": "int32",
               "default": 1,
               "description": "1-based page index",
+              "exclusiveMinimum": 0,
               "minimum": 1
             }
           }
@@ -1677,7 +3282,7 @@
     },
     "/sca/releases/{key}": {
       "get": {
-        "tags": ["k"],
+        "tags": ["Releases"],
         "summary": "Get a single release",
         "description": "Fetch a single release by its key.\n\nThis single-release endpoint lists full details for all dependencies\nthat mention the release.\n\nIn the terminology of this endpoint, a \"release\" is a version of\na package like \"lodash 1.2.3\", and a \"dependency\" is a specific file\nand scope that pulls in the release such as \"subproject/pom.xml test\".\nEach returned release may have multiple dependencies.\n\nThis is an internal API and is subject to change without notice.\n",
         "operationId": "fetchRelease",
@@ -1705,143 +3310,41 @@
         "x-sonar-internal": "true"
       }
     },
-    "/sca/issues-releases": {
+    "/sca/license-profiles/assignable-projects": {
       "get": {
-        "tags": ["k"],
-        "summary": "Search for issue-release pairs",
-        "description": "Search for software composition analysis issues (dependency risks)\nof a project, paired with releases that appear in the analyzed\nproject.\n\nThis endpoint returns one result for each (issue,release) pair,\nrather than one result for each distinct issue. So for example\nif a library uses two different versions of a package and\nboth versions are affected by the same vulnerability, you will\nget two results not one.\n\nHowever each result may appear in multiple files or scopes that\nall use the same version of the affected package.\n\nIn the terminology of this endpoint, a \"release\" is a version of\na package like \"lodash 1.2.3\", an \"issue\" is a problem such as\n\"CVE-1234\", and a \"dependency\" is a specific file and scope that\npulls in the release such as \"subproject/pom.xml test\".\n\nThe dependencyRisks attribute in the result is deprecated; please\nuse issuesReleases instead.\n\nThis is an internal API and is subject to change without notice.\n",
-        "operationId": "search_4",
+        "tags": ["License Profiles"],
+        "summary": "License profile assignable projects",
+        "description": "  List the projects that can be assigned to the license profile. Assigning the\n  project to a license profile will cause that license profile to be used when\n  analyzing the project for license issues.\n",
+        "operationId": "index_1",
         "parameters": [
           {
-            "name": "projectKey",
+            "name": "licenseProfileUuid",
             "in": "query",
-            "description": "Key of the project to fetch all dependency risks from",
+            "description": "The key of the license profile whose assignable projects should be retrieved.\n",
             "required": true,
             "schema": {
               "type": "string",
-              "description": "Key of the project to fetch all dependency risks from"
+              "description": "The key of the license profile whose assignable projects should be retrieved.\n"
             }
           },
           {
-            "name": "branchKey",
+            "name": "assignedToLicenseProfile",
             "in": "query",
-            "description": "Key of the branch to fetch all dependency risks from. If not provided, the default branch will be used unless a Pull Request Key is provided.",
-            "required": false,
-            "schema": {
-              "type": "string",
-              "description": "Key of the branch to fetch all dependency risks from. If not provided, the default branch will be used unless a Pull Request Key is provided."
-            }
-          },
-          {
-            "name": "pullRequestKey",
-            "in": "query",
-            "description": "Key of the Pull Request to fetch all dependency risks from.",
-            "required": false,
-            "schema": {
-              "type": "string",
-              "description": "Key of the Pull Request to fetch all dependency risks from."
-            }
-          },
-          {
-            "name": "packageManagers",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "array",
-              "description": "Filter on the package manager",
-              "items": { "type": "string" },
-              "uniqueItems": true
-            }
-          },
-          {
-            "name": "types",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "array",
-              "description": "Filter on the issue type",
-              "items": { "type": "string" },
-              "uniqueItems": true
-            }
-          },
-          {
-            "name": "severities",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "array",
-              "description": "Filter on the severity",
-              "items": { "type": "string" },
-              "uniqueItems": true
-            }
-          },
-          {
-            "name": "packageName",
-            "in": "query",
-            "description": "Filter on the package name This parameter performs a partial match (contains and case insensitive) on the package name.",
-            "required": false,
-            "schema": {
-              "type": "string",
-              "description": "Filter on the package name This parameter performs a partial match (contains and case insensitive) on the package name."
-            }
-          },
-          {
-            "name": "vulnerabilityId",
-            "in": "query",
-            "description": "Filter on the vulnerability IDThis parameter performs a partial match (contains and case insensitive) on the vulnerability ID.",
-            "required": false,
-            "schema": {
-              "type": "string",
-              "description": "Filter on the vulnerability IDThis parameter performs a partial match (contains and case insensitive) on the vulnerability ID."
-            }
-          },
-          {
-            "name": "newInPullRequest",
-            "in": "query",
-            "description": "Filter on the newInPullRequest attribute. TRUE stands for only releases introduced vs. the target branch, FALSE for releases shared with target.",
+            "description": "  Providing this parameter filters by whether projects are assigned to the license profile or not.\n  Omitting this parameter includes all projects which can be assigned to the license profile,\n  regardless of whether they are already assigned to the license profile.\n",
             "required": false,
             "schema": {
               "type": "boolean",
-              "description": "Filter on the newInPullRequest attribute. TRUE stands for only releases introduced vs. the target branch, FALSE for releases shared with target."
+              "description": "  Providing this parameter filters by whether projects are assigned to the license profile or not.\n  Omitting this parameter includes all projects which can be assigned to the license profile,\n  regardless of whether they are already assigned to the license profile.\n"
             }
           },
           {
-            "name": "direct",
+            "name": "q",
             "in": "query",
-            "description": "Filter on the direct attribute. TRUE stands for only direct dependencies, FALSE for only transitive. If a release is both, it matches both.",
-            "required": false,
-            "schema": {
-              "type": "boolean",
-              "description": "Filter on the direct attribute. TRUE stands for only direct dependencies, FALSE for only transitive. If a release is both, it matches both."
-            }
-          },
-          {
-            "name": "productionScope",
-            "in": "query",
-            "description": "Filter on the productionScope attribute. TRUE stands for only production dependencies, FALSE for only not in production. If a release is both, it matches both.",
-            "required": false,
-            "schema": {
-              "type": "boolean",
-              "description": "Filter on the productionScope attribute. TRUE stands for only production dependencies, FALSE for only not in production. If a release is both, it matches both."
-            }
-          },
-          {
-            "name": "sort",
-            "in": "query",
-            "description": "Sort order",
+            "description": "  Providing this parameter performs a partial match (contains and case insensitive) on the project name.\n",
             "required": false,
             "schema": {
               "type": "string",
-              "default": "+identity",
-              "description": "Sort order",
-              "enum": [
-                "+identity",
-                "-identity",
-                "+severity",
-                "-severity",
-                "+cvssScore",
-                "-cvssScore"
-              ]
+              "description": "  Providing this parameter performs a partial match (contains and case insensitive) on the project name.\n"
             }
           },
           {
@@ -1868,6 +3371,7 @@
               "format": "int32",
               "default": 1,
               "description": "1-based page index",
+              "exclusiveMinimum": 0,
               "minimum": 1
             }
           }
@@ -1878,7 +3382,244 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/DependencyRisksSearchRestResponse"
+                  "$ref": "#/components/schemas/AssignableProjectsIndexRestResponse"
+                }
+              }
+            }
+          }
+        },
+        "x-sonar-internal": "true"
+      }
+    },
+    "/sca/issues-releases": {
+      "get": {
+        "tags": ["Issues-Releases"],
+        "summary": "Search for issue-release pairs",
+        "description": "Search for software composition analysis issues (dependency risks)\nof a project, paired with releases that appear in the analyzed\nproject, application, or portfolio.\n\nThis endpoint returns one result for each (issue,release) pair,\nrather than one result for each distinct issue. So for example\nif a library uses two different versions of a package and\nboth versions are affected by the same vulnerability, you will\nget two results not one.\n\nHowever each result may appear in multiple files or scopes that\nall use the same version of the affected package.\n\nIn the terminology of this endpoint, a \"release\" is a version of\na package like \"lodash 1.2.3\", an \"issue\" is a problem such as\n\"CVE-1234\", and a \"dependency\" is a specific file and scope that\npulls in the release such as \"subproject/pom.xml test\".\n\nThis is an internal API and is subject to change without notice.\n",
+        "operationId": "search_4",
+        "parameters": [
+          {
+            "name": "projectKey",
+            "in": "query",
+            "description": "Key of the component (project, application, portfolio) to fetch all dependency risks from.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Key of the component (project, application, portfolio) to fetch all dependency risks from."
+            }
+          },
+          {
+            "name": "branchKey",
+            "in": "query",
+            "description": "Key of the branch to fetch all dependency risks from. If not provided, the default branch will be used unless a pull request key is provided.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Key of the branch to fetch all dependency risks from. If not provided, the default branch will be used unless a pull request key is provided."
+            }
+          },
+          {
+            "name": "pullRequestKey",
+            "in": "query",
+            "description": "Key of the pull request to fetch all dependency risks from.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Key of the pull request to fetch all dependency risks from."
+            }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "description": "Sort order",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "+identity",
+              "description": "Sort order",
+              "enum": [
+                "+identity",
+                "-identity",
+                "+severity",
+                "-severity",
+                "+cvssScore",
+                "-cvssScore"
+              ]
+            }
+          },
+          {
+            "name": "packageManagers",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "description": "Filter on the package manager",
+              "items": { "type": "string" },
+              "uniqueItems": true
+            }
+          },
+          {
+            "name": "types",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "description": "Filter on the issue type",
+              "items": { "type": "string" },
+              "uniqueItems": true
+            }
+          },
+          {
+            "name": "qualities",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "description": "Filter on the quality domain",
+              "items": { "type": "string" },
+              "uniqueItems": true
+            }
+          },
+          {
+            "name": "severities",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "description": "Filter on the severity",
+              "items": { "type": "string" },
+              "uniqueItems": true
+            }
+          },
+          {
+            "name": "statuses",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "description": "Filter on the status",
+              "items": { "type": "string" },
+              "uniqueItems": true
+            }
+          },
+          {
+            "name": "packageName",
+            "in": "query",
+            "description": "Filter on the package name. This parameter performs a partial match (contains and case insensitive) on the package name.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Filter on the package name. This parameter performs a partial match (contains and case insensitive) on the package name."
+            }
+          },
+          {
+            "name": "vulnerabilityId",
+            "in": "query",
+            "description": "Filter on the vulnerability ID. This parameter performs a partial match (contains and case insensitive) on the vulnerability ID.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Filter on the vulnerability ID. This parameter performs a partial match (contains and case insensitive) on the vulnerability ID."
+            }
+          },
+          {
+            "name": "newlyIntroduced",
+            "in": "query",
+            "description": "Filter on the isNew attribute. TRUE stands for only releases introduced vs. the target branch, FALSE for releases shared with target.",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "description": "Filter on the isNew attribute. TRUE stands for only releases introduced vs. the target branch, FALSE for releases shared with target."
+            }
+          },
+          {
+            "name": "direct",
+            "in": "query",
+            "description": "Filter on the direct attribute. TRUE stands for only direct dependencies, FALSE for only transitive. If a release is both, it matches both.",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "description": "Filter on the direct attribute. TRUE stands for only direct dependencies, FALSE for only transitive. If a release is both, it matches both."
+            }
+          },
+          {
+            "name": "productionScope",
+            "in": "query",
+            "description": "Filter on the productionScope attribute. TRUE stands for only production dependencies, FALSE for only not in production. If a release is both, it matches both.",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "description": "Filter on the productionScope attribute. TRUE stands for only production dependencies, FALSE for only not in production. If a release is both, it matches both."
+            }
+          },
+          {
+            "name": "assignees",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "description": "Filter on assignee logins.",
+              "items": { "type": "string" },
+              "uniqueItems": true
+            }
+          },
+          {
+            "name": "projects",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "description": "Filter on project keys.",
+              "items": { "type": "string" },
+              "uniqueItems": true
+            }
+          },
+          {
+            "name": "assigned",
+            "in": "query",
+            "description": "Filter on whether the issue is assigned or not.",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "description": "Filter on whether the issue is assigned or not."
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "description": "Number of results per page. A value of 0 will only return the pagination information.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 50,
+              "description": "Number of results per page. A value of 0 will only return the pagination information.",
+              "maximum": 500,
+              "minimum": 0
+            }
+          },
+          {
+            "name": "pageIndex",
+            "in": "query",
+            "description": "1-based page index",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 1,
+              "description": "1-based page index",
+              "exclusiveMinimum": 0,
+              "minimum": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IssuesReleasesSearchRestResponse"
                 }
               }
             }
@@ -1889,10 +3630,10 @@
     },
     "/sca/issues-releases/{key}": {
       "get": {
-        "tags": ["k"],
+        "tags": ["Issues-Releases"],
         "summary": "Get a single issue-release pair",
         "description": "Fetch a single (issue,release) pair (dependency risk), using the key from the search endpoint.\n\nThis is an internal API and is subject to change without notice.\n",
-        "operationId": "fetchDependencyRisk",
+        "operationId": "fetchIssueRelease",
         "parameters": [
           {
             "name": "key",
@@ -1908,7 +3649,103 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/DependencyRiskDetailsResource"
+                  "$ref": "#/components/schemas/IssueReleaseDetailsResource"
+                }
+              }
+            }
+          }
+        },
+        "x-sonar-internal": "true"
+      }
+    },
+    "/sca/issues-releases/all-assignees": {
+      "get": {
+        "tags": ["Issues-Releases"],
+        "summary": "Get the list of users assigned to at least one issue in a given branch",
+        "description": "Get the list of users assigned to at least one issue in a given branch.\n",
+        "operationId": "getAllAssignees",
+        "parameters": [
+          {
+            "name": "projectKey",
+            "in": "query",
+            "description": "Key of the project to fetch all assignee users from.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Key of the project to fetch all assignee users from."
+            }
+          },
+          {
+            "name": "branchKey",
+            "in": "query",
+            "description": "Key of the branch to fetch all assignee users from. If not provided, the default branch will be used unless a pull request key is provided.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Key of the branch to fetch all assignee users from. If not provided, the default branch will be used unless a pull request key is provided."
+            }
+          },
+          {
+            "name": "pullRequestKey",
+            "in": "query",
+            "description": "Key of the pull request to fetch all assignee users from.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Key of the pull request to fetch all assignee users from."
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/UserResource" }
+                }
+              }
+            }
+          }
+        },
+        "x-sonar-internal": "true"
+      }
+    },
+    "/sca/enabled": {
+      "get": {
+        "tags": ["SCA Enabled"],
+        "summary": "Get whether SCA is licensed and set up for a resource's organization or enterprise, prefer the /feature-enabled path in new code",
+        "operationId": "getFeatureEnabled",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScaFeatureEnabledResource"
+                }
+              }
+            }
+          }
+        },
+        "x-sonar-internal": "true"
+      }
+    },
+    "/sca/feature-enabled": {
+      "get": {
+        "tags": ["SCA Enabled"],
+        "summary": "Get whether SCA is licensed and set up for a resource's organization or enterprise, prefer the /feature-enabled path in new code",
+        "operationId": "getFeatureEnabled_1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScaFeatureEnabledResource"
                 }
               }
             }
@@ -1919,7 +3756,7 @@
     },
     "/sca/clis": {
       "get": {
-        "tags": ["k"],
+        "tags": ["SCA CLIs"],
         "summary": "Get available CLI downloads",
         "description": "Gets the available SCA CLI downloads. The response includes metadata about each option\nsuch as the filename and operating system.\n\nThis is an internal API and is subject to change without notice.\n",
         "operationId": "getScaClisMetadata",
@@ -1971,7 +3808,7 @@
     },
     "/sca/clis/{id}": {
       "get": {
-        "tags": ["k"],
+        "tags": ["SCA CLIs"],
         "summary": "Get metadata for a specific CLI download",
         "description": "Gets the metadata for a specific SCA CLI download. The response includes the\nfilename, SHA-256 checksum, operating system, and CPU architecture.\n\nThis is an internal API and is subject to change without notice.\n",
         "operationId": "downloadScaCli",
@@ -1989,20 +3826,194 @@
             "description": "OK",
             "content": {
               "application/octet-stream": {
-                "schema": {
-                  "oneOf": [
-                    { "$ref": "#/components/schemas/ScaCliInfoRestResponse" },
-                    { "type": "string", "format": "binary" }
-                  ]
-                }
+                "schema": { "type": "string", "format": "binary" }
               },
               "application/json": {
                 "schema": {
-                  "oneOf": [
-                    { "$ref": "#/components/schemas/ScaCliInfoRestResponse" },
-                    { "type": "string", "format": "binary" }
-                  ]
+                  "$ref": "#/components/schemas/ScaCliInfoRestResponse"
                 }
+              }
+            }
+          }
+        },
+        "x-sonar-internal": "true"
+      }
+    },
+    "/sca/analyses": {
+      "get": {
+        "tags": ["Analyses"],
+        "summary": "Fetch analysis status for one branch",
+        "description": "Fetch analysis status information for a branch. If the branch has\nnever been analyzed, will return a status of 404.\n\nThis is an internal API and is subject to change without notice.\n",
+        "operationId": "fetchAnalysis",
+        "parameters": [
+          {
+            "name": "projectKey",
+            "in": "query",
+            "description": "Key of the project to fetch analysis status from",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Key of the project to fetch analysis status from"
+            }
+          },
+          {
+            "name": "branchKey",
+            "in": "query",
+            "description": "Key of the branch to fetch analysis status from. If not provided, the default branch will be used unless a pull request key is provided.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Key of the branch to fetch analysis status from. If not provided, the default branch will be used unless a pull request key is provided."
+            }
+          },
+          {
+            "name": "pullRequestKey",
+            "in": "query",
+            "description": "Key of the pull request to fetch analysis status from.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Key of the pull request to fetch analysis status from."
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/AnalysisResource" }
+              }
+            }
+          }
+        },
+        "x-sonar-internal": "true"
+      }
+    },
+    "/jira/user-actions": {
+      "get": {
+        "tags": ["Jira"],
+        "summary": "Returns a list of available user actions for a project",
+        "description": "Returns a list of available user actions for the authenticated user in the context of a specific project.\nIf the user is not authenticated, returns an empty list.\n",
+        "operationId": "鲥_14",
+        "parameters": [
+          {
+            "name": "sonarProjectId",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": { "type": "array", "items": { "type": "string" } }
+              }
+            }
+          }
+        },
+        "x-sonar-internal": "true"
+      }
+    },
+    "/jira/projects": {
+      "get": {
+        "tags": ["Jira"],
+        "summary": "Returns a list of all the available Jira projects",
+        "description": "Returns a list of all the available Jira projects",
+        "operationId": "鲥_15",
+        "parameters": [
+          {
+            "name": "sonarOrganizationUuid",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/JiraProjectResultResource"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-sonar-internal": "true"
+      }
+    },
+    "/jira/linked-issues-count/{sonarProjectId}": {
+      "get": {
+        "tags": ["Jira"],
+        "summary": "Count linked Jira issues",
+        "description": "Count the number of Jira issues linked to a specific Sonar project.\nAccepts only authenticated requests.\n",
+        "operationId": "鲥_16",
+        "parameters": [
+          {
+            "name": "sonarProjectId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LinkedIssuesCountResource"
+                }
+              }
+            }
+          }
+        },
+        "x-sonar-internal": "true"
+      }
+    },
+    "/integrations/user-bindings/{id}": {
+      "get": {
+        "tags": ["Slack User Bindings"],
+        "summary": "Get Slack user binding",
+        "description": "Retrieves a Slack user binding by its ID. Users can only access their own bindings\nunless they have administrative privileges.\n",
+        "operationId": "getUserBinding",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "User binding retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/UserBindingResponse" }
+              }
+            }
+          },
+          "401": { "description": "Authentication required" },
+          "403": { "description": "Insufficient permissions" },
+          "404": { "description": "User binding not found" },
+          "500": { "description": "Internal server error" }
+        },
+        "x-sonar-internal": "true"
+      }
+    },
+    "/fix-suggestions/supported-rules": {
+      "get": {
+        "tags": ["Fix Suggestions"],
+        "summary": "Get the supported rules",
+        "description": "Returns the list of rules for which a fix suggestion can be generated",
+        "operationId": "supportedRules",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/SupportedRulesDto" }
               }
             }
           }
@@ -2012,7 +4023,7 @@
     },
     "/fix-suggestions/supported-llm-providers": {
       "get": {
-        "tags": ["supported-llm-provider-controller"],
+        "tags": ["Fix Suggestions"],
         "summary": "Get the supported LLM providers",
         "description": "Returns the LLM providers that could be used for requesting an AI fix suggestion",
         "operationId": "getLlmProviders",
@@ -2030,14 +4041,15 @@
               }
             }
           }
-        }
+        },
+        "x-sonar-internal": "true"
       }
     },
     "/fix-suggestions/service-info": {
       "get": {
-        "tags": ["service-info-controller"],
-        "summary": "Request status and subscription information of AI CodeFix service",
-        "operationId": "get",
+        "tags": ["Fix Suggestions"],
+        "summary": "Request status of AI CodeFix service",
+        "operationId": "get_2",
         "responses": {
           "200": {
             "description": "OK",
@@ -2047,34 +4059,16 @@
               }
             }
           }
-        }
-      }
-    },
-    "/fix-suggestions/service-info/subscription-type": {
-      "get": {
-        "tags": ["service-info-controller"],
-        "summary": "Request subscription information of AI CodeFix service",
-        "operationId": "getSubscriptionType",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SubscriptionTypeResponse"
-                }
-              }
-            }
-          }
-        }
+        },
+        "x-sonar-internal": "true"
       }
     },
     "/fix-suggestions/issues/{issueId}": {
       "get": {
-        "tags": ["fix-suggestion-issue-controller"],
+        "tags": ["Fix Suggestions"],
         "summary": "Fetch AI suggestion availability for the given issueId",
         "description": "Requires Code Viewer permission.",
-        "operationId": "get_1",
+        "operationId": "get_3",
         "parameters": [
           {
             "name": "issueId",
@@ -2097,9 +4091,33 @@
         }
       }
     },
+    "/entitlements/purchasable-features": {
+      "get": {
+        "tags": ["Entitlements"],
+        "summary": "Returns a list of all available purchasable features for this edition",
+        "description": "  Returns a list of all available purchasable features for this edition including the ones who are already purchased\n",
+        "operationId": "getPurchasableFeatures",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PurchasableFeatureRestResponse"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-sonar-internal": "true"
+      }
+    },
     "/dop-translation/project-bindings": {
       "get": {
-        "tags": ["project-bindings-controller"],
+        "tags": ["Dop Translation"],
         "summary": "Search across project bindings",
         "operationId": "getProjectBindingByProjectId",
         "parameters": [
@@ -2121,6 +4139,16 @@
             "schema": {
               "type": "string",
               "description": "Filter on the DevOps Platform setting id."
+            }
+          },
+          {
+            "name": "repositoryUrl",
+            "in": "query",
+            "description": "Filter on the repository URL.\nThis parameter can be in different formats, the traditional URL or the git remote URL (https or ssh).\n",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Filter on the repository URL.\nThis parameter can be in different formats, the traditional URL or the git remote URL (https or ssh).\n"
             }
           },
           {
@@ -2147,6 +4175,7 @@
               "format": "int32",
               "default": 1,
               "description": "1-based page index",
+              "exclusiveMinimum": 0,
               "minimum": 1
             }
           }
@@ -2168,7 +4197,7 @@
     },
     "/dop-translation/project-bindings/{id}": {
       "get": {
-        "tags": ["project-bindings-controller"],
+        "tags": ["Dop Translation"],
         "summary": "Fetch a single Project Binding",
         "operationId": "getProjectBinding",
         "parameters": [
@@ -2195,7 +4224,7 @@
     },
     "/dop-translation/dop-settings": {
       "get": {
-        "tags": ["dop-settings-controller"],
+        "tags": ["Dop Translation"],
         "summary": "List all DevOps Platform Integration settings",
         "description": "Requires the 'Create Projects' permission ",
         "operationId": "fetchAllDopSettings",
@@ -2213,11 +4242,102 @@
         }
       }
     },
+    "/atlassian/auth-url": {
+      "get": {
+        "tags": ["Atlassian"],
+        "summary": "Generate Jira authentication URL",
+        "description": "Generate the authentication URL for Jira OAuth flow.\nRequires authenticated user.\n",
+        "operationId": "鲥_17",
+        "parameters": [
+          {
+            "name": "sonarOrganizationKey",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "sonarOrganizationUuid",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": { "schema": { "type": "string" } }
+            }
+          }
+        },
+        "x-sonar-internal": "true"
+      }
+    },
+    "/architecture/graphs": {
+      "get": {
+        "tags": ["Architecture"],
+        "summary": "Search all current graphs available for a branch. This endpoint do not includes graph Data itself",
+        "operationId": "鲥_18",
+        "parameters": [
+          {
+            "name": "projectKey",
+            "in": "query",
+            "description": "The key of the project.",
+            "required": true,
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "branchKey",
+            "in": "query",
+            "description": "The key of the branch.",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/_a" }
+              }
+            }
+          }
+        },
+        "x-sonar-internal": "true"
+      }
+    },
+    "/architecture/graphs/{id}": {
+      "get": {
+        "tags": ["Architecture"],
+        "summary": "Get graph data by id.",
+        "description": "Fetch the graph data produced by analysis.",
+        "operationId": "鲥_19",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "id of the graph data.",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/graph+json": { "schema": { "type": "string" } }
+            }
+          }
+        },
+        "x-sonar-internal": "true"
+      }
+    },
     "/architecture/file-graph": {
       "get": {
-        "tags": ["k"],
+        "tags": ["Architecture"],
         "summary": "Find the file graph for this project branch and source.",
-        "operationId": "踼",
+        "operationId": "鲥_20",
         "parameters": [
           {
             "name": "projectKey",
@@ -2254,7 +4374,7 @@
     },
     "/analysis/version": {
       "get": {
-        "tags": ["version-controller"],
+        "tags": ["Analysis"],
         "summary": "Server version",
         "description": "Get the version of the Scanner Engine",
         "operationId": "getVersion",
@@ -2268,7 +4388,7 @@
     },
     "/analysis/jres": {
       "get": {
-        "tags": ["jres-controller"],
+        "tags": ["Analysis"],
         "summary": "All JREs metadata",
         "description": "Get metadata of all available JREs",
         "operationId": "getJresMetadata",
@@ -2307,7 +4427,7 @@
     },
     "/analysis/jres/{id}": {
       "get": {
-        "tags": ["jres-controller"],
+        "tags": ["Analysis"],
         "summary": "JRE download/metadata",
         "description": "This endpoint return the JRE metadata by default. To download the JRE binary asset, set the Accept header of the request to 'application/octet-stream'.",
         "operationId": "downloadJre",
@@ -2325,20 +4445,10 @@
             "description": "OK",
             "content": {
               "application/octet-stream": {
-                "schema": {
-                  "oneOf": [
-                    { "$ref": "#/components/schemas/JreInfoRestResponse" },
-                    { "type": "string", "format": "binary" }
-                  ]
-                }
+                "schema": { "type": "string", "format": "binary" }
               },
               "application/json": {
-                "schema": {
-                  "oneOf": [
-                    { "$ref": "#/components/schemas/JreInfoRestResponse" },
-                    { "type": "string", "format": "binary" }
-                  ]
-                }
+                "schema": { "$ref": "#/components/schemas/JreInfoRestResponse" }
               }
             }
           }
@@ -2347,7 +4457,7 @@
     },
     "/analysis/engine": {
       "get": {
-        "tags": ["scanner-engine-controller"],
+        "tags": ["Analysis"],
         "summary": "Scanner engine download/metadata",
         "description": "This endpoint return the Scanner Engine metadata by default. To download the Scanner Engine, set the Accept header of the request to 'application/octet-stream'.",
         "operationId": "downloadScannerEngine",
@@ -2356,19 +4466,11 @@
             "description": "OK",
             "content": {
               "application/octet-stream": {
-                "schema": {
-                  "oneOf": [
-                    { "$ref": "#/components/schemas/EngineInfoRestResponse" },
-                    { "type": "string", "format": "binary" }
-                  ]
-                }
+                "schema": { "type": "string", "format": "binary" }
               },
               "application/json": {
                 "schema": {
-                  "oneOf": [
-                    { "$ref": "#/components/schemas/EngineInfoRestResponse" },
-                    { "type": "string", "format": "binary" }
-                  ]
+                  "$ref": "#/components/schemas/EngineInfoRestResponse"
                 }
               }
             }
@@ -2378,7 +4480,7 @@
     },
     "/analysis/active_rules": {
       "get": {
-        "tags": ["active-rules-controller"],
+        "tags": ["Analysis"],
         "summary": "Get all active rules for a specific project",
         "description": "Used by the scanner-engine to get all active rules for a given project.",
         "operationId": "getActiveRules",
@@ -2406,12 +4508,30 @@
         }
       }
     },
+    "/sca/license-profiles/assigned-projects/{project-key}": {
+      "delete": {
+        "tags": ["License Profiles"],
+        "summary": "Remove the project's assignment to the license profile.",
+        "description": "   Remove the project's assignment to the license profile. If there is a default license profile,\n   it will be used to analyze license issues for this project.\n",
+        "operationId": "delete_2",
+        "parameters": [
+          {
+            "name": "project-key",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": { "204": { "description": "No Content" } },
+        "x-sonar-internal": "true"
+      }
+    },
     "/authorizations/group-memberships/{id}": {
       "delete": {
-        "tags": ["group-membership-controller"],
+        "tags": ["Authorizations"],
         "summary": "Remove a group membership",
         "description": "Remove a user from a group",
-        "operationId": "delete",
+        "operationId": "delete_3",
         "parameters": [
           {
             "name": "id",
@@ -2432,13 +4552,14 @@
         "properties": {
           "email": {
             "type": "string",
+            "format": "email",
             "description": "User email",
             "maxLength": 100,
             "minLength": 1
           },
           "local": {
             "type": "boolean",
-            "default": "true",
+            "default": true,
             "description": "Specify if the user should be authenticated from SonarQube server or from an external authentication system. Password should not be set when local is set to false."
           },
           "login": {
@@ -2490,11 +4611,13 @@
         "properties": {
           "host": {
             "type": "string",
-            "description": "URL of your SMTP server"
+            "description": "URL of your SMTP server",
+            "minLength": 1
           },
           "port": {
             "type": "string",
-            "description": "Port of your SMTP server (usually 25, 587 or 465)"
+            "description": "Port of your SMTP server (usually 25, 587 or 465)",
+            "minLength": 1
           },
           "securityProtocol": {
             "type": "string",
@@ -2503,15 +4626,18 @@
           },
           "fromAddress": {
             "type": "string",
-            "description": "Address emails will come from"
+            "description": "Address emails will come from",
+            "minLength": 1
           },
           "fromName": {
             "type": "string",
-            "description": "Name emails will come from (usually \"SonarQube\")"
+            "description": "Name emails will come from (usually \"SonarQube\")",
+            "minLength": 1
           },
           "subjectPrefix": {
             "type": "string",
-            "description": "Prefix added to email so they can be easily recognized (usually \"[SonarQube]\")"
+            "description": "Prefix added to email so they can be easily recognized (usually \"[SonarQube]\")",
+            "minLength": 1
           },
           "authMethod": {
             "type": "string",
@@ -2520,7 +4646,8 @@
           },
           "username": {
             "type": "string",
-            "description": "For Basic and OAuth authentication: username used to authenticate to the SMTP server"
+            "description": "For Basic and OAuth authentication: username used to authenticate to the SMTP server",
+            "minLength": 1
           },
           "basicPassword": {
             "type": "string",
@@ -2617,6 +4744,581 @@
           }
         }
       },
+      "LicenseProfilesCreateRestRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "The name of the license policy"
+          },
+          "default": {
+            "type": "boolean",
+            "description": "Whether this license policy is the default or not"
+          }
+        },
+        "required": ["name"]
+      },
+      "LicenseProfileResource": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "default": { "type": "boolean" },
+          "actions": {
+            "$ref": "#/components/schemas/LicenseProfileSingleActions"
+          },
+          "updatedAt": { "type": "string" }
+        }
+      },
+      "LicenseProfileSingleActions": {
+        "type": "object",
+        "properties": {
+          "edit": { "type": "boolean" },
+          "setAsDefault": { "type": "boolean" },
+          "associateProjects": { "type": "boolean" },
+          "delete": { "type": "boolean" }
+        }
+      },
+      "UpdateAssigneeRestRequest": {
+        "type": "object",
+        "properties": {
+          "issueReleaseKey": {
+            "type": "string",
+            "description": "Issue release key"
+          },
+          "assigneeLogin": { "type": "string", "description": "Assignee login" }
+        },
+        "required": ["issueReleaseKey"]
+      },
+      "AffectedPackageResource": {
+        "type": "object",
+        "properties": {
+          "purl": { "type": "string" },
+          "recommendation": {
+            "type": "string",
+            "description": "The maintainer's overall recommendation, if available",
+            "enum": ["ignore", "upgrade", "upgrade_or_workaround"]
+          },
+          "recommendationDetails": {
+            "$ref": "#/components/schemas/VulnerabilityRecommendationDetailsResource"
+          },
+          "versionOptions": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/VersionOptionResource" }
+          },
+          "affectedVersions": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "unaffectedVersions": { "type": "string" }
+        }
+      },
+      "IssueReleaseBranchResource": {
+        "type": "object",
+        "properties": {
+          "uuid": { "type": "string" },
+          "key": { "type": "string" },
+          "pullRequest": { "type": "boolean" },
+          "projectKey": { "type": "string" },
+          "projectName": { "type": "string" },
+          "legacyProjectUuid": { "type": "string" },
+          "organizationUuid": { "type": "string", "format": "uuid" }
+        }
+      },
+      "IssueReleaseDetailsResource": {
+        "type": "object",
+        "properties": {
+          "key": { "type": "string" },
+          "severity": { "type": "string" },
+          "originalSeverity": { "type": "string" },
+          "manualSeverity": { "type": "string" },
+          "showIncreasedSeverityWarning": { "type": "boolean" },
+          "release": { "$ref": "#/components/schemas/ReleaseSearchResource" },
+          "type": {
+            "type": "string",
+            "enum": ["VULNERABILITY", "PROHIBITED_LICENSE"]
+          },
+          "quality": {
+            "type": "string",
+            "enum": ["MAINTAINABILITY", "RELIABILITY", "SECURITY"]
+          },
+          "status": { "type": "string" },
+          "createdAt": { "type": "string" },
+          "assignee": { "$ref": "#/components/schemas/UserResource" },
+          "commentCount": { "type": "integer", "format": "int32" },
+          "vulnerability": {
+            "$ref": "#/components/schemas/VulnerabilityResource"
+          },
+          "spdxLicenseId": { "type": "string" },
+          "transitions": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": ["CONFIRM", "REOPEN", "SAFE", "FIXED", "ACCEPT"]
+            }
+          },
+          "actions": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": ["COMMENT", "ASSIGN", "SET_SEVERITY"]
+            },
+            "uniqueItems": true
+          },
+          "branch": {
+            "$ref": "#/components/schemas/IssueReleaseBranchResource"
+          }
+        }
+      },
+      "ReleaseSearchResource": {
+        "type": "object",
+        "properties": {
+          "key": { "type": "string" },
+          "branchUuid": { "type": "string" },
+          "packageUrl": { "type": "string" },
+          "packageManager": { "type": "string" },
+          "packageName": { "type": "string" },
+          "version": { "type": "string" },
+          "licenseExpression": { "type": "string" },
+          "known": { "type": "boolean" },
+          "knownPackage": { "type": "boolean" },
+          "newlyIntroduced": { "type": "boolean" },
+          "directSummary": { "type": "boolean" },
+          "scopeSummary": { "type": "string" },
+          "productionScopeSummary": { "type": "boolean" },
+          "dependencyFilePaths": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        }
+      },
+      "UserResource": {
+        "type": "object",
+        "properties": {
+          "login": { "type": "string" },
+          "name": { "type": "string" },
+          "avatar": { "type": "string" },
+          "active": { "type": "boolean" }
+        }
+      },
+      "VersionOptionResource": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "string",
+            "description": "The version being presented as an option"
+          },
+          "vulnerabilityIds": {
+            "type": "array",
+            "description": "Vulnerability IDs affecting this version",
+            "items": { "type": "string" }
+          },
+          "prerelease": {
+            "type": "boolean",
+            "description": "Is this version a pre-release version"
+          },
+          "fixLevel": {
+            "type": "string",
+            "description": "Describes which vulnerabilities are fixed",
+            "enum": ["COMPLETE", "PARTIAL", "NONE", "UNKNOWN"]
+          },
+          "descriptionCode": {
+            "type": "string",
+            "description": "How the frontend should label this version",
+            "enum": [
+              "VERSION_IN_USE",
+              "NEAREST_PARTIAL",
+              "NEAREST_COMPLETE",
+              "LATEST_PARTIAL",
+              "LATEST_COMPLETE",
+              "LATEST_STABLE",
+              "LATEST_PRERELEASE",
+              "UNKNOWN"
+            ]
+          }
+        }
+      },
+      "VulnerabilityRecommendationDetailsResource": {
+        "type": "object",
+        "properties": {
+          "impactScore": { "type": "integer", "format": "int32" },
+          "impactDescription": { "type": "string" },
+          "realIssue": { "type": "boolean" },
+          "falsePositiveReason": { "type": "string" },
+          "includesDev": { "type": "boolean" },
+          "specificMethodsAffected": { "type": "boolean" },
+          "specificMethodsDescription": { "type": "string" },
+          "otherConditions": { "type": "boolean" },
+          "otherConditionsDescription": { "type": "string" },
+          "workaroundAvailable": { "type": "boolean" },
+          "workaroundDescription": { "type": "string" },
+          "visibility": { "type": "string" }
+        }
+      },
+      "VulnerabilityReportResource": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "url": { "type": "string" },
+          "type": { "type": "string" },
+          "cvssScore": { "type": "string" },
+          "cvssSeverity": { "type": "string" },
+          "withdrawnAt": { "type": "string" }
+        }
+      },
+      "VulnerabilityResource": {
+        "type": "object",
+        "properties": {
+          "vulnerabilityId": { "type": "string" },
+          "reports": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/VulnerabilityReportResource"
+            }
+          },
+          "description": { "type": "string" },
+          "epssPercentile": { "type": "string" },
+          "epssProbability": { "type": "string" },
+          "knownExploited": { "type": "boolean" },
+          "cweIds": { "type": "array", "items": { "type": "string" } },
+          "publishedOn": { "type": "string" },
+          "affectedPackages": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/AffectedPackageResource" }
+          },
+          "withdrawn": { "type": "boolean" }
+        }
+      },
+      "IssueReleaseSetSeverityRestRequest": {
+        "type": "object",
+        "properties": {
+          "issueReleaseKey": {
+            "type": "string",
+            "description": "Issue release key"
+          },
+          "quality": {
+            "type": "string",
+            "description": "Software Quality",
+            "enum": ["MAINTAINABILITY", "RELIABILITY", "SECURITY"]
+          },
+          "severity": {
+            "type": "string",
+            "description": "Severity",
+            "enum": ["INFO", "LOW", "MEDIUM", "HIGH", "BLOCKER"]
+          }
+        },
+        "required": ["issueReleaseKey", "quality", "severity"]
+      },
+      "IssueReleaseClearSeverityWarningRestRequest": {
+        "type": "object",
+        "properties": {
+          "issueReleaseKey": {
+            "type": "string",
+            "description": "Issue release key"
+          }
+        },
+        "required": ["issueReleaseKey"]
+      },
+      "IssueReleaseStatusTransitionRequest": {
+        "type": "object",
+        "properties": {
+          "issueReleaseKey": {
+            "type": "string",
+            "description": "Issue release key"
+          },
+          "transitionKey": {
+            "type": "string",
+            "description": "Transition key",
+            "enum": ["CONFIRM", "REOPEN", "SAFE", "FIXED", "ACCEPT"]
+          },
+          "comment": { "type": "string", "description": "Transition comment" }
+        },
+        "required": ["issueReleaseKey", "transitionKey"]
+      },
+      "IssueReleaseAddCommentRestRequest": {
+        "type": "object",
+        "properties": {
+          "issueReleaseKey": {
+            "type": "string",
+            "description": "Issue release key"
+          },
+          "comment": { "type": "string", "description": "comment" }
+        },
+        "required": ["issueReleaseKey"]
+      },
+      "AzureBillingRestResponse": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean" },
+          "message": { "type": "string" }
+        }
+      },
+      "PostJiraWorkItemRequestResource": {
+        "type": "object",
+        "properties": {
+          "resourceId": {
+            "type": "string",
+            "description": "Resource identifier",
+            "minLength": 1,
+            "writeOnly": true
+          },
+          "resourceType": {
+            "type": "string",
+            "description": "Resource type",
+            "enum": ["SONAR_ISSUE", "DEPENDENCY_RISK"],
+            "writeOnly": true
+          },
+          "sonarProjectId": {
+            "type": "string",
+            "description": "Sonar project identifier",
+            "minLength": 1,
+            "writeOnly": true
+          },
+          "workTypeId": {
+            "type": "string",
+            "description": "Work type identifier",
+            "minLength": 1,
+            "writeOnly": true
+          },
+          "summary": {
+            "type": "string",
+            "description": "Work item summary",
+            "minLength": 1,
+            "writeOnly": true
+          },
+          "description": {
+            "type": "string",
+            "description": "Work item description",
+            "minLength": 1,
+            "writeOnly": true
+          }
+        },
+        "required": [
+          "description",
+          "resourceId",
+          "resourceType",
+          "sonarProjectId",
+          "summary",
+          "workTypeId"
+        ]
+      },
+      "JiraWorkItemResource": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Work item identifier",
+            "readOnly": true
+          },
+          "jiraIssueId": {
+            "type": "string",
+            "description": "Jira issue identifier",
+            "readOnly": true
+          },
+          "jiraIssueKey": {
+            "type": "string",
+            "description": "Jira issue key",
+            "readOnly": true
+          },
+          "jiraIssueUrl": {
+            "type": "string",
+            "description": "Jira issue URL",
+            "readOnly": true
+          },
+          "jiraIssueStatus": {
+            "type": "string",
+            "description": "Jira issue status",
+            "readOnly": true
+          }
+        }
+      },
+      "PostJiraProjectBindingRequestResource": {
+        "type": "object",
+        "properties": {
+          "sonarProjectId": {
+            "type": "string",
+            "description": "Sonar project identifier",
+            "minLength": 1,
+            "writeOnly": true
+          },
+          "jiraOrganizationId": {
+            "type": "string",
+            "description": "Jira instance binding identifier",
+            "writeOnly": true
+          },
+          "jiraProjectKey": {
+            "type": "string",
+            "description": "Jira project key",
+            "minLength": 1,
+            "writeOnly": true
+          }
+        },
+        "required": ["jiraOrganizationId", "jiraProjectKey", "sonarProjectId"]
+      },
+      "JiraProjectBindingResource": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Jira project binding identifier",
+            "readOnly": true
+          },
+          "sonarProjectId": {
+            "type": "string",
+            "description": "Sonar project identifier",
+            "readOnly": true
+          },
+          "jiraOrganizationId": {
+            "type": "string",
+            "description": "Jira instance binding identifier",
+            "readOnly": true
+          },
+          "jiraProjectKey": {
+            "type": "string",
+            "description": "Jira project key",
+            "readOnly": true
+          }
+        }
+      },
+      "PostJiraOrganizationBindingRequestResource": {
+        "type": "object",
+        "properties": {
+          "state": {
+            "type": "string",
+            "description": "Base64-encoded OAuth state parameter",
+            "minLength": 1,
+            "writeOnly": true
+          },
+          "authorizationCode": {
+            "type": "string",
+            "description": "OAuth authorization code (no whitespace)",
+            "minLength": 1,
+            "writeOnly": true
+          }
+        },
+        "required": ["authorizationCode", "state"]
+      },
+      "JiraOrganizationBindingResource": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Jira instance binding identifier",
+            "readOnly": true
+          },
+          "sonarOrganizationUuid": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Sonar organization UUID",
+            "readOnly": true
+          },
+          "jiraInstanceUrl": {
+            "type": "string",
+            "description": "Jira instance URL",
+            "readOnly": true
+          },
+          "createdBy": {
+            "type": "string",
+            "description": "User who created or reauthorized the jira connection",
+            "readOnly": true
+          },
+          "createdAt": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Creation timestamp",
+            "readOnly": true
+          },
+          "isTokenShared": {
+            "type": "boolean",
+            "description": "TODO",
+            "readOnly": true
+          }
+        }
+      },
+      "OAuthResource": {
+        "type": "object",
+        "properties": {
+          "cloudId": {
+            "type": "string",
+            "description": "The resource's cloud ID",
+            "readOnly": true
+          },
+          "url": {
+            "type": "string",
+            "description": "The resource's URL",
+            "readOnly": true
+          }
+        }
+      },
+      "PostJiraOrganizationBindingResponseResource": {
+        "type": "object",
+        "properties": {
+          "binding": {
+            "$ref": "#/components/schemas/JiraOrganizationBindingResource",
+            "description": "The successfully created binding (present if binding was created)",
+            "readOnly": true
+          },
+          "resources": {
+            "type": "array",
+            "description": "Array of available resources to bind the instance to",
+            "items": { "$ref": "#/components/schemas/OAuthResource" },
+            "readOnly": true
+          }
+        },
+        "required": ["resources"]
+      },
+      "UserBindingCreationRequest": {
+        "type": "object",
+        "description": "User binding creation request",
+        "properties": {
+          "bindingData": {
+            "$ref": "#/components/schemas/UserBindingCreationRequestBindingData"
+          },
+          "userId": { "type": "string", "minLength": 1 }
+        },
+        "required": ["bindingData", "userId"]
+      },
+      "UserBindingCreationRequestBindingData": {
+        "type": "object",
+        "properties": { "code": { "type": "string", "minLength": 1 } },
+        "required": ["code"]
+      },
+      "UserBindingResponse": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "user_id": { "type": "string" },
+          "slack_user_id": { "type": "string" },
+          "slack_workspace_id": { "type": "string" },
+          "slack_workspace_name": { "type": "string" },
+          "created_at": { "type": "integer", "format": "int64" }
+        }
+      },
+      "IntegrationConfigurationPostRequest": {
+        "type": "object",
+        "properties": {
+          "integrationType": { "type": "string", "enum": ["SLACK"] },
+          "clientId": { "type": "string", "minLength": 1 },
+          "clientSecret": { "type": "string", "minLength": 1 },
+          "signingSecret": { "type": "string", "minLength": 1 }
+        },
+        "required": [
+          "clientId",
+          "clientSecret",
+          "integrationType",
+          "signingSecret"
+        ]
+      },
+      "IntegrationConfigurationResponse": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "integrationType": { "type": "string", "enum": ["SLACK"] },
+          "clientId": { "type": "string" },
+          "appId": { "type": "string" }
+        }
+      },
       "AwarenessBannerClickedRequest": {
         "type": "object",
         "properties": {
@@ -2630,9 +5332,24 @@
       "FixSuggestionPostRequest": {
         "type": "object",
         "properties": {
-          "issueId": { "type": "string", "description": "Issue key" }
+          "projectKey": { "type": "string" },
+          "issueId": { "type": "string", "description": "Issue key" },
+          "issue": {
+            "$ref": "#/components/schemas/Issue",
+            "description": "Issue"
+          }
+        }
+      },
+      "Issue": {
+        "type": "object",
+        "properties": {
+          "message": { "type": "string" },
+          "startLine": { "type": "integer", "format": "int32" },
+          "endLine": { "type": "integer", "format": "int32" },
+          "ruleKey": { "type": "string" },
+          "sourceCode": { "type": "string" }
         },
-        "required": ["issueId"]
+        "required": ["endLine", "message", "ruleKey", "sourceCode", "startLine"]
       },
       "ChangeDto": {
         "type": "object",
@@ -2652,6 +5369,31 @@
             "type": "array",
             "items": { "$ref": "#/components/schemas/ChangeDto" }
           }
+        }
+      },
+      "LicenseRestRequest": {
+        "type": "object",
+        "properties": {
+          "licenseKey": { "type": "string", "description": "New license key" }
+        }
+      },
+      "LicenseUploadActivationRequest": {
+        "type": "object",
+        "properties": {
+          "license": {
+            "type": "string",
+            "description": "Contents of a valid .lic file"
+          },
+          "licenseKey": {
+            "type": "string",
+            "description": "License key for the license"
+          }
+        }
+      },
+      "LegacyLicenseRestRequest": {
+        "type": "object",
+        "properties": {
+          "licenseKey": { "type": "string", "description": "New license key" }
         }
       },
       "GitlabSynchronizationRunResource": {
@@ -2712,15 +5454,18 @@
           },
           "applicationId": {
             "type": "string",
-            "description": "Gitlab Application id"
+            "description": "Gitlab Application id",
+            "minLength": 1
           },
           "url": {
             "type": "string",
-            "description": "Url of Gitlab instance for authentication (for instance https://gitlab.com)"
+            "description": "Url of Gitlab instance for authentication (for instance https://gitlab.com)",
+            "minLength": 1
           },
           "secret": {
             "type": "string",
             "description": "Secret of the application",
+            "minLength": 1,
             "writeOnly": true
           },
           "synchronizeGroups": {
@@ -2799,20 +5544,24 @@
           "clientId": {
             "type": "string",
             "description": "Client ID provided by GitHub when registering the application.",
+            "minLength": 1,
             "writeOnly": true
           },
           "clientSecret": {
             "type": "string",
             "description": "Client password provided by GitHub when registering the application.",
+            "minLength": 1,
             "writeOnly": true
           },
           "applicationId": {
             "type": "string",
-            "description": "The App ID is found on your GitHub App's page on GitHub at Settings > Developer Settings > GitHub Apps."
+            "description": "The App ID is found on your GitHub App's page on GitHub at Settings > Developer Settings > GitHub Apps.",
+            "minLength": 1
           },
           "privateKey": {
             "type": "string",
             "description": "Your GitHub App's private key. You can generate a .pem file from your GitHub App's page under Private keys.\nCopy and paste the whole contents of the file here.\n",
+            "minLength": 1,
             "writeOnly": true
           },
           "synchronizeGroups": {
@@ -2821,11 +5570,13 @@
           },
           "apiUrl": {
             "type": "string",
-            "description": "The API url for a GitHub instance. https://api.github.com/ for Github.com, https://github.company.com/api/v3/ when using Github Enterprise"
+            "description": "The API url for a GitHub instance. https://api.github.com/ for Github.com, https://github.company.com/api/v3/ when using Github Enterprise",
+            "minLength": 1
           },
           "webUrl": {
             "type": "string",
-            "description": "The WEB url for a GitHub instance. https://github.com/ for Github.com, https://github.company.com/ when using GitHub Enterprise.\n"
+            "description": "The WEB url for a GitHub instance. https://github.com/ for Github.com, https://github.company.com/ when using GitHub Enterprise.\n",
+            "minLength": 1
           },
           "allowedOrganizations": {
             "type": "array",
@@ -2904,19 +5655,23 @@
         "properties": {
           "projectKey": {
             "type": "string",
-            "description": "Key of the project to create"
+            "description": "Key of the project to create",
+            "minLength": 1
           },
           "projectName": {
             "type": "string",
-            "description": "Name of the project to create"
+            "description": "Name of the project to create",
+            "minLength": 1
           },
           "devOpsPlatformSettingId": {
             "type": "string",
-            "description": "Identifier of DevOps platform configuration to use. Use /dop-translation/dop-settings to retrieve the settings and their ID"
+            "description": "Identifier of DevOps platform configuration to use. Use /dop-translation/dop-settings to retrieve the settings and their ID",
+            "minLength": 1
           },
           "repositoryIdentifier": {
             "type": "string",
-            "description": "Identifier of the DevOps platform repository to import:\n- repository slug for GitHub and Bitbucket (Cloud and Server)\n- repository id for GitLab\n- repository name for Azure DevOps\n"
+            "description": "Identifier of the DevOps platform repository to import:\n- repository slug for GitHub and Bitbucket (Cloud and Server)\n- repository id for GitLab\n- repository name for Azure DevOps\n",
+            "minLength": 1
           },
           "projectIdentifier": {
             "type": "string",
@@ -3201,6 +5956,31 @@
           "userId": { "type": "string", "readOnly": true }
         }
       },
+      "AtlassianAuthenticationDetailsResource": {
+        "type": "object",
+        "properties": {
+          "clientId": {
+            "type": "string",
+            "description": "Atlassian 3LO App Client ID",
+            "writeOnly": true
+          },
+          "secret": {
+            "type": "string",
+            "description": "Atlassian 3LO App Secret",
+            "writeOnly": true
+          }
+        }
+      },
+      "AtlassianAuthenticationDetailsResultResource": {
+        "type": "object",
+        "properties": {
+          "clientId": {
+            "type": "string",
+            "description": "Atlassian 3LO App Client ID",
+            "readOnly": true
+          }
+        }
+      },
       "UpdateFieldListString": {
         "type": "object",
         "properties": {
@@ -3208,19 +5988,14 @@
           "defined": { "type": "boolean" }
         }
       },
-      "UpdateFieldString": {
-        "type": "object",
-        "properties": {
-          "value": { "type": "string" },
-          "defined": { "type": "boolean" }
-        }
-      },
       "UserUpdateRestRequest": {
         "type": "object",
         "properties": {
           "login": {
-            "$ref": "#/components/schemas/UpdateFieldString",
-            "description": "User login"
+            "type": "string",
+            "description": "User login",
+            "maxLength": 100,
+            "minLength": 2
           },
           "name": {
             "type": "string",
@@ -3230,12 +6005,14 @@
           },
           "email": {
             "type": "string",
+            "format": "email",
             "description": "Email",
             "maxLength": 100,
             "minLength": 1
           },
           "scmAccounts": {
-            "$ref": "#/components/schemas/UpdateFieldListString"
+            "$ref": "#/components/schemas/UpdateFieldListString",
+            "items": { "type": "string" }
           },
           "externalProvider": {
             "type": "string",
@@ -3314,6 +6091,114 @@
           }
         }
       },
+      "LicenseProfilesUpdateRestRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "The name of the license policy"
+          },
+          "default": {
+            "type": "boolean",
+            "description": "Whether this license policy is the default or not"
+          }
+        }
+      },
+      "LicensePolicyLicenseUpdateRestRequest": {
+        "type": "object",
+        "properties": {
+          "policy": {
+            "type": "string",
+            "description": "The new status of this license.",
+            "enum": ["DENY", "ALLOW"]
+          }
+        },
+        "required": ["policy"]
+      },
+      "LicensePolicyLicenseResource": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "spdxLicenseId": { "type": "string" },
+          "name": { "type": "string" },
+          "category": {
+            "type": "string",
+            "enum": [
+              "UNKNOWN",
+              "COPYLEFT_WEAK",
+              "COPYLEFT_STRONG",
+              "COPYLEFT_NETWORK",
+              "COPYLEFT_MAXIMAL",
+              "PERMISSIVE_STANDARD",
+              "PERMISSIVE_AMATEUR"
+            ]
+          },
+          "policy": {
+            "type": "string",
+            "description": "The policy status of this license.",
+            "enum": ["DENY", "ALLOW"]
+          }
+        }
+      },
+      "LicenseProfileCategoryUpdateRestRequest": {
+        "type": "object",
+        "properties": {
+          "policy": {
+            "type": "string",
+            "description": "The new status of this category.",
+            "enum": ["DENY", "ALLOW"]
+          }
+        },
+        "required": ["policy"]
+      },
+      "LicenseProfileCategoryResource": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "key": {
+            "type": "string",
+            "enum": [
+              "UNKNOWN",
+              "COPYLEFT_WEAK",
+              "COPYLEFT_STRONG",
+              "COPYLEFT_NETWORK",
+              "COPYLEFT_MAXIMAL",
+              "PERMISSIVE_STANDARD",
+              "PERMISSIVE_AMATEUR"
+            ]
+          },
+          "policy": {
+            "type": "string",
+            "description": "The policy status of this category.",
+            "enum": ["DENY", "ALLOW"]
+          }
+        }
+      },
+      "AssignedProjectsUpdateRestRequest": {
+        "type": "object",
+        "properties": {
+          "licenseProfileUuid": {
+            "type": "string",
+            "description": "The id of the license profile that should be used when analyzing the project for license issues."
+          },
+          "projectKey": {
+            "type": "string",
+            "description": "The key of the project that should be assigned to the license profile."
+          }
+        },
+        "required": ["licenseProfileUuid", "projectKey"]
+      },
+      "IssueReleaseUpdateCommentRestRequest": {
+        "type": "object",
+        "properties": {
+          "issueReleaseChangeKey": {
+            "type": "string",
+            "description": "Issue release change key"
+          },
+          "comment": { "type": "string", "description": "Comment text" }
+        },
+        "required": ["comment", "issueReleaseChangeKey"]
+      },
       "FeatureEnablementRequest": {
         "type": "object",
         "properties": {
@@ -3326,6 +6211,177 @@
       "FeatureEnablementResource": {
         "type": "object",
         "properties": { "enablement": { "type": "boolean" } }
+      },
+      "JiraWorkTypesSelectionResource": {
+        "type": "object",
+        "properties": {
+          "sonarProjectId": {
+            "type": "string",
+            "description": "The Sonar project ID",
+            "writeOnly": true
+          },
+          "selectedWorkTypes": {
+            "type": "array",
+            "description": "An array with the selected work type ids",
+            "items": { "type": "string" },
+            "writeOnly": true
+          }
+        }
+      },
+      "PatchJiraProjectBindingRequestResource": {
+        "type": "object",
+        "properties": {
+          "sonarProjectId": {
+            "type": "string",
+            "description": "Sonar project identifier",
+            "minLength": 1,
+            "writeOnly": true
+          },
+          "jiraProjectKey": {
+            "type": "string",
+            "description": "Jira project key",
+            "minLength": 1,
+            "writeOnly": true
+          }
+        },
+        "required": ["jiraProjectKey", "sonarProjectId"]
+      },
+      "PatchJiraOrganizationBindingRequestResource": {
+        "type": "object",
+        "properties": {
+          "sonarOrganizationUuid": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Sonar organization UUID",
+            "writeOnly": true
+          },
+          "jiraCloudId": {
+            "type": "string",
+            "description": "Jira cloud ID to bind with the organization",
+            "minLength": 1,
+            "writeOnly": true
+          },
+          "jiraInstanceUrl": {
+            "type": "string",
+            "description": "Jira instance URL",
+            "minLength": 1,
+            "writeOnly": true
+          }
+        },
+        "required": ["jiraCloudId", "jiraInstanceUrl", "sonarOrganizationUuid"]
+      },
+      "PatchJiraOrganizationBindingEditResource": {
+        "type": "object",
+        "properties": {
+          "sonarOrganizationUuid": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Sonar organization UUID",
+            "writeOnly": true
+          },
+          "isTokenShared": {
+            "type": "boolean",
+            "description": "TODO",
+            "writeOnly": true
+          }
+        },
+        "required": ["isTokenShared", "sonarOrganizationUuid"]
+      },
+      "RuleTypeMapping": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "description": "Rule type",
+            "enum": ["CODE_SMELL", "BUG", "VULNERABILITY", "SECURITY_HOTSPOT"]
+          },
+          "severities": {
+            "type": "array",
+            "description": "List of severities",
+            "items": {
+              "type": "string",
+              "enum": ["BLOCKER", "CRITICAL", "MAJOR", "MINOR", "INFO"]
+            }
+          }
+        },
+        "required": ["severities", "type"]
+      },
+      "SandboxSettingsResource": {
+        "type": "object",
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "description": "Whether sandbox is enabled globally"
+          },
+          "defaultValue": {
+            "type": "boolean",
+            "description": "Default value for projects"
+          },
+          "allowOverride": {
+            "type": "boolean",
+            "description": "Allow projects to override settings"
+          },
+          "softwareQualities": {
+            "type": "array",
+            "description": "Software quality mappings (MQR mode)",
+            "items": { "$ref": "#/components/schemas/SoftwareQualityMapping" }
+          },
+          "types": {
+            "type": "array",
+            "description": "Rule type mappings (Standard Experience mode)",
+            "items": { "$ref": "#/components/schemas/RuleTypeMapping" }
+          }
+        }
+      },
+      "SoftwareQualityMapping": {
+        "type": "object",
+        "properties": {
+          "softwareQuality": {
+            "type": "string",
+            "description": "Software quality",
+            "enum": ["MAINTAINABILITY", "RELIABILITY", "SECURITY"]
+          },
+          "impactSeverities": {
+            "type": "array",
+            "description": "List of impact severities",
+            "items": {
+              "type": "string",
+              "enum": ["INFO", "LOW", "MEDIUM", "HIGH", "BLOCKER"]
+            }
+          }
+        },
+        "required": ["impactSeverities", "softwareQuality"]
+      },
+      "SandboxSettingsProjectResource": {
+        "type": "object",
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "description": "Whether sandbox is enabled for this project"
+          },
+          "softwareQualities": {
+            "type": "array",
+            "description": "Software quality mappings (MQR mode)",
+            "items": { "$ref": "#/components/schemas/SoftwareQualityMapping" }
+          },
+          "types": {
+            "type": "array",
+            "description": "Rule type mappings (Standard Experience mode)",
+            "items": { "$ref": "#/components/schemas/RuleTypeMapping" }
+          },
+          "overridden": {
+            "type": "boolean",
+            "description": "Whether project settings override instance settings"
+          }
+        }
+      },
+      "IntegrationConfigurationPatchRequest": {
+        "type": "object",
+        "properties": {
+          "clientId": { "type": "string" },
+          "clientSecret": { "type": "string" },
+          "signingSecret": { "type": "string" }
+        }
       },
       "DevOpsPermissionMappingUpdateRequest": {
         "type": "object",
@@ -3371,7 +6427,8 @@
             "description": "Set whether to synchronize groups"
           },
           "allowedGroups": {
-            "$ref": "#/components/schemas/UpdateFieldListString"
+            "$ref": "#/components/schemas/UpdateFieldListString",
+            "items": { "type": "string" }
           },
           "provisioningType": {
             "type": "string",
@@ -3423,7 +6480,8 @@
             "description": "Url of GitHub instance for authentication (for instance https://github.com)"
           },
           "allowedOrganizations": {
-            "$ref": "#/components/schemas/UpdateFieldListString"
+            "$ref": "#/components/schemas/UpdateFieldListString",
+            "items": { "type": "string" }
           },
           "provisioningType": {
             "type": "string",
@@ -3523,23 +6581,108 @@
           "page": { "$ref": "#/components/schemas/PageRestResponse" }
         }
       },
-      "ReleaseSearchResource": {
+      "Category": {
         "type": "object",
         "properties": {
-          "key": { "type": "string" },
-          "packageUrl": { "type": "string" },
-          "packageManager": { "type": "string" },
-          "packageName": { "type": "string" },
-          "version": { "type": "string" },
-          "licenseExpression": { "type": "string" },
-          "known": { "type": "boolean" },
-          "newInPullRequest": { "type": "boolean" },
-          "directSummary": { "type": "boolean" },
-          "scopeSummary": { "type": "string" },
-          "dependencyFilePaths": {
+          "activeRules": { "type": "integer", "format": "int32" },
+          "issues": { "type": "integer", "format": "int32" },
+          "key": { "type": "string" }
+        }
+      },
+      "GetAccessibilityReportResponse": {
+        "type": "object",
+        "properties": {
+          "categories": {
             "type": "array",
-            "items": { "type": "string" }
+            "items": { "$ref": "#/components/schemas/Category" }
           }
+        }
+      },
+      "SelfTestHttpCallResource": {
+        "type": "object",
+        "properties": {
+          "attemptedUrl": { "type": "string" },
+          "attemptedMethod": { "type": "string" },
+          "responseCode": { "type": "integer", "format": "int32" },
+          "responseBody": { "type": "string" },
+          "responseBodyAppearsValid": { "type": "boolean" },
+          "responseHeaders": {
+            "type": "array",
+            "items": { "type": "array", "items": { "type": "string" } }
+          }
+        }
+      },
+      "SelfTestResponse": {
+        "type": "object",
+        "properties": {
+          "featureEnabled": { "type": "boolean" },
+          "selfTestPassed": { "type": "boolean" },
+          "cliVersionCheck": {
+            "$ref": "#/components/schemas/SelfTestHttpCallResource"
+          },
+          "vulnerabilityDetailsCheck": {
+            "$ref": "#/components/schemas/SelfTestHttpCallResource"
+          }
+        }
+      },
+      "SelfTestSpringConfigurationResponse": {
+        "type": "object",
+        "properties": { "springVersion": { "type": "string" } }
+      },
+      "RiskReportItem": {
+        "type": "object",
+        "properties": {
+          "projectKey": { "type": "string" },
+          "projectName": { "type": "string" },
+          "branchKey": { "type": "string" },
+          "riskTitle": { "type": "string" },
+          "riskType": {
+            "type": "string",
+            "enum": ["VULNERABILITY", "PROHIBITED_LICENSE"]
+          },
+          "riskSeverity": {
+            "type": "string",
+            "enum": ["INFO", "LOW", "MEDIUM", "HIGH", "BLOCKER"]
+          },
+          "riskStatus": {
+            "type": "string",
+            "enum": ["OPEN", "ACCEPT", "CONFIRM", "SAFE", "FIXED"]
+          },
+          "statusChanges": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/StatusChange" }
+          },
+          "vulnerabilityId": { "type": "string" },
+          "cvssScore": { "type": "number" },
+          "cweIds": { "type": "array", "items": { "type": "string" } },
+          "publishedOn": { "type": "string" },
+          "createdAt": { "type": "string" },
+          "packageUrl": { "type": "string" },
+          "riskUrl": { "type": "string" },
+          "dependencyChains": {
+            "type": "array",
+            "items": { "type": "array", "items": { "type": "string" } }
+          },
+          "scope": { "type": "string" },
+          "productionScope": { "type": "boolean" }
+        }
+      },
+      "StatusChange": {
+        "type": "object",
+        "properties": {
+          "comment": { "type": "string" },
+          "newStatus": { "type": "string" },
+          "createdAt": { "type": "string" }
+        }
+      },
+      "BranchResource": {
+        "type": "object",
+        "properties": {
+          "uuid": { "type": "string" },
+          "key": { "type": "string" },
+          "pullRequest": { "type": "boolean" },
+          "projectKey": { "type": "string" },
+          "projectName": { "type": "string" }
         }
       },
       "ReleasesSearchRestResponse": {
@@ -3555,6 +6698,11 @@
               "$ref": "#/components/schemas/ScaReleaseByPackageManagerCountDto"
             }
           },
+          "branches": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/BranchResource" }
+          },
+          "countWithoutFilters": { "type": "integer", "format": "int32" },
           "page": { "$ref": "#/components/schemas/PageRestResponse" }
         }
       },
@@ -3578,7 +6726,7 @@
             "type": "array",
             "items": { "type": "array", "items": { "type": "string" } }
           },
-          "newInPullRequest": { "type": "boolean" }
+          "newlyIntroduced": { "type": "boolean" }
         }
       },
       "IssueResource": {
@@ -3586,8 +6734,17 @@
         "properties": {
           "key": { "type": "string" },
           "severity": { "type": "string" },
-          "type": { "type": "string" },
+          "showIncreasedSeverityWarning": { "type": "boolean" },
+          "type": {
+            "type": "string",
+            "enum": ["VULNERABILITY", "PROHIBITED_LICENSE"]
+          },
+          "quality": {
+            "type": "string",
+            "enum": ["MAINTAINABILITY", "RELIABILITY", "SECURITY"]
+          },
           "createdAt": { "type": "string" },
+          "assignee": { "$ref": "#/components/schemas/UserResource" },
           "vulnerabilityId": { "type": "string" },
           "cweIds": { "type": "array", "items": { "type": "string" } },
           "cvssScore": { "type": "string" },
@@ -3598,13 +6755,15 @@
         "type": "object",
         "properties": {
           "key": { "type": "string" },
+          "branchUuid": { "type": "string" },
           "packageUrl": { "type": "string" },
           "packageManager": { "type": "string" },
           "packageName": { "type": "string" },
           "version": { "type": "string" },
           "licenseExpression": { "type": "string" },
           "known": { "type": "boolean" },
-          "newInPullRequest": { "type": "boolean" },
+          "knownPackage": { "type": "boolean" },
+          "newlyIntroduced": { "type": "boolean" },
           "directSummary": { "type": "boolean" },
           "scopeSummary": { "type": "string" },
           "productionScopeSummary": { "type": "boolean" },
@@ -3615,150 +6774,170 @@
           "issues": {
             "type": "array",
             "items": { "$ref": "#/components/schemas/IssueResource" }
+          },
+          "branch": { "$ref": "#/components/schemas/BranchResource" }
+        }
+      },
+      "LicenseProfileCollectionActions": {
+        "type": "object",
+        "properties": { "create": { "type": "boolean" } }
+      },
+      "LicenseProfileIndexRestResponse": {
+        "type": "object",
+        "properties": {
+          "licenseProfiles": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/LicenseProfileResource" }
+          },
+          "actions": {
+            "$ref": "#/components/schemas/LicenseProfileCollectionActions"
           }
         }
       },
-      "DependencyRiskResource": {
+      "LicenseProfileDetailsResource": {
         "type": "object",
         "properties": {
-          "key": { "type": "string" },
-          "severity": { "type": "string" },
-          "release": { "$ref": "#/components/schemas/ReleaseSearchResource" },
-          "type": { "type": "string" },
-          "createdAt": { "type": "string" },
-          "vulnerabilityId": { "type": "string" },
-          "cweIds": { "type": "array", "items": { "type": "string" } },
-          "cvssScore": { "type": "string" },
-          "spdxLicenseId": { "type": "string" }
+          "profile": { "$ref": "#/components/schemas/LicenseProfileResource" },
+          "categories": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LicenseProfileCategoryResource"
+            }
+          },
+          "licenses": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LicensePolicyLicenseResource"
+            }
+          }
         }
       },
-      "DependencyRisksSearchRestResponse": {
+      "AssignableProjectResource": {
         "type": "object",
         "properties": {
-          "issuesReleases": {
+          "projectKey": { "type": "string" },
+          "projectName": { "type": "string" },
+          "assignedToLicenseProfile": { "type": "boolean" }
+        }
+      },
+      "AssignableProjectsIndexRestResponse": {
+        "type": "object",
+        "properties": {
+          "assignableProjects": {
             "type": "array",
-            "items": { "$ref": "#/components/schemas/DependencyRiskResource" }
+            "items": {
+              "$ref": "#/components/schemas/AssignableProjectResource"
+            }
           },
           "page": { "$ref": "#/components/schemas/PageRestResponse" }
         }
       },
-      "AffectedPackageResource": {
-        "type": "object",
-        "properties": {
-          "purl": { "type": "string" },
-          "recommendation": { "type": "string" },
-          "recommendationDetails": {
-            "$ref": "#/components/schemas/VulnerabilityRecommendationDetailsResource"
-          },
-          "versionOptions": {
-            "type": "array",
-            "items": { "$ref": "#/components/schemas/VersionOptionResource" }
-          },
-          "affectedVersions": {
-            "type": "array",
-            "items": { "type": "string" }
-          },
-          "unaffectedVersions": { "type": "string" }
-        }
-      },
-      "DependencyRiskDetailsResource": {
+      "IssueReleaseResource": {
         "type": "object",
         "properties": {
           "key": { "type": "string" },
           "severity": { "type": "string" },
+          "originalSeverity": { "type": "string" },
+          "manualSeverity": { "type": "string" },
+          "showIncreasedSeverityWarning": { "type": "boolean" },
           "release": { "$ref": "#/components/schemas/ReleaseSearchResource" },
-          "type": { "type": "string" },
+          "type": {
+            "type": "string",
+            "enum": ["VULNERABILITY", "PROHIBITED_LICENSE"]
+          },
+          "quality": {
+            "type": "string",
+            "enum": ["MAINTAINABILITY", "RELIABILITY", "SECURITY"]
+          },
+          "status": { "type": "string" },
           "createdAt": { "type": "string" },
-          "vulnerability": {
-            "$ref": "#/components/schemas/VulnerabilityResource"
-          },
-          "spdxLicenseId": { "type": "string" }
-        }
-      },
-      "VersionOptionResource": {
-        "type": "object",
-        "properties": {
-          "version": {
-            "type": "string",
-            "description": "The version being presented as an option"
-          },
-          "vulnerabilityIds": {
-            "type": "array",
-            "description": "Vulnerability IDs affecting this version",
-            "items": { "type": "string" }
-          },
-          "prerelease": {
-            "type": "boolean",
-            "description": "Is this version a pre-release version"
-          },
-          "fixLevel": {
-            "type": "string",
-            "description": "Describes which vulnerabilities are fixed",
-            "enum": ["COMPLETE", "PARTIAL", "NONE", "UNKNOWN"]
-          },
-          "descriptionCode": {
-            "type": "string",
-            "description": "How the frontend should label this version",
-            "enum": [
-              "VERSION_IN_USE",
-              "NEAREST_PARTIAL",
-              "NEAREST_COMPLETE",
-              "LATEST_PARTIAL",
-              "LATEST_COMPLETE",
-              "LATEST_STABLE",
-              "LATEST_PRERELEASE",
-              "UNKNOWN"
-            ]
-          }
-        }
-      },
-      "VulnerabilityRecommendationDetailsResource": {
-        "type": "object",
-        "properties": {
-          "impactScore": { "type": "integer", "format": "int32" },
-          "impactDescription": { "type": "string" },
-          "realIssue": { "type": "boolean" },
-          "falsePositiveReason": { "type": "string" },
-          "includesDev": { "type": "boolean" },
-          "specificMethodsAffected": { "type": "boolean" },
-          "specificMethodsDescription": { "type": "string" },
-          "otherConditions": { "type": "boolean" },
-          "otherConditionsDescription": { "type": "string" },
-          "workaroundAvailable": { "type": "boolean" },
-          "workaroundDescription": { "type": "string" },
-          "visibility": { "type": "string" }
-        }
-      },
-      "VulnerabilityReportResource": {
-        "type": "object",
-        "properties": {
-          "id": { "type": "string" },
-          "url": { "type": "string" },
-          "type": { "type": "string" },
-          "cvssScore": { "type": "string" },
-          "cvssSeverity": { "type": "string" }
-        }
-      },
-      "VulnerabilityResource": {
-        "type": "object",
-        "properties": {
+          "assignee": { "$ref": "#/components/schemas/UserResource" },
+          "commentCount": { "type": "integer", "format": "int32" },
           "vulnerabilityId": { "type": "string" },
-          "reports": {
+          "cweIds": { "type": "array", "items": { "type": "string" } },
+          "cvssScore": { "type": "string" },
+          "withdrawn": { "type": "boolean" },
+          "spdxLicenseId": { "type": "string" },
+          "transitions": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/VulnerabilityReportResource"
+              "type": "string",
+              "enum": ["CONFIRM", "REOPEN", "SAFE", "FIXED", "ACCEPT"]
             }
           },
-          "description": { "type": "string" },
-          "epssPercentile": { "type": "string" },
-          "epssProbability": { "type": "string" },
-          "knownExploited": { "type": "boolean" },
-          "cweIds": { "type": "array", "items": { "type": "string" } },
-          "affectedPackages": {
+          "actions": {
             "type": "array",
-            "items": { "$ref": "#/components/schemas/AffectedPackageResource" }
+            "items": {
+              "type": "string",
+              "enum": ["COMMENT", "ASSIGN", "SET_SEVERITY"]
+            },
+            "uniqueItems": true
           }
         }
+      },
+      "IssuesReleasesSearchRestResponse": {
+        "type": "object",
+        "properties": {
+          "issuesReleases": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/IssueReleaseResource" }
+          },
+          "branches": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/IssueReleaseBranchResource"
+            }
+          },
+          "countWithoutFilters": { "type": "integer", "format": "int32" },
+          "page": { "$ref": "#/components/schemas/PageRestResponse" }
+        }
+      },
+      "IssueReleaseChangeDiffResource": {
+        "type": "object",
+        "properties": {
+          "fieldName": { "type": "string" },
+          "oldValue": { "type": "string" },
+          "newValue": { "type": "string" }
+        }
+      },
+      "IssueReleaseChangeResource": {
+        "type": "object",
+        "properties": {
+          "key": { "type": "string" },
+          "createdAt": { "type": "string" },
+          "user": { "$ref": "#/components/schemas/UserResource" },
+          "markdownComment": { "type": "string" },
+          "htmlComment": { "type": "string" },
+          "changeData": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/IssueReleaseChangeDiffResource"
+            }
+          },
+          "actions": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": ["EDIT_COMMENT", "DELETE_COMMENT"]
+            },
+            "uniqueItems": true
+          }
+        }
+      },
+      "IssuesReleasesChangesRestResponse": {
+        "type": "object",
+        "properties": {
+          "changelog": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/IssueReleaseChangeResource"
+            }
+          }
+        }
+      },
+      "ScaFeatureEnabledResource": {
+        "type": "object",
+        "properties": { "enabled": { "type": "boolean" } }
       },
       "ScaCliInfoRestResponse": {
         "type": "object",
@@ -3768,6 +6947,155 @@
           "sha256": { "type": "string" },
           "os": { "type": "string" },
           "arch": { "type": "string" }
+        }
+      },
+      "AnalysisErrorResource": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": [
+              "UNKNOWN",
+              "NO_DEPENDENCIES_FOUND",
+              "DEPENDENCY_FILES_PARSE_ERROR",
+              "UNSUPPORTED_PLATFORM",
+              "INEXACT_VERSIONS",
+              "MISSING_LOCKFILE"
+            ]
+          },
+          "path": { "type": "string" },
+          "message": { "type": "string" }
+        }
+      },
+      "AnalysisResource": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["FAILED", "OUTDATED", "COMPLETED"]
+          },
+          "failedReason": { "type": "string" },
+          "errors": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/AnalysisErrorResource" }
+          },
+          "parsedFiles": { "type": "array", "items": { "type": "string" } }
+        }
+      },
+      "JiraWorkTypeFieldResultResource": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string",
+            "description": "The field key",
+            "readOnly": true
+          },
+          "name": {
+            "type": "string",
+            "description": "The field name",
+            "readOnly": true
+          },
+          "required": {
+            "type": "boolean",
+            "description": "Whether the field is required",
+            "readOnly": true
+          },
+          "hasDefaultValue": {
+            "type": "boolean",
+            "description": "Whether the field has a default value",
+            "readOnly": true
+          }
+        }
+      },
+      "JiraWorkTypeResultResource": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "the Jira work type id",
+            "readOnly": true
+          },
+          "name": {
+            "type": "string",
+            "description": "the Jira work type name",
+            "readOnly": true
+          },
+          "description": {
+            "type": "string",
+            "description": "the Jira work type description",
+            "readOnly": true
+          },
+          "subtask": {
+            "type": "boolean",
+            "description": "true, if the Jira work type is a subtask",
+            "readOnly": true
+          },
+          "hierarchyLevel": {
+            "type": "integer",
+            "format": "int32",
+            "description": "the Jira work type hierarchy",
+            "readOnly": true
+          },
+          "selected": {
+            "type": "boolean",
+            "description": "true, if the Jira work type is selected",
+            "readOnly": true
+          },
+          "fields": {
+            "type": "array",
+            "description": "Array of field metadata for the specified work type. (Optional)",
+            "items": {
+              "$ref": "#/components/schemas/JiraWorkTypeFieldResultResource"
+            },
+            "readOnly": true
+          }
+        }
+      },
+      "JiraProjectResultResource": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "the name of the project",
+            "readOnly": true
+          },
+          "key": {
+            "type": "string",
+            "description": "the key of the project",
+            "readOnly": true
+          }
+        }
+      },
+      "LinkedIssuesCountResource": {
+        "type": "object",
+        "properties": {
+          "count": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Count of linked Jira issues",
+            "readOnly": true
+          }
+        }
+      },
+      "IntegrationConfigurationSearchResponse": {
+        "type": "object",
+        "properties": {
+          "integrationConfigurations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/IntegrationConfigurationResponse"
+            }
+          }
+        }
+      },
+      "SupportedRulesDto": {
+        "type": "object",
+        "properties": {
+          "rules": {
+            "type": "array",
+            "items": { "type": "string" },
+            "uniqueItems": true
+          }
         }
       },
       "LlmModelDto": {
@@ -3802,20 +7130,6 @@
               "TIMEOUT",
               "UNAUTHORIZED"
             ]
-          },
-          "isEnabled": { "type": "boolean" },
-          "subscriptionType": {
-            "type": "string",
-            "enum": ["EARLY_ACCESS", "PAID", "NOT_PAID"]
-          }
-        }
-      },
-      "SubscriptionTypeResponse": {
-        "type": "object",
-        "properties": {
-          "subscriptionType": {
-            "type": "string",
-            "enum": ["EARLY_ACCESS", "PAID", "NOT_PAID"]
           }
         }
       },
@@ -3859,6 +7173,59 @@
           "key": { "type": "string" },
           "modelKey": { "type": "string" },
           "endpoint": { "type": "string" }
+        }
+      },
+      "PurchasableFeatureRestResponse": {
+        "type": "object",
+        "properties": {
+          "featureKey": { "type": "string" },
+          "parent": { "type": "string" },
+          "isEnabled": { "type": "boolean" },
+          "isAvailable": { "type": "boolean" },
+          "url": { "type": "string" }
+        }
+      },
+      "LicenseFeatureRestResponse": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "parent": { "type": "string" },
+          "startDate": { "type": "string" },
+          "endDate": { "type": "string" }
+        }
+      },
+      "LicenseRestResponse": {
+        "type": "object",
+        "properties": {
+          "expirationDate": { "type": "string" },
+          "lastRefreshDate": { "type": "string" },
+          "edition": { "type": "string" },
+          "features": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LicenseFeatureRestResponse"
+            }
+          },
+          "maxLoc": { "type": "integer", "format": "int64" },
+          "loc": { "type": "integer", "format": "int64" },
+          "serverId": { "type": "string" },
+          "type": { "type": "string" },
+          "contactEmail": { "type": "string" },
+          "remainingLocThreshold": { "type": "integer", "format": "int64" },
+          "canActivateGracePeriod": { "type": "boolean" },
+          "gracePeriodEndDate": { "type": "string" },
+          "gracePeriodExpired": { "type": "boolean" },
+          "extraDays": { "type": "integer", "format": "int32" },
+          "startDate": { "type": "string" },
+          "activatedOnline": { "type": "boolean" },
+          "licenseKey": { "type": "string" },
+          "validEdition": { "type": "boolean" },
+          "validServerId": { "type": "boolean" },
+          "officialDistribution": { "type": "boolean" },
+          "supported": { "type": "boolean" },
+          "legacy": { "type": "boolean" },
+          "expired": { "type": "boolean" },
+          "disabled": { "type": "boolean" }
         }
       },
       "ProjectBinding": {
@@ -3961,6 +7328,32 @@
             }
           },
           "page": { "$ref": "#/components/schemas/PageRestResponse" }
+        }
+      },
+      "_a": {
+        "type": "object",
+        "properties": {
+          "graphs": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/_h" }
+          }
+        }
+      },
+      "_h": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "branchId": { "type": "string" },
+          "type": {
+            "type": "string",
+            "enum": ["file_graph", "namespace_graph"]
+          },
+          "ecosystem": {
+            "type": "string",
+            "enum": ["java", "js", "ts", "py", "cs", "xoo"]
+          },
+          "perspectiveKey": { "type": "string" },
+          "graphVersion": { "type": "string" }
         }
       },
       "JreInfoRestResponse": {
