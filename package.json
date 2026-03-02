@@ -1,6 +1,6 @@
 {
   "name": "@philips-software/qubekit",
-  "version": "1.5.0",
+  "version": "1.6.0",
   "packageManager": "yarn@4.5.0",
   "main": "src/index.ts",
   "types": "src/index.ts",

@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.0](https://github.com/philips-software/qubekit/compare/v1.5.0...v1.6.0) (2026-03-02)
+
+
+### Features
+
+* Bump to node 24 ([#132](https://github.com/philips-software/qubekit/issues/132)) ([3d67865](https://github.com/philips-software/qubekit/commit/3d678650b2fd8dedfa5c3a954e06e01aa6292e22))
+
 ## [1.5.0](https://github.com/philips-software/qubekit/compare/v1.4.0...v1.5.0) (2026-03-02)
 
 
