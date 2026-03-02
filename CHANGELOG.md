@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.0](https://github.com/philips-software/qubekit/compare/v1.3.0...v1.4.0) (2026-03-02)
+
+
+### Features
+
+* Add ALM Settings and Applications endpoints to v1 OpenAPI specification ([#113](https://github.com/philips-software/qubekit/issues/113)) ([c941aeb](https://github.com/philips-software/qubekit/commit/c941aeb8436e946530b9bbcb6c0da157ed5d9f60))
+
 ## [1.3.0](https://github.com/philips-software/qubekit/compare/v1.2.0...v1.3.0) (2025-11-21)
 
 
