@@ -1,6 +1,6 @@
 {
   "name": "QubeKit Development",
-  "image": "mcr.microsoft.com/devcontainers/typescript-node:20-bookworm",
+  "image": "mcr.microsoft.com/devcontainers/typescript-node:24-bookworm",
   "forwardPorts": [],
   "mounts": [
     // volume mount to speed up package restore

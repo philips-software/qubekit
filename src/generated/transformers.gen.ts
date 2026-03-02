@@ -102,13 +102,6 @@ export const getUserBindingResponseTransformer = async (
   return data;
 };
 
-const userTokenSearchResponseSchemaResponseTransformer = (data: any) => {
-  data.userTokens = data.userTokens.map((item: any) =>
-    userTokenDetailsSchemaResponseTransformer(item),
-  );
-  return data;
-};
-
 const userTokenDetailsSchemaResponseTransformer = (data: any) => {
   data.createdAt = new Date(data.createdAt);
   if (data.lastConnectionDate) {
@@ -117,6 +110,13 @@ const userTokenDetailsSchemaResponseTransformer = (data: any) => {
   if (data.expirationDate) {
     data.expirationDate = new Date(data.expirationDate);
   }
+  return data;
+};
+
+const userTokenSearchResponseSchemaResponseTransformer = (data: any) => {
+  data.userTokens = data.userTokens.map((item: any) =>
+    userTokenDetailsSchemaResponseTransformer(item),
+  );
   return data;
 };
 
