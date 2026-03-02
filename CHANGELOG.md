@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.0](https://github.com/philips-software/qubekit/compare/v1.4.0...v1.5.0) (2026-03-02)
+
+
+### Features
+
+* Update v2 OpenAPI specification from SonarQube API docs ([#112](https://github.com/philips-software/qubekit/issues/112)) ([06ab6d8](https://github.com/philips-software/qubekit/commit/06ab6d871e5f80f8475142729d54dd042eb9b3a7))
+
 ## [1.4.0](https://github.com/philips-software/qubekit/compare/v1.3.0...v1.4.0) (2026-03-02)
 
 
